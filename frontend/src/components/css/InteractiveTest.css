@@ -1,0 +1,76 @@
+.interactive-test-wrapper {
+  margin-top: 20px;
+}
+
+.interactive-test-wrapper button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+  margin-bottom: 10px;
+}
+
+.interactive-test-wrapper button:hover {
+  background-color: #2980b9;
+}
+
+.interactive-test {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  margin-top: 10px;
+}
+
+.question-block {
+  margin-bottom: 20px;
+}
+
+.question-block ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.question-block li {
+  margin-bottom: 5px;
+}
+
+.question-block input[type="radio"] {
+  margin-right: 10px;
+}
+
+.correct {
+  color: green;
+}
+
+.incorrect {
+  color: red;
+}
+
+.submit-test-button {
+  background-color: #27ae60;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+}
+
+.submit-test-button:hover {
+  background-color: #219150;
+}
+
+.test-result {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #e8f5e9;
+  border: 1px solid #c8e6c9;
+  border-radius: 6px;
+}
