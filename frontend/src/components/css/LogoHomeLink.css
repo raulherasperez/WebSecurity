@@ -1,0 +1,18 @@
+.logo-home-link {
+  text-align: left;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  margin-left:80px;
+}
+
+.logo-home-link h1 {
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin: 0;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.logo-home-link h1:hover {
+  color: #1a252f;
+}

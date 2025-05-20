@@ -2,18 +2,21 @@ import React, { useState } from 'react';
 import './css/ModulePage.css';
 import InteractiveTest from '../components/InteractiveTest';
 import sqlQuestions from './questions'; // Importamos las preguntas
-
+import LogoHomeLink from '../components/LogoHomeLink';
 function ModulePage() {
   const [showDetails, setShowDetails] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
 
   return (
     <div className="ModulePage">
+
+    <LogoHomeLink />
       {/* Título */}
-      <h1>Modulo 1</h1>
+      
 
       {/* Contenido principal */}
       <main className="ModuleContent">
+        <h1 className="h1">Modulo 1</h1>
         {/* Texto inicial */}
         <p>
           En este módulo aprenderás sobre uno de los tipos de ataques más comunes en aplicaciones web: la inyección SQL.
@@ -60,7 +63,7 @@ function ModulePage() {
               <iframe
                 width="560"
                 height="315"
-                src="https://www.youtube.com/embed/dQw4w9WgXcQ "
+                src="https://www.youtube.com/embed/qLeeLRn9Z78?si=yXBmGdkXtWBO-pMR"
                 title="YouTube video player"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

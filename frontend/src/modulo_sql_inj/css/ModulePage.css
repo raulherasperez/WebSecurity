@@ -12,7 +12,6 @@ body, html {
   flex-direction: column;
   min-height: 100vh;
   position: relative;
-  margin-right: 500px;
 }
 
 /* Contenido principal */
@@ -21,18 +20,24 @@ body, html {
   display: flex;
   justify-content: flex-start;
   padding: 20px;
-  flex-direction: column; /* Organización vertical */
+  flex-direction: column;
+  margin-left:50px;
+  margin-right:300px;
+  text-justify: inter-word;
 }
 
 .ModuleContent h1 {
-  text-align: center;
-  margin-top: 20px;
-  margin-bottom: 10px;
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin: 0;
+  cursor: pointer;
+  transition: color 0.3s ease;
 }
 
 .ModuleContent h2 {
   margin-top: 20px;
   margin-bottom: 10px;
+  
 }
 
 .ModuleContent p {
@@ -50,6 +55,8 @@ body, html {
   cursor: pointer;
   border-radius: 6px;
   transition: background-color 0.3s ease;
+  align-self: flex-start;
+  margin-bottom: 10px;
 }
 
 .ModuleContent button:hover {
@@ -65,6 +72,19 @@ body, html {
   width: 100%;
   max-width: 600px;
   margin: 0 auto;
+}
+
+/* Bloque de código SQL */
+.sql-code {
+  display: block;
+  background-color: #1e1e1e;
+  color: #00ff80;
+  font-family: 'Courier New', Courier, monospace;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  white-space: pre-wrap; /* Mantiene espacios y saltos de línea */
+  word-wrap: break-word;
 }
 
 /* Panel lateral de módulos */
@@ -104,6 +124,18 @@ body, html {
 
 .module-sidebar li:hover {
   background-color: #dce3e5;
+}
+
+.module-sidebar a {
+  text-decoration: none;
+  color: #2c3e50;
+  font-weight: 500;
+  display: block;
+  width: 100%;
+}
+
+.module-sidebar a:hover {
+  color: #1a252f;
 }
 
 /* Botón Sandbox */

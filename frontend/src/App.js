@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
 import ModuleList from './components/ModuleList'; // Importamos el componente
+import LogoHomeLink from './components/LogoHomeLink'; // Importamos el componente LogoHomeLink
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -24,7 +25,7 @@ function App() {
       </aside>
 
       {/* Título */}
-      <h1 className="App-title">Web Security</h1>
+      <LogoHomeLink />
 
       {/* Contenido principal */}
       <main className="App-main">
