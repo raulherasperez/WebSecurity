@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './App.css';
 import ModuleList from './components/ModuleList'; // Importamos el componente
 import LogoHomeLink from './components/LogoHomeLink'; // Importamos el componente LogoHomeLink
+import SidebarMenu from './components/SidebarMenu';
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -14,15 +15,7 @@ function App() {
       </button>
 
       {/* Menú lateral izquierdo */}
-      <aside className={`sidebar-menu ${isMenuOpen ? 'active' : ''}`}>
-        <nav>
-          <ul>
-            <li><a href="/login">Iniciar sesión / Registro</a></li>
-            <li><a href="/guides">Guías</a></li>
-            <li><a href="/machines">Máquinas virtuales</a></li>
-          </ul>
-        </nav>
-      </aside>
+      <SidebarMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
 
       {/* Título */}
       <LogoHomeLink />

@@ -1,0 +1,39 @@
+.sidebar-menu {
+  position: fixed;
+  top: 0;
+  left: -250px;
+  width: 250px;
+  height: 100%;
+  background-color: #ffffff;
+  padding: 60px 20px 20px; /* Ajustamos el padding-top a 60px para dejar espacio */
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  transition: left 0.3s ease;
+  z-index: 100;
+}
+
+.sidebar-menu.active {
+  left: 0;
+}
+
+.sidebar-menu ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sidebar-menu li {
+  margin-bottom: 15px;
+}
+
+.sidebar-menu a {
+  text-decoration: none;
+  color: #2c3e50;
+  font-size: 1rem;
+  display: block;
+  padding: 10px;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+
+.sidebar-menu a:hover {
+  background-color: #ecf0f1;
+}

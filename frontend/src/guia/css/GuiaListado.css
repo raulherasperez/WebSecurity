@@ -1,0 +1,73 @@
+.guia-listado-container {
+  max-width: 700px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(44, 62, 80, 0.06);
+  padding: 24px 24px 16px 24px;
+}
+
+.guia-listado-container h2 {
+  color: #2c3e50;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.guia-listado-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.guia-listado-item {
+  margin-bottom: 18px;
+  padding: 16px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background: #fafbfc;
+  transition: box-shadow 0.2s;
+}
+
+.guia-listado-item:hover {
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+}
+
+.guia-listado-title {
+  font-size: 1.2rem;
+  color: #2980b9;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.guia-listado-title:hover {
+  color: #1a252f;
+  text-decoration: underline;
+}
+
+.guia-listado-meta {
+  font-size: 0.95rem;
+  color: #888;
+  margin-top: 4px;
+}
+.guia-listado-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.guia-listado-crear-btn {
+  background: #3498db;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.guia-listado-crear-btn:hover {
+  background: #217dbb;
+}

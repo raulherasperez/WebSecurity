@@ -1,8 +1,13 @@
 package com.websecurity.websecurity.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 @Entity
 @Table(name = "users")  // nombre de tabla en la BD
 public class User {
@@ -11,10 +16,12 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Size(max = 30, message = "El nombre de usuario no puede tener más de 30 caracteres")
+    @Pattern(regexp = "^[A-Za-z0-9ÑñÁáÉéÍíÓóÚúÝýÜüÀàÈèÌìÒòÙùÂâÊêÎîÔôÛûÄäËëÏïÖöÜü._-]+$", message = "El nombre de usuario solo puede contener caracteres alfanuméricos, punto, guion y guion bajo")    
+    @Column(unique = true)
     private String username;
 
-    @Column(nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @Lob
