@@ -1,0 +1,70 @@
+.vm-listado-container {
+  max-width: 700px;
+  margin: 40px auto 0 auto;
+  background: #f7fafd;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(60, 60, 60, 0.08);
+  padding: 32px 28px 18px 28px;
+}
+
+.vm-listado-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.vm-listado-header h2 {
+  font-size: 1.5rem;
+  color: #2d3a4a;
+  font-weight: 700;
+}
+
+.vm-listado-crear-btn {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 22px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.vm-listado-crear-btn:hover {
+  background: #1256a3;
+}
+
+.vm-listado-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.vm-listado-item {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(60, 60, 60, 0.07);
+  margin-bottom: 18px;
+  padding: 16px 18px 12px 18px;
+  border-left: 4px solid #1976d2;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.vm-listado-title {
+  font-size: 1.18rem;
+  font-weight: 600;
+  color: #1976d2;
+  text-decoration: none;
+  transition: color 0.18s;
+}
+.vm-listado-title:hover {
+  color: #1256a3;
+  text-decoration: underline;
+}
+
+.vm-listado-meta {
+  color: #8a99a8;
+  font-size: 0.95rem;
+}

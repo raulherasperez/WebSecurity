@@ -168,3 +168,21 @@ body, html {
   background-color: #2980b9;
 }
 
+/* Puedes poner esto en src/App.css o src/index.css */
+
+a {
+  color: #1976d2;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.18s, box-shadow 0.18s;
+  border-radius: 4px;
+  padding: 1px 2px;
+}
+
+a:hover, a:focus {
+  color: #1256a3;
+  text-decoration: underline;
+  background: #e3f0fc;
+  box-shadow: 0 1px 6px rgba(25, 118, 210, 0.08);
+  outline: none;
+}

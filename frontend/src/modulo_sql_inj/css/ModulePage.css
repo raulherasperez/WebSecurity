@@ -161,3 +161,32 @@ body, html {
 .sandbox-button:hover {
   background-color: #2980b9;
 }
+
+/* Puedes añadir esto a tu ModulePage.css */
+.hint-btn {
+  margin: 8px 8px 0 0;
+  padding: 6px 16px;
+  border-radius: 5px;
+  border: none;
+  background: #e1e8ed;
+  color: #2c3e50;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.hint-btn:hover {
+  background: #3498db;
+  color: #fff;
+}
+.hint-box {
+  background: #f9f9f9;
+  border-left: 4px solid #3498db;
+  padding: 10px 16px;
+  margin: 8px 0 12px 0;
+  border-radius: 4px;
+  color: #222;
+}
+.solution-box {
+  border-left-color: #27ae60;
+  background: #f6fff6;
+}

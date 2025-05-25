@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './css/AuthForm.css';
 
+import LogoHomeLink from '../components/LogoHomeLink';
+
 const RegisterPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -50,6 +52,7 @@ const RegisterPage = () => {
 
   return (
     <div className="auth-form-container">
+      <LogoHomeLink />
       <h2>Registro</h2>
       <form onSubmit={handleRegister}>
         <div>

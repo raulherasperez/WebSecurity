@@ -10,6 +10,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.http.HttpMethod;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @org.springframework.context.annotation.Configuration
@@ -44,7 +45,14 @@ public class SecurityConfig {
                     "/uploads/**"
                     ).permitAll()
                     .requestMatchers("/api/upload/**").authenticated()
+                    .requestMatchers(HttpMethod.GET, "/api/comentarios/**").permitAll()
+                    .requestMatchers("/api/vms", "/api/vms/**").permitAll()
+                    .requestMatchers("/api/sugerencias/**").authenticated()
+                    .requestMatchers("/api/reportes/**").authenticated()
+                    .requestMatchers("/api/logros/**").authenticated()
+                    .requestMatchers(HttpMethod.GET,"/api/glosario/**").permitAll()
                     .anyRequest().authenticated()
+                    
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
             http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './css/AuthForm.css';
+import LogoHomeLink from '../components/LogoHomeLink';
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
@@ -45,7 +46,9 @@ const LoginPage = () => {
   };
 
   return (
+    
     <div className="auth-form-container">
+      <LogoHomeLink />
       <h2>Iniciar sesión</h2>
       <form onSubmit={handleLogin}>
         <div>

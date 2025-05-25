@@ -1,0 +1,58 @@
+.vm-crear-container {
+  max-width: 600px;
+  margin: 40px auto 0 auto;
+  background: #f7fafd;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(60, 60, 60, 0.08);
+  padding: 32px 28px 18px 28px;
+}
+
+.vm-crear-container h2 {
+  font-size: 1.4rem;
+  color: #2d3a4a;
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+
+.vm-crear-container form > div {
+  margin-bottom: 18px;
+}
+
+.vm-crear-container label {
+  display: block;
+  font-weight: 600;
+  color: #1976d2;
+  margin-bottom: 6px;
+}
+
+.vm-crear-titulo,
+.vm-crear-container textarea {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #cfd8dc;
+  padding: 10px;
+  font-size: 1rem;
+  background: #fff;
+  resize: vertical;
+}
+
+.vm-crear-btn {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 9px 28px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+.vm-crear-btn:hover {
+  background: #1256a3;
+}
+
+.vm-crear-error {
+  color: #e74c3c;
+  margin-top: 10px;
+  font-weight: 500;
+}
