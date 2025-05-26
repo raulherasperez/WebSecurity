@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './css/AuthForm.css';
-
 import LogoHomeLink from '../components/LogoHomeLink';
+import { useAuth } from '../context/AuthContext';
 
 const RegisterPage = () => {
   const [username, setUsername] = useState('');
@@ -11,6 +11,7 @@ const RegisterPage = () => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -31,8 +32,11 @@ const RegisterPage = () => {
           });
           const data = typeof loginResponse.data === 'string' ? JSON.parse(loginResponse.data) : loginResponse.data;
           if (data.token) {
-            localStorage.setItem('authToken', data.token);
-            localStorage.setItem('username', username);
+            // Obtener el usuario con el token y actualizar el contexto
+            const userRes = await axios.get('http://localhost:8080/api/users/me', {
+              headers: { Authorization: `Bearer ${data.token}` }
+            });
+            login(userRes.data, data.token);
             navigate('/'); // Redirige a la página principal
           } else {
             setMessage('Registro exitoso, pero error al iniciar sesión.');

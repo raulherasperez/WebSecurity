@@ -1,49 +1,32 @@
+.module-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.18);
+  z-index: 109;
+}
 .module-sidebar {
   position: fixed;
   top: 0;
-  right: 0;
-  width: 220px;
+  right: -260px;
+  width: 240px;
   height: 100vh;
-  background-color: #ffffff;
+  background-color: #fff;
   padding: 20px;
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
-  z-index: 99;
+  z-index: 120;
+  transition: right 0.3s;
 }
-
-.module-sidebar h2 {
-  font-size: 1.4rem;
-  margin-top: 0;
-  margin-bottom: 15px;
-  color: #34495e;
+.module-sidebar.active {
+  right: 0;
 }
-
-.module-sidebar ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.module-sidebar li {
-  background-color: #ecf0f1;
-  margin-bottom: 10px;
-  padding: 12px;
-  border-radius: 6px;
+.module-sidebar-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #1976d2;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.module-sidebar li:hover {
-  background-color: #dce3e5;
-}
-
-.module-sidebar a {
-  text-decoration: none;
-  color: #2c3e50;
-  font-weight: 500;
-  display: block;
-  width: 100%;
-}
-
-.module-sidebar a:hover {
-  color: #1a252f;
 }

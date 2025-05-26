@@ -10,7 +10,7 @@ import ModuleList from '../components/ModuleList';
 import SidebarMenu from '../components/SidebarMenu';
 import ModuleComments from '../components/ModuleComments';
 
-function ModulePage() {
+function ModulePageSQLi() {
   const [showDetails, setShowDetails] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
   const { user } = useAuth();
@@ -23,19 +23,9 @@ function ModulePage() {
   const [showHint3, setShowHint3] = useState(false);
   const [showSolution3, setShowSolution3] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   return (
     <div className="ModulePage">
-      {/* Botón hamburguesa */}
-      <button className="hamburger" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-        ☰
-      </button>
-
-      {/* Menú lateral izquierdo */}
-      <SidebarMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
-
-      {/* Título */}
-      <LogoHomeLink />
-
       <main className="ModuleContent">
         <h1 className="h1">Módulo 1: Inyección SQL</h1>
         <p>
@@ -82,7 +72,6 @@ function ModulePage() {
             </li>
           </ul>
         </p>
-
 
         {/* Ejemplo y vídeo */}
         <section>
@@ -141,7 +130,7 @@ function ModulePage() {
           <InteractiveTest questions={sqlQuestions} />
         </section>
 
-                {/* Ejercicio 1 */}
+        {/* Ejercicio 1 */}
         <section>
           <h2>Ejercicio 1: Login vulnerable</h2>
           <p>
@@ -231,6 +220,65 @@ function ModulePage() {
           >
             Abrir entorno vulnerable
           </button>
+          <div style={{ marginTop: 18 }}>
+            <p style={{ marginBottom: 6, color: '#555', fontSize: '0.98rem' }}>
+              ¿Quieres reiniciar tu progreso en la tienda vulnerable? Puedes limpiar tu sesión y los retos completados con este botón. 
+              Si has desbloqueado logros, se mantendrán, pero perderás el progreso en los retos de SQLi.
+            </p>
+            <button
+              className="sandbox-button"
+              style={{ background: '#e53935', color: '#fff' }}
+              onClick={() => {
+                localStorage.removeItem('vshopLogin');
+                localStorage.removeItem('vshopRetosCompletados');
+                window.location.reload();
+              }}
+            >
+              Limpiar progreso SQLi
+            </button>
+          </div>
+
+          {/* Explicación técnica de la vulnerabilidad en un desplegable */}
+          <details style={{ marginTop: 32 }}>
+            <summary style={{ cursor: 'pointer', fontWeight: 600, fontSize: '1.08em' }}>
+              ¿Por qué funciona la vulnerabilidad? (ver explicación técnica)
+            </summary>
+            <div style={{ marginTop: 16 }}>
+              <p>
+                La vulnerabilidad de inyección SQL existe porque el backend construye las consultas SQL directamente con los datos que introduce el usuario, sin validarlos ni parametrizarlos.
+                Esto permite que un atacante inserte código SQL propio y altere el comportamiento de la consulta.
+              </p>
+              <p>
+                Por ejemplo, en el backend (<code>app.py</code>), el login vulnerable se implementa así:
+              </p>
+              <pre style={{ background: '#f7f7f7', padding: 12, borderRadius: 8, fontSize: '0.97em', overflowX: 'auto' }}>
+{String.raw`query = f"SELECT * FROM usuarios WHERE nombre = '{username}' AND email = '{password}'"
+cursor.execute(query)
+`}
+              </pre>
+              <p>
+                Si el usuario introduce en el campo de usuario: <code>admin' OR 1=1 --</code>, la consulta resultante será:
+              </p>
+              <pre style={{ background: '#f7f7f7', padding: 12, borderRadius: 8, fontSize: '0.97em', overflowX: 'auto' }}>
+{String.raw`SELECT * FROM usuarios WHERE nombre = 'admin' OR 1=1 --' AND email = '...'
+`}
+              </pre>
+              <p>
+                El <code>OR 1=1</code> siempre es verdadero, así que la consulta devuelve todos los usuarios y el atacante puede acceder sin conocer la contraseña.
+              </p>
+              <p>
+                Lo mismo ocurre en los endpoints de productos y detalles, donde los parámetros de búsqueda y <code>id</code> se insertan directamente en la consulta SQL:
+              </p>
+              <pre style={{ background: '#f7f7f7', padding: 12, borderRadius: 8, fontSize: '0.97em', overflowX: 'auto' }}>
+{String.raw`query = f"SELECT * FROM productos WHERE id = {prod_id}"
+cursor.execute(query)
+`}
+              </pre>
+              <p>
+                <strong>Solución:</strong> Para evitar la inyección SQL, siempre debes usar consultas parametrizadas/preparadas y nunca concatenar directamente los datos del usuario en las consultas SQL.
+              </p>
+            </div>
+          </details>
         </section>
 
         <ModuleComments moduleId="sql-inyeccion" user={user} />
@@ -244,4 +292,4 @@ function ModulePage() {
   );
 }
 
-export default ModulePage;
+export default ModulePageSQLi;

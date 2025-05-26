@@ -22,6 +22,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -54,16 +56,16 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        // Usuarios normales
-        createUserIfNotExists("user1", "user1@websec.com", "user1pass", User.Rol.USER);
-        createUserIfNotExists("user2", "user2@websec.com", "user2pass", User.Rol.USER);
-        createUserIfNotExists("user3", "user3@websec.com", "user3pass", User.Rol.USER);
+        // Usuarios normales con foto
+        createUserIfNotExists("user1", "user1@websec.com", "user1pass", User.Rol.USER, loadFoto("user1.jpg"));
+        createUserIfNotExists("user2", "user2@websec.com", "user2pass", User.Rol.USER, loadFoto("user2.jpg"));
+        createUserIfNotExists("user3", "user3@websec.com", "user3pass", User.Rol.USER, loadFoto("user3.jpg"));
 
-        // Admin
-        createUserIfNotExists("admin", "admin@websec.com", "adminpass", User.Rol.ADMIN);
+        // Admin con foto
+        createUserIfNotExists("admin", "admin@websec.com", "adminpass", User.Rol.ADMIN, loadFoto("admin.jpg"));
 
-        // Moderador
-        createUserIfNotExists("moderator", "moderator@websec.com", "modpass", User.Rol.MODERATOR);
+        // Moderador con foto
+        createUserIfNotExists("moderator", "moderator@websec.com", "modpass", User.Rol.MODERATOR, loadFoto("moderator.jpg"));
 
         // Guías de prueba para cada usuario con rol USER
         createGuiaIfNotExists("user1", "Guía de prueba 1", "Contenido de la guía de prueba 1.");
@@ -91,6 +93,14 @@ public class DataInitializer implements CommandLineRunner {
         desbloquearLogroIfNotExists("user2", "Primer Logro");
         desbloquearLogroIfNotExists("user3", "Primer Logro");
 
+        createLogroIfNotExists("Explorador", "Has visitado todas las secciones de la plataforma.", "explorador.png");
+        createLogroIfNotExists("Reportero", "Has enviado tu primer reporte de error.", "reportero.png");
+        createLogroIfNotExists("Colaborador", "Has enviado una sugerencia aceptada.", "colaborador.png");
+        createLogroIfNotExists("Maestro de Guías", "Has publicado 5 guías.", "maestro_guias.png");
+        createLogroIfNotExists("Cazador de Bugs", "Has reportado 3 errores diferentes.", "cazador_bugs.png");
+        createLogroIfNotExists("Aprendiz SQL", "Has completado el módulo de SQL Injection.", "aprendiz_sql.png");
+        createLogroIfNotExists("XSS Hunter", "Has completado el módulo de XSS.", "xss_hunter.png");
+
         // Términos de prueba para el glosario
         createTerminoIfNotExists(
             "Phishing",
@@ -109,16 +119,33 @@ public class DataInitializer implements CommandLineRunner {
         );
     }
 
-    private void createUserIfNotExists(String username, String email, String rawPassword, User.Rol rol) {
-        if (userRepository.findByUsername(username).isEmpty()) {
-            User user = new User();
-            user.setUsername(username);
-            user.setEmail(email);
-            user.setPassword(passwordEncoder.encode(rawPassword));
-            user.setRol(rol);
+    private void createUserIfNotExists(String username, String email, String rawPassword, User.Rol rol, byte[] foto) {
+        var userOpt = userRepository.findByUsername(username);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            user.setFoto(foto); // Siempre actualiza la foto
             userRepository.save(user);
-        }
+        } else if (userRepository.findByUsername(username).isEmpty()) {
+                    User user = new User();
+                    user.setUsername(username);
+                    user.setEmail(email);
+                    user.setPassword(passwordEncoder.encode(rawPassword));
+                    user.setRol(rol);
+                    user.setFoto(foto); // Asigna la foto
+                    userRepository.save(user);
+                }
+            }
+
+    private byte[] loadFoto(String filename) {
+    try {
+        byte[] data = Files.readAllBytes(Paths.get("src/main/resources/fotos/" + filename));
+        System.out.println("Foto cargada: " + filename + " (" + data.length + " bytes)");
+        return data;
+    } catch (Exception e) {
+        System.err.println("No se pudo cargar la foto: " + filename + " (" + e.getMessage() + ")");
+        return null;
     }
+}
 
     private void createGuiaIfNotExists(String username, String titulo, String contenido) {
         User user = userRepository.findByUsername(username).orElse(null);

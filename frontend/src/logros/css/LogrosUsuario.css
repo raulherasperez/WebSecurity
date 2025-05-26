@@ -1,0 +1,60 @@
+.logros-usuario-container {
+  max-width: 600px;
+  margin: 40px auto;
+  background: #f7fafd;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(60,60,60,0.10);
+  padding: 32px;
+}
+
+.logros-usuario-container h2 {
+  color: #1976d2;
+  margin-top: 0;
+  margin-bottom: 18px;
+  font-size: 1.3rem;
+}
+
+.logros-usuario-container ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 24px;
+}
+
+.logros-usuario-container li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 14px;
+  font-size: 1.07rem;
+  border-bottom: 1px solid #e0e6ef;
+  padding-bottom: 10px;
+}
+
+.logros-usuario-container img {
+  margin-left: 10px;
+  height: 32px;
+  border-radius: 6px;
+  background: #fff;
+  border: 1px solid #e0e6ef;
+}
+
+.logros-usuario-container button {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-left: 12px;
+  transition: background 0.2s;
+}
+
+.logros-usuario-container button:hover {
+  background: #125ea7;
+}
+
+.logros-usuario-container div[style] {
+  color: #1976d2;
+  font-weight: 500;
+  margin-top: 10px;
+}

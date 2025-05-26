@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { desbloquearLogro } from '../services/logroService';
+import ModalLogroDesbloqueado from '../components/ModalLogroDesbloqueado';
 import './css/VulnerableShop.css';
 
 const RETOS = [
   { id: 1, nombre: 'Login vulnerable', descripcion: 'Has iniciado sesión usando inyección SQL.' },
+  { id: 2, nombre: 'Detalle de producto vulnerable', descripcion: 'Has accedido a un producto usando inyección SQL en el detalle.' },
   { id: 3, nombre: 'Filtrar productos ocultos', descripcion: 'Has mostrado productos de la categoría "Oculta" usando filtros e inyección SQL.' }
 ];
+
+const LOGRO_APRENDIZ_SQL = {
+  nombre: 'Aprendiz SQL',
+  descripcion: 'Has completado el módulo de SQL Injection.',
+  icono: 'aprendiz_sql.png'
+};
 
 const VulnerableShop = () => {
   // Login
@@ -23,6 +32,13 @@ const VulnerableShop = () => {
 
   // Modal de éxito
   const [retoCompletado, setRetoCompletado] = useState(null);
+  const [logroDesbloqueado, setLogroDesbloqueado] = useState(null);
+
+  // Progreso de retos
+  const [retosCompletados, setRetosCompletados] = useState(() => {
+    const saved = localStorage.getItem('vshopRetosCompletados');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -33,11 +49,13 @@ const VulnerableShop = () => {
     if (logged === 'true') setLoginSuccess(true);
   }, []);
 
-  // Al cambiar la ruta, si sales de /modulo/sql-inyeccion/tienda, borra el login
+  // Al cambiar la ruta, si sales de /modulo/sql-inyeccion/tienda, borra login y progreso
   useEffect(() => {
     if (!location.pathname.startsWith('/modulo/sql-inyeccion/tienda')) {
       setLoginSuccess(false);
       localStorage.removeItem('vshopLogin');
+      localStorage.removeItem('vshopRetosCompletados');
+      setRetosCompletados([]);
     }
     // eslint-disable-next-line
   }, [location.pathname]);
@@ -70,6 +88,7 @@ const VulnerableShop = () => {
       setError('');
       // Detectar reto 3: productos ocultos en la lista
       if (Array.isArray(res.data) && res.data.some(prod => prod.categoria === "Oculta")) {
+        marcarRetoCompletado(3);
         setRetoCompletado(3);
       }
     } catch (err) {
@@ -88,12 +107,30 @@ const VulnerableShop = () => {
       if (res.data && res.data.success) {
         setLoginSuccess(true);
         localStorage.setItem('vshopLogin', 'true');
+        marcarRetoCompletado(1);
         setRetoCompletado(1);
       } else {
         setLoginSuccess(false);
       }
     } catch {
       setLoginSuccess(false);
+    }
+  };
+
+  // Marcar reto como completado y desbloquear logro si corresponde
+  const marcarRetoCompletado = async (idReto) => {
+    if (!retosCompletados.includes(idReto)) {
+      const nuevos = [...retosCompletados, idReto];
+      setRetosCompletados(nuevos);
+      localStorage.setItem('vshopRetosCompletados', JSON.stringify(nuevos));
+      // Si los tres retos están completados, desbloquea el logro
+      if ([1, 2, 3].every(id => nuevos.includes(id))) {
+        try {
+          const token = localStorage.getItem('authToken');
+          await desbloquearLogro(token, LOGRO_APRENDIZ_SQL.nombre);
+          setLogroDesbloqueado(LOGRO_APRENDIZ_SQL);
+        } catch {}
+      }
     }
   };
 
@@ -157,6 +194,12 @@ const VulnerableShop = () => {
               <p>{RETOS.find(r => r.id === retoCompletado)?.descripcion}</p>
             </div>
           </div>
+        )}
+        {logroDesbloqueado && (
+          <ModalLogroDesbloqueado
+            logro={logroDesbloqueado}
+            onClose={() => setLogroDesbloqueado(null)}
+          />
         )}
       </div>
     );
@@ -254,6 +297,12 @@ const VulnerableShop = () => {
             <p>{RETOS.find(r => r.id === retoCompletado)?.descripcion}</p>
           </div>
         </div>
+      )}
+      {logroDesbloqueado && (
+        <ModalLogroDesbloqueado
+          logro={logroDesbloqueado}
+          onClose={() => setLogroDesbloqueado(null)}
+        />
       )}
     </div>
   );

@@ -8,11 +8,14 @@ body, html {
 }
 
 .App {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  position: relative;
 }
+.App-main {
+  flex: 1;
+}
+
 
 /* Botón de menú hamburguesa */
 .hamburger {
@@ -86,6 +89,7 @@ body, html {
   display: flex;
   justify-content: flex-start;
   padding: 0 20px 20px 20px;
+  margin-right: 240px;
 }
 
 .news-section {
@@ -145,12 +149,7 @@ body, html {
 }
 
 /* Botón Sandbox */
-.App-footer {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 100;
-}
+
 
 .sandbox-button {
   background-color: #3498db;

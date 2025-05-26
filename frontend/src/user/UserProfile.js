@@ -1,41 +1,89 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import './css/UserProfile.css';
+import UserProfileEdit from './UserProfileEdit';
+import SidebarMenu from '../components/SidebarMenu';
+import LogoHomeLink from '../components/LogoHomeLink';
+import { useAuth } from '../context/AuthContext';
+import { getLogrosDesbloqueados } from '../services/logroService';
+import { Link } from 'react-router-dom';
 
 const UserProfile = () => {
-  const [user, setUser] = useState(null);
+  const { user, setUser } = useAuth();
   const [error, setError] = useState('');
+  const [editMode, setEditMode] = useState(false);
+  const [logros, setLogros] = useState([]);
+  const [loadingLogros, setLoadingLogros] = useState(true);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        setError('No autenticado');
-        return;
-      }
+    const fetchLogros = async () => {
+      if (!user) return;
+      setLoadingLogros(true);
       try {
-        const response = await axios.get('http://localhost:8080/api/users/me', {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-        setUser(response.data);
-      } catch (err) {
-        setError('No se pudo obtener la información del usuario.');
+        const token = localStorage.getItem('authToken');
+        const desbloqueados = await getLogrosDesbloqueados(token);
+        setLogros(desbloqueados.map(l => l.logro || l));
+      } catch {
+        setError('No se pudieron cargar los logros');
       }
+      setLoadingLogros(false);
     };
-    fetchUser();
-  }, []);
+    fetchLogros();
+  }, [user]);
 
   if (error) return <div>{error}</div>;
   if (!user) return <div>Cargando...</div>;
 
+  if (editMode) {
+    return <UserProfileEdit onProfileUpdated={() => setEditMode(false)} />;
+  }
+
   return (
-    <div>
-      <h2>Perfil de usuario</h2>
-      <p><strong>ID:</strong> {user.id}</p>
-      <p><strong>Usuario:</strong> {user.username}</p>
-      <p><strong>Email:</strong> {user.email}</p>
-    </div>
+    <>
+      <div className="user-profile-container">
+        {user.foto && (
+          <img
+            src={`data:image/jpeg;base64,${user.foto}`}
+            alt="Foto de perfil"
+            className="user-profile-photo"
+          />
+        )}
+        <h2 className="user-profile-username">{user.username}</h2>
+        <p className="user-profile-email">
+          <strong>Email:</strong> {user.email}
+        </p>
+        <button className="user-profile-edit-btn" onClick={() => setEditMode(true)}>
+          Editar perfil
+        </button>
+        <div className="user-profile-logros">
+          <h3>Logros desbloqueados</h3>
+          <Link to="/logros" className="user-profile-logros-link">
+            Ver todos los logros
+          </Link>
+          {loadingLogros ? (
+            <div>Cargando logros...</div>
+          ) : logros.length === 0 ? (
+            <div>No has desbloqueado logros aún.</div>
+          ) : (
+            <ul className="user-profile-logros-list">
+              {logros.map(logro => (
+                <li key={logro.id} className="user-profile-logro-item">
+                  <span>
+                    <strong>{logro.nombre}</strong> - {logro.descripcion}
+                  </span>
+                  {logro.icono && (
+                    <img
+                      src={logro.icono.startsWith('http') ? logro.icono : `/uploads/${logro.icono}`}
+                      alt={logro.nombre}
+                      style={{ height: 32, marginLeft: 8 }}
+                    />
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    </>
   );
 };
 

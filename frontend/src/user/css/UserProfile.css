@@ -1,0 +1,103 @@
+.user-profile-container {
+  width: 100%;
+  align-self: center;
+  margin-left:20%;
+  background: #f7fafd;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(60,60,60,0.10);
+  padding: 32px;
+  text-align: center;
+}
+
+.user-profile-photo {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 18px;
+  border: 3px solid #1976d2;
+}
+
+.user-profile-username {
+  color: #1976d2;
+  margin-bottom: 10px;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.user-profile-email {
+  color: #2d3a4a;
+  font-weight: 500;
+  margin-bottom: 6px;
+  font-size: 1.08rem;
+}
+
+.user-profile-edit-btn {
+  margin-top: 18px;
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.user-profile-edit-btn:hover {
+  background: #125ea7;
+}
+
+.user-profile-container label {
+  display: block;
+  color: #2d3a4a;
+  font-weight: 600;
+  margin-bottom: 4px;
+  text-align: left;
+}
+
+.user-profile-container input[type="text"],
+.user-profile-container input[type="email"] {
+  border: 1px solid #bfc9d9;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 1rem;
+  margin-bottom: 10px;
+  background: #fff;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.user-profile-container input[type="file"] {
+  margin: 10px 0 8px 0;
+}
+/* Puedes añadir esto a tu archivo UserProfile.css */
+.user-profile-logros {
+  margin-top: 32px;
+  background: #f7fafd;
+  border-radius: 10px;
+  padding: 18px 24px;
+  box-shadow: 0 2px 8px rgba(60,60,60,0.07);
+}
+.user-profile-logros-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.user-profile-logro-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.user-profile-logro-item img {
+  margin-left: 10px;
+}
+.user-profile-logros-link {
+  display: inline-block;
+  margin-bottom: 12px;
+  color: #1976d2;
+  text-decoration: underline;
+  font-weight: 500;
+}
+.user-profile-logros-link:hover {
+  color: #125ea7;
+}

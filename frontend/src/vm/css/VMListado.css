@@ -1,6 +1,7 @@
 .vm-listado-container {
-  max-width: 700px;
+  width: 100%;
   margin: 40px auto 0 auto;
+  margin-left: 10%;
   background: #f7fafd;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(60, 60, 60, 0.08);
@@ -67,4 +68,44 @@
 .vm-listado-meta {
   color: #8a99a8;
   font-size: 0.95rem;
+}
+.vm-listado-delete-btn {
+  background: #e53935;
+  color: #fff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.98rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.vm-listado-delete-btn:hover {
+  background: #b71c1c;
+}
+.vm-listado-cancel-btn {
+  background: #bfc9d9;
+  color: #222;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.98rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+.modal-content {
+  background: #fff;
+  border-radius: 10px;
+  padding: 32px 28px;
+  box-shadow: 0 2px 16px rgba(60,60,60,0.18);
+  text-align: center;
+  min-width: 300px;
 }

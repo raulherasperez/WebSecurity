@@ -1,0 +1,306 @@
+.xss-entorno-container {
+  max-width: 600px;
+  margin: 40px auto;
+  background: #f7fafd;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(60,60,60,0.10);
+  padding: 32px;
+}
+
+.xss-entorno-container h2 {
+  color: #1976d2;
+  margin-top: 0;
+  margin-bottom: 18px;
+  font-size: 1.3rem;
+}
+
+.xss-entorno-container label {
+  font-weight: 600;
+  color: #2d3a4a;
+}
+
+.xss-entorno-container input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #bfc9d9;
+  font-size: 1rem;
+  margin-bottom: 8px;
+  background: #fff;
+}
+
+.xss-entorno-container button {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  padding: 7px 18px;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: background 0.2s;
+}
+
+.xss-entorno-container button:hover {
+  background: #125ea7;
+}
+
+.xss-entorno-container ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 16px;
+}
+
+.xss-entorno-container li {
+  background: #fff;
+  margin: 6px 0;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 1.07rem;
+  border-bottom: 1px solid #e0e6ef;
+}
+
+.xss-entorno-container hr {
+  margin: 28px 0 18px 0;
+  border: none;
+  border-top: 1px solid #e0e6ef;
+}
+
+.vshop-container {
+  max-width: 1100px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 10px;
+  padding: 32px;
+  box-shadow: 0 4px 16px rgba(44,62,80,0.08);
+}
+
+.vshop-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.vshop-logo {
+  font-size: 2.2rem;
+}
+
+.vshop-title {
+  color: #2c3e50;
+}
+
+.vshop-vuln {
+  color: #c0392b;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-left: auto;
+}
+
+.vshop-section {
+  margin-bottom: 36px;
+}
+
+.vshop-login-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.vshop-login-input {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  min-width: 160px;
+}
+
+.vshop-btn {
+  padding: 10px 24px;
+  border-radius: 6px;
+  background: #3498db;
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.vshop-btn:hover {
+  background: #217dbb;
+}
+
+.vshop-success-msg {
+  color: #27ae60;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.vshop-error {
+  color: #c0392b;
+  margin-top: 8px;
+  font-weight: 500;
+}
+
+.vshop-toolbar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.vshop-search {
+  padding: 10px;
+  flex: 2;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.vshop-select {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  flex: 1;
+  min-width: 160px;
+}
+
+.vshop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 28px;
+}
+
+.vshop-product {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 18px 18px 16px 18px;
+  background: #fafbfc;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: box-shadow 0.2s;
+}
+
+.vshop-product:hover {
+  box-shadow: 0 2px 12px rgba(44,62,80,0.10);
+}
+
+.vshop-product-img-wrap {
+  width: 100%;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.vshop-product-img {
+  max-width: 100%;
+  max-height: 130px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: #eaeaea;
+}
+
+.vshop-product-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.vshop-product-cat {
+  color: #888;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.vshop-product-price {
+  color: #27ae60;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.vshop-product-stock {
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.vshop-empty {
+  margin-top: 32px;
+  text-align: center;
+  color: #888;
+}
+
+/* Modal de éxito y detalle */
+.vshop-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(44,62,80,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.vshop-modal {
+  background: #fff;
+  border-radius: 10px;
+  padding: 32px 28px 20px 28px;
+  box-shadow: 0 4px 24px rgba(44,62,80,0.18);
+  max-width: 340px;
+  text-align: center;
+  position: relative;
+}
+
+.vshop-modal-title {
+  color: #27ae60;
+  margin-bottom: 16px;
+}
+
+.vshop-modal-btn {
+  margin-top: 18px;
+  padding: 10px 24px;
+  border-radius: 6px;
+  background: #3498db;
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.vshop-modal-btn:hover {
+  background: #217dbb;
+}
+
+.vshop-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: #888;
+  cursor: pointer;
+}
+
+.vshop-modal-close:hover {
+  color: #c0392b;
+  background: #f2f2f2;
+  border-radius: 50%;
+}

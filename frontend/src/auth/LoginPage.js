@@ -3,14 +3,16 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './css/AuthForm.css';
 import LogoHomeLink from '../components/LogoHomeLink';
+import { useAuth } from '../context/AuthContext';
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth();
 
-    useEffect(() => {
+  useEffect(() => {
     const token = localStorage.getItem('authToken');
     if (token) {
       navigate('/'); // Redirige a la página principal si ya hay sesión
@@ -25,14 +27,16 @@ const LoginPage = () => {
         username,
         password,
       });
-      // Parse the token from the response
       const data = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
       if (data.token) {
         localStorage.setItem('authToken', data.token);
-        localStorage.setItem('username', username);
+        // Ahora obtenemos el usuario con el token
+        const userRes = await axios.get('http://localhost:8080/api/users/me', {
+          headers: { Authorization: `Bearer ${data.token}` }
+        });
+        login(userRes.data, data.token); // Actualiza el contexto y localStorage
         setMessage('Login successful');
-        navigate('/'); // Redirect to the main page
-        // Optionally, redirect or fetch user info here
+        navigate('/'); // Redirige a la página principal
       } else {
         setMessage('Login failed');
       }
@@ -46,7 +50,6 @@ const LoginPage = () => {
   };
 
   return (
-    
     <div className="auth-form-container">
       <LogoHomeLink />
       <h2>Iniciar sesión</h2>

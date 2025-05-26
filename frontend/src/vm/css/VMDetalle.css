@@ -1,6 +1,7 @@
 .vm-detalle-container {
-  max-width: 700px;
-  margin: 40px auto 0 auto;
+  width: 100%;
+  align-self: center;
+  margin-left:20%;
   background: #f7fafd;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(60, 60, 60, 0.08);

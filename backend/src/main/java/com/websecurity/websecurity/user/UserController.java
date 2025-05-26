@@ -3,6 +3,7 @@ package com.websecurity.websecurity.user;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
@@ -13,6 +14,9 @@ public class UserController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody User user) {
@@ -57,5 +61,29 @@ public class UserController {
             }
         }
         return ResponseEntity.status(401).body("Invalid token");
-}
+    }
+
+    @PutMapping(value = "/me", consumes = {"multipart/form-data"})
+    public ResponseEntity<?> updateProfile(
+            @RequestHeader("Authorization") String authHeader,
+            @RequestPart(required = false) String username,
+            @RequestPart(required = false) String email,
+            @RequestPart(required = false) MultipartFile foto
+    ) {
+        String token = authHeader.replace("Bearer ", "");
+        String currentUsername = usuarioService.getUsernameFromToken(token);
+        User user = userRepository.findByUsername(currentUsername).orElseThrow();
+
+        if (username != null && !username.isBlank()) user.setUsername(username);
+        if (email != null && !email.isBlank()) user.setEmail(email);
+        if (foto != null && !foto.isEmpty()) {
+            try {
+                user.setFoto(foto.getBytes());
+            } catch (Exception e) {
+                return ResponseEntity.badRequest().body("Error al procesar la imagen");
+            }
+        }
+        userRepository.save(user);
+        return ResponseEntity.ok(user);
+    }
 }

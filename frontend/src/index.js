@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 
 import './index.css';
 import LoginPage from './auth/LoginPage';
 import App from './App'; // Página de inicio
-import ModulePage from './modulo_sql_inj/ModulePage'; // Página del Módulo SQL
+import ModulePageSQLi from './modulo_sql_inj/ModulePageSQLi'; // Página del Módulo SQL
 import reportWebVitals from './reportWebVitals';
 import UserProfile from './user/UserProfile';
 import RegisterPage from './auth/RegisterPage';
@@ -19,35 +19,68 @@ import ProductoDetalle from './modulo_sql_inj/ProductoDetalle';
 import VMListado from './vm/VMListado';
 import VMDetalle from './vm/VMDetalle';
 import VMCreador from './vm/VMCreador';
+import GlosarioListado from './glosario/GlosarioListado';
+import GlosarioCrear from './glosario/GlosarioCrear';
+import GlosarioEditar from './glosario/GlosarioEditar';
+import ReporteListado from './reporte/ReporteListado';
+import ReporteCrear from './reporte/ReporteCrear';
+import SugerenciaListado from './sugerencia/SugerenciaListado';
+import SugerenciaCrear from './sugerencia/SugerenciaCrear';
+import LogrosUsuario from './logros/LogrosUsuario';
+import LogrosAdmin from './logros/LogrosAdmin';
+import ModulePageXSS from './modulo_xss/ModulePageXSS';
+import EntornoVulnerableXSS from './modulo_xss/EntornoVulnerableXSS';
+// Importa el layout principal
+import MainLayout from './components/MainLayout';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
   <AuthProvider>
-  <React.StrictMode>
-    <BrowserRouter>
-      <Routes>
-        {/* Ruta principal */}
-        <Route path="/" element={<App />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/profile" element={<UserProfile/>} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/guias" element={<GuiaListado />} />
-        <Route path="/guias/:id" element={<GuiaDetalle />} />
-        <Route path="/guias/crear" element={<GuiaCrear />} />
-        <Route path="/guias/:id/editar" element={<GuiaEditar />} />
-        {/* Ruta del módulo SQL */}
-        <Route path="/modulo/sql-inyeccion" element={<ModulePage />} />
-        <Route path="/modulo/sql-inyeccion/tienda" element={<VulnerableShop />} />
-        <Route path="/modulo/sql-inyeccion/tienda/producto" element={<ProductoDetalle />} />
-        {/* Rutas de máquinas virtuales */}
-        <Route path="/machines" element={<VMListado />} />
-        <Route path="/machines/crear" element={<VMCreador />} />
-        <Route path="/machines/:id" element={<VMDetalle />} />
-        <Route path="/machines/:id/editar" element={<VMCreador />} />
-      </Routes>
-    </BrowserRouter>
-  </React.StrictMode>
+    <React.StrictMode>
+      <BrowserRouter>
+        <Routes>
+          {/* Rutas SIN layout */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/modulo/sql-inyeccion/tienda" element={<VulnerableShop />} />
+          <Route path="/modulo/sql-inyeccion/tienda/producto" element={<ProductoDetalle />} />
+          <Route path="/modulo/xss/entorno" element={<EntornoVulnerableXSS />} />
+
+          {/* Rutas CON layout */}
+          <Route element={<MainLayout />}>
+            <Route path="/" element={<App />} />
+            <Route path="/profile" element={<UserProfile />} />
+            <Route path="/guias" element={<GuiaListado />} />
+            <Route path="/guias/:id" element={<GuiaDetalle />} />
+            <Route path="/guias/crear" element={<GuiaCrear />} />
+            <Route path="/guias/:id/editar" element={<GuiaEditar />} />
+            <Route path="/modulo/sql-inyeccion" element={<ModulePageSQLi />} />
+
+
+            <Route path="/modulo/xss" element={<ModulePageXSS />} />
+            
+            {/* Rutas de máquinas virtuales */}
+            <Route path="/machines" element={<VMListado />} />
+            <Route path="/machines/crear" element={<VMCreador />} />
+            <Route path="/machines/:id" element={<VMDetalle />} />
+            <Route path="/machines/:id/editar" element={<VMCreador />} />
+            {/* Rutas del glosario */}
+            <Route path="/glosario" element={<GlosarioListado />} />
+            <Route path="/glosario/crear" element={<GlosarioCrear />} />
+            <Route path="/glosario/editar/:id" element={<GlosarioEditar />} />
+            {/* Rutas de reportes */}
+            <Route path="/reportes" element={<ReporteListado />} />
+            <Route path="/reportes/crear" element={<ReporteCrear />} />
+            {/* Rutas de sugerencias */}
+            <Route path="/sugerencias" element={<SugerenciaListado />} />
+            <Route path="/sugerencias/crear" element={<SugerenciaCrear />} />
+            <Route path="/logros" element={<LogrosUsuario />} />
+             <Route path="/logros/admin" element={<LogrosAdmin />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </React.StrictMode>
   </AuthProvider>
 );
 
