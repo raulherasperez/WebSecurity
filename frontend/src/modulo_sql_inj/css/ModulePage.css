@@ -190,3 +190,27 @@ body, html {
   border-left-color: #27ae60;
   background: #f6fff6;
 }
+.ModuleContent select {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1.5px solid #2980b9;
+  background: #f7fbff;
+  color: #222;
+  font-size: 1.05em;
+  font-weight: 500;
+  margin-bottom: 8px;
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 4px rgba(41,128,185,0.06);
+  cursor: pointer;
+}
+
+.ModuleContent select:focus {
+  border-color: #1565c0;
+  box-shadow: 0 0 0 2px #90caf9;
+}
+
+.ModuleContent option {
+  background: #fff;
+  color: #222;
+}

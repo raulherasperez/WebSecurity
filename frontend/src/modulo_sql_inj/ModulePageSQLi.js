@@ -5,10 +5,9 @@ import { useAuth } from '../context/AuthContext';
 
 import InteractiveTest from '../components/InteractiveTest';
 import sqlQuestions from './questions';
-import LogoHomeLink from '../components/LogoHomeLink';
 import ModuleList from '../components/ModuleList';
-import SidebarMenu from '../components/SidebarMenu';
 import ModuleComments from '../components/ModuleComments';
+import { pistas, soluciones, explicacionNivel } from './sqliHints';
 
 function ModulePageSQLi() {
   const [showDetails, setShowDetails] = useState(false);
@@ -23,6 +22,9 @@ function ModulePageSQLi() {
   const [showHint3, setShowHint3] = useState(false);
   const [showSolution3, setShowSolution3] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Nivel de dificultad
+  const [nivel, setNivel] = useState('facil');
 
   return (
     <div className="ModulePage">
@@ -72,6 +74,24 @@ function ModulePageSQLi() {
             </li>
           </ul>
         </p>
+
+        {/* Selector de nivel de dificultad */}
+        <section>
+          <h2>Selecciona el nivel de dificultad</h2>
+          <label style={{ fontWeight: 600, marginRight: 8 }}>Nivel:</label>
+          <select value={nivel} onChange={e => setNivel(e.target.value)}>
+            <option value="facil">Fácil</option>
+            <option value="medio">Medio</option>
+            <option value="dificil">Difícil</option>
+            <option value="imposible">Imposible</option>
+          </select>
+          <div style={{ marginTop: 8, color: '#555', fontSize: '0.98em' }}>
+            {nivel === 'facil' && 'Sin protección, vulnerable a cualquier SQLi.'}
+            {nivel === 'medio' && 'Filtrado básico, pero aún vulnerable a técnicas conocidas.'}
+            {nivel === 'dificil' && 'Consultas preparadas, pero quedan vectores avanzados (blind/error-based).'}
+            {nivel === 'imposible' && 'Todas las protecciones activadas, no vulnerable.'}
+          </div>
+        </section>
 
         {/* Ejemplo y vídeo */}
         <section>
@@ -142,7 +162,7 @@ function ModulePageSQLi() {
           </button>
           {showHint1 && (
             <div className="hint-box">
-              Prueba a escribir algo especial en el campo de usuario o contraseña para alterar la consulta SQL.
+              {pistas[1][nivel]}
             </div>
           )}
           <button className="hint-btn" onClick={() => setShowSolution1(s => !s)}>
@@ -150,50 +170,26 @@ function ModulePageSQLi() {
           </button>
           {showSolution1 && (
             <div className="hint-box solution-box">
-              Por ejemplo, puedes probar con: <code>admin' OR 1=1 --</code> en el campo de usuario.
+              {soluciones[1][nivel]}
             </div>
           )}
         </section>
 
-        {/* Ejercicio 2 */}
-        <section>
-          <h2>Ejercicio 2: Detalles de producto vulnerables</h2>
-          <p>
-            Una vez dentro, puedes ver el catálogo de productos. Si haces clic en un producto, accederás a una pantalla de detalle.
-            El endpoint que obtiene los detalles es vulnerable a inyección SQL, así que puedes manipular el parámetro <code>id</code> en la URL para intentar acceder a productos ocultos o a información de otros productos.
-          </p>
-          <button className="hint-btn" onClick={() => setShowHint2(h => !h)}>
-            {showHint2 ? 'Ocultar pista' : 'Mostrar pista'}
-          </button>
-          {showHint2 && (
-            <div className="hint-box">
-              Prueba a modificar el valor del parámetro <code>id</code> directamente en la barra de direcciones del navegador tras acceder al detalle de un producto.
-            </div>
-          )}
-          <button className="hint-btn" onClick={() => setShowSolution2(s => !s)}>
-            {showSolution2 ? 'Ocultar solución' : 'Mostrar solución'}
-          </button>
-          {showSolution2 && (
-            <div className="hint-box solution-box">
-              Cambia la URL de la página de detalle, por ejemplo:<br />
-              <code>/modulo/sql-inyeccion/tienda/producto?id=1 OR 1=1</code><br />
-              Esto puede permitirte ver productos ocultos o información adicional si el backend es vulnerable.
-            </div>
-          )}
-        </section>
+        
 
         {/* Ejercicio 3 */}
         <section>
-          <h2>Ejercicio 3: Filtros avanzados vulnerables</h2>
+          <h2>Ejercicio 2: Filtros avanzados vulnerables</h2>
           <p>
             Utiliza los filtros de búsqueda (nombre, categoría) en el catálogo. Todos los filtros son vulnerables a inyección SQL.
+            ¿Podrás encontrar productos ocultos o manipular los resultados?
           </p>
           <button className="hint-btn" onClick={() => setShowHint3(h => !h)}>
             {showHint3 ? 'Ocultar pista' : 'Mostrar pista'}
           </button>
           {showHint3 && (
             <div className="hint-box">
-              Intenta escribir algo inesperado en los campos de búsqueda o categoría para ver si puedes mostrar productos ocultos.
+              {pistas[2][nivel]}
             </div>
           )}
           <button className="hint-btn" onClick={() => setShowSolution3(s => !s)}>
@@ -201,7 +197,34 @@ function ModulePageSQLi() {
           </button>
           {showSolution3 && (
             <div className="hint-box solution-box">
-              Por ejemplo, en el campo de búsqueda puedes probar: <code>' OR 1=1 --</code>
+              {soluciones[2][nivel]}
+            </div>
+          )}
+        </section>
+
+        {/* Ejercicio 2 */}
+        <section>
+          <h2>Ejercicio 3: Detalles de producto vulnerables</h2>
+          <p>
+            Una vez dentro, puedes ver el catálogo de productos. Si haces clic en un producto, accederás a una pantalla de detalle.
+            </p>
+            <p>Sin embargo, los productos de la categoría "Oculta" no son visibles a menos que manipules la URL.</p>
+            <p>El endpoint que obtiene los detalles es vulnerable a inyección SQL, así que puedes manipular el parámetro <code>id</code> en la URL para intentar acceder a productos ocultos o a información de otros productos.</p>
+          
+          <button className="hint-btn" onClick={() => setShowHint2(h => !h)}>
+            {showHint2 ? 'Ocultar pista' : 'Mostrar pista'}
+          </button>
+                      {showHint2 && (
+              <div className="hint-box">
+                {pistas[3][nivel]}
+              </div>
+            )}
+          <button className="hint-btn" onClick={() => setShowSolution2(s => !s)}>
+            {showSolution2 ? 'Ocultar solución' : 'Mostrar solución'}
+          </button>
+                    {showSolution2 && (
+            <div className="hint-box solution-box">
+              {soluciones[3][nivel]}
             </div>
           )}
         </section>
@@ -216,7 +239,10 @@ function ModulePageSQLi() {
           <button
             className="sandbox-button"
             style={{ marginTop: 12 }}
-            onClick={() => window.open('/modulo/sql-inyeccion/tienda', '_blank')}
+            onClick={() => {
+              localStorage.setItem('nivelSQLi', nivel); // o sessionStorage
+              window.open('/modulo/sql-inyeccion/tienda', '_blank');
+            }}
           >
             Abrir entorno vulnerable
           </button>
@@ -240,45 +266,13 @@ function ModulePageSQLi() {
 
           {/* Explicación técnica de la vulnerabilidad en un desplegable */}
           <details style={{ marginTop: 32 }}>
-            <summary style={{ cursor: 'pointer', fontWeight: 600, fontSize: '1.08em' }}>
-              ¿Por qué funciona la vulnerabilidad? (ver explicación técnica)
-            </summary>
-            <div style={{ marginTop: 16 }}>
-              <p>
-                La vulnerabilidad de inyección SQL existe porque el backend construye las consultas SQL directamente con los datos que introduce el usuario, sin validarlos ni parametrizarlos.
-                Esto permite que un atacante inserte código SQL propio y altere el comportamiento de la consulta.
-              </p>
-              <p>
-                Por ejemplo, en el backend (<code>app.py</code>), el login vulnerable se implementa así:
-              </p>
-              <pre style={{ background: '#f7f7f7', padding: 12, borderRadius: 8, fontSize: '0.97em', overflowX: 'auto' }}>
-{String.raw`query = f"SELECT * FROM usuarios WHERE nombre = '{username}' AND email = '{password}'"
-cursor.execute(query)
-`}
-              </pre>
-              <p>
-                Si el usuario introduce en el campo de usuario: <code>admin' OR 1=1 --</code>, la consulta resultante será:
-              </p>
-              <pre style={{ background: '#f7f7f7', padding: 12, borderRadius: 8, fontSize: '0.97em', overflowX: 'auto' }}>
-{String.raw`SELECT * FROM usuarios WHERE nombre = 'admin' OR 1=1 --' AND email = '...'
-`}
-              </pre>
-              <p>
-                El <code>OR 1=1</code> siempre es verdadero, así que la consulta devuelve todos los usuarios y el atacante puede acceder sin conocer la contraseña.
-              </p>
-              <p>
-                Lo mismo ocurre en los endpoints de productos y detalles, donde los parámetros de búsqueda y <code>id</code> se insertan directamente en la consulta SQL:
-              </p>
-              <pre style={{ background: '#f7f7f7', padding: 12, borderRadius: 8, fontSize: '0.97em', overflowX: 'auto' }}>
-{String.raw`query = f"SELECT * FROM productos WHERE id = {prod_id}"
-cursor.execute(query)
-`}
-              </pre>
-              <p>
-                <strong>Solución:</strong> Para evitar la inyección SQL, siempre debes usar consultas parametrizadas/preparadas y nunca concatenar directamente los datos del usuario en las consultas SQL.
-              </p>
-            </div>
-          </details>
+          <summary style={{ cursor: 'pointer', fontWeight: 600, fontSize: '1.08em' }}>
+            ¿Por qué funciona la vulnerabilidad? (ver explicación técnica)
+          </summary>
+          <div style={{ marginTop: 16 }}>
+            {explicacionNivel[nivel]}
+          </div>
+        </details>
         </section>
 
         <ModuleComments moduleId="sql-inyeccion" user={user} />

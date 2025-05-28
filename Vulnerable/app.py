@@ -18,15 +18,28 @@ def vuln_login():
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
-    if not username or not password:
-        return jsonify({"error": "Faltan nombre de usuario o contraseña"}), 400
+    nivel = request.args.get('nivel', 'facil')
     conn = get_db_connection()
     cursor = conn.cursor()
-    # Vulnerable a SQLi
-    query = f"SELECT * FROM usuarios WHERE nombre = '{username}' AND email = '{password}'"
-    print("Ejecutando consulta:", query)
     try:
-        cursor.execute(query)
+        if nivel == 'facil':
+            # Totalmente vulnerable
+            query = f"SELECT * FROM usuarios WHERE nombre = '{username}' AND email = '{password}'"
+            cursor.execute(query)
+        elif nivel == 'medio':
+            # Filtra comillas, pero sigue vulnerable a técnicas básicas
+            if "'" in username or '"' in username or "'" in password or '"' in password:
+                return jsonify({"success": False, "error": "Caracteres no permitidos"}), 400
+            query = f"SELECT * FROM usuarios WHERE nombre = {username} AND email = {password}"
+            cursor.execute(query)
+        elif nivel == 'dificil':
+            # Consultas preparadas, pero muestra errores SQL
+            query = "SELECT * FROM usuarios WHERE nombre = ? AND email = ?"
+            cursor.execute(query, (username, password))
+        else:  # imposible
+            # Consultas preparadas y sin mensajes de error
+            query = "SELECT * FROM usuarios WHERE nombre = ? AND email = ?"
+            cursor.execute(query, (username, password))
         user = cursor.fetchone()
         conn.close()
         if user:
@@ -34,51 +47,70 @@ def vuln_login():
         else:
             return jsonify({"success": False, "error": "Credenciales inválidas"}), 401
     except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
+        conn.close()
+        if nivel == 'dificil':
+            return jsonify({"success": False, "error": str(e)}), 500
+        else:
+            return jsonify({"success": False, "error": "Error interno"}), 500
 
 # Ejercicio 2 y 3: Productos y detalles vulnerables
 @app.route('/vulnerable-productos', methods=['GET'])
 def vuln_productos():
     search = request.args.get('search', '')
-    categoria = request.args.get('categoria', '')
-    precio_min = request.args.get('precio_min', '')
-    precio_max = request.args.get('precio_max', '')
-    stock_min = request.args.get('stock_min', '')
+    nivel = request.args.get('nivel', 'facil')
     conn = get_db_connection()
     cursor = conn.cursor()
-    # Vulnerable a SQLi
-    query = "SELECT * FROM productos WHERE categoria != 'Oculta'"
-    if search:
-        query += f" AND nombre LIKE '%{search}%'"
-    if categoria:
-        query += f" AND categoria = '{categoria}'"
-    if precio_min:
-        query += f" AND precio >= {precio_min}"
-    if precio_max:
-        query += f" AND precio <= {precio_max}"
-    if stock_min:
-        query += f" AND stock >= {stock_min}"
-    print("Ejecutando consulta:", query)
     try:
-        cursor.execute(query)
+        if nivel == 'facil':
+            query = f"SELECT * FROM productos WHERE nombre LIKE '%{search}%' AND categoria != 'Oculta'"
+            cursor.execute(query)
+        elif nivel == 'medio':
+            if "'" in search or '"' in search:
+                return jsonify({"productos": [], "error": "Caracteres no permitidos"}), 400
+            safe_search = search if search.strip() else "'%'"
+            # OJO: NO hay comillas, así que el usuario debe inyectar algo válido para SQL
+            query = f"SELECT * FROM productos WHERE nombre LIKE {safe_search} AND categoria != 'Oculta'"
+            cursor.execute(query)
+        elif nivel == 'dificil':
+            query = "SELECT * FROM productos WHERE nombre LIKE ? AND categoria != 'Oculta'"
+            cursor.execute(query, (f"%{search}%",))
+        else:  # imposible
+            query = "SELECT * FROM productos WHERE nombre LIKE ? AND categoria != 'Oculta'"
+            cursor.execute(query, (f"%{search}%",))
         productos = [dict(row) for row in cursor.fetchall()]
         conn.close()
-        return jsonify(productos), 200
+        return jsonify({"productos": productos}), 200
     except Exception as e:
         conn.close()
-        return jsonify({"error": str(e)}), 500
-
+        if nivel == 'dificil':
+            return jsonify({"productos": [], "error": str(e)}), 500
+        else:
+            return jsonify({"productos": [], "error": "Error interno"}), 500
+        
+        
 # Ejercicio 2: Detalle de producto vulnerable
 @app.route('/vulnerable-producto', methods=['GET'])
 def vuln_producto():
     prod_id = request.args.get('id', '')
+    nivel = request.args.get('nivel', 'facil')
     conn = get_db_connection()
     cursor = conn.cursor()
-    # Vulnerable a SQLi
-    query = f"SELECT * FROM productos WHERE id = {prod_id}"
-    print("Ejecutando consulta:", query)
     try:
-        cursor.execute(query)
+        if nivel == 'facil':
+            query = f"SELECT * FROM productos WHERE id = {prod_id}"
+            cursor.execute(query)
+        elif nivel == 'medio':
+            import re
+            if not re.match(r'^[0-9\s\-+*/%()]+$', prod_id):
+                return jsonify({"error": "Solo se permiten números y operadores aritméticos"}), 400
+            query = f"SELECT * FROM productos WHERE id = {prod_id}"
+            cursor.execute(query)
+        elif nivel == 'dificil':
+            query = "SELECT * FROM productos WHERE id = ?"
+            cursor.execute(query, (prod_id,))
+        else:  # imposible
+            query = "SELECT * FROM productos WHERE id = ?"
+            cursor.execute(query, (prod_id,))
         producto = cursor.fetchone()
         conn.close()
         if producto:
@@ -94,6 +126,7 @@ def vuln_producto():
 def vuln_categorias():
     conn = get_db_connection()
     cursor = conn.cursor()
+    # Siempre oculta la categoría "Oculta"
     cursor.execute("SELECT DISTINCT categoria FROM productos WHERE categoria != 'Oculta'")
     categorias = [row['categoria'] for row in cursor.fetchall()]
     conn.close()
