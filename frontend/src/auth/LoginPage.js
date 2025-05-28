@@ -11,13 +11,14 @@ const LoginPage = () => {
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
   const { login } = useAuth();
+  const {user} = useAuth();
 
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    if (token) {
+    if (user) {
       navigate('/'); // Redirige a la página principal si ya hay sesión
     }
-  }, [navigate]);
+  }, [user, navigate]);
+  
 
   const handleLogin = async (e) => {
     e.preventDefault();

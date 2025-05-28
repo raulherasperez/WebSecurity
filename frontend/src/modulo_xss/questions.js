@@ -1,53 +1,63 @@
 const xssQuestions = [
   {
-    question: "¿Qué es un ataque XSS?",
+    question: "¿Qué es un ataque XSS y por qué es peligroso?",
     options: [
-      "Un ataque que explota vulnerabilidades de inyección de código JavaScript en páginas web",
-      "Un ataque que explota contraseñas débiles",
-      "Un ataque que explota configuraciones inseguras del servidor",
-      "Un ataque que explota la inyección SQL"
+      "Un ataque que explota vulnerabilidades de inyección de código JavaScript en páginas web, permitiendo a un atacante ejecutar scripts maliciosos en el navegador de otros usuarios.",
+      "Un ataque que explota contraseñas débiles.",
+      "Un ataque que explota configuraciones inseguras del servidor.",
+      "Un ataque que explota la inyección SQL."
     ],
-    correctAnswer: "Un ataque que explota vulnerabilidades de inyección de código JavaScript en páginas web"
+    correctAnswer: "Un ataque que explota vulnerabilidades de inyección de código JavaScript en páginas web, permitiendo a un atacante ejecutar scripts maliciosos en el navegador de otros usuarios."
   },
   {
-    question: "¿Cuál de los siguientes NO es un tipo de XSS?",
+    question: "¿Cuáles son los principales tipos de XSS?",
     options: [
-      "Reflejado",
-      "Almacenado",
-      "DOM-based",
-      "Inyección SQL"
+      "Reflejado, almacenado y basado en DOM.",
+      "SQLi, CSRF y SSRF.",
+      "Reflejado, CSRF y RCE.",
+      "Almacenado, SSRF y XXE."
     ],
-    correctAnswer: "Inyección SQL"
+    correctAnswer: "Reflejado, almacenado y basado en DOM."
   },
   {
     question: "¿Qué puede lograr un atacante con un XSS exitoso?",
     options: [
-      "Robar cookies de sesión",
-      "Modificar el contenido de la página",
-      "Redirigir al usuario a sitios maliciosos",
-      "Todas las anteriores"
+      "Robar cookies de sesión y credenciales.",
+      "Modificar el contenido de la página o redirigir al usuario.",
+      "Capturar pulsaciones de teclado o propagar malware.",
+      "Todas las anteriores."
     ],
-    correctAnswer: "Todas las anteriores"
+    correctAnswer: "Todas las anteriores."
   },
   {
     question: "¿Cuál es una buena práctica para prevenir XSS?",
     options: [
-      "Validar y escapar las entradas del usuario",
-      "Permitir cualquier entrada sin validación",
-      "Desactivar el firewall",
-      "Usar solo contraseñas fuertes"
+      "Validar y escapar las entradas del usuario y nunca insertar datos no confiables en el HTML sin sanitizar.",
+      "Permitir cualquier entrada sin validación.",
+      "Desactivar el firewall.",
+      "Usar solo contraseñas fuertes."
     ],
-    correctAnswer: "Validar y escapar las entradas del usuario"
+    correctAnswer: "Validar y escapar las entradas del usuario y nunca insertar datos no confiables en el HTML sin sanitizar."
   },
   {
-    question: "¿Qué función cumple Content Security Policy (CSP)?",
+    question: "¿Qué función cumple Content Security Policy (CSP) en la protección contra XSS?",
     options: [
-      "Limita los recursos que puede cargar una página web",
-      "Permite la ejecución de cualquier script",
-      "Desactiva la validación de formularios",
-      "Permite la inyección de código"
+      "Limita los recursos y scripts que puede cargar y ejecutar una página web, ayudando a mitigar el impacto de XSS.",
+      "Permite la ejecución de cualquier script.",
+      "Desactiva la validación de formularios.",
+      "Permite la inyección de código."
     ],
-    correctAnswer: "Limita los recursos que puede cargar una página web"
+    correctAnswer: "Limita los recursos y scripts que puede cargar y ejecutar una página web, ayudando a mitigar el impacto de XSS."
+  },
+  {
+    question: "¿Por qué es peligroso usar innerHTML o dangerouslySetInnerHTML?",
+    options: [
+      "Porque permite insertar código HTML y JavaScript directamente en el DOM, lo que puede ser explotado por un atacante si los datos no están correctamente sanitizados.",
+      "Porque hace la página más lenta.",
+      "Porque bloquea el acceso a la base de datos.",
+      "Porque desactiva el CSS."
+    ],
+    correctAnswer: "Porque permite insertar código HTML y JavaScript directamente en el DOM, lo que puede ser explotado por un atacante si los datos no están correctamente sanitizados."
   }
 ];
 

@@ -1,0 +1,73 @@
+.ssrfshop-container {
+  max-width: 480px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 10px;
+  padding: 32px 24px 24px 24px;
+  box-shadow: 0 2px 18px #0002;
+}
+.ssrfshop-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.ssrfshop-input {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #bbb;
+  font-size: 1em;
+}
+.ssrfshop-btn {
+  padding: 8px 16px;
+  border-radius: 5px;
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+.ssrfshop-preview {
+  margin-top: 18px;
+  min-height: 40px;
+}
+.ssrfshop-img {
+  max-width: 100%;
+  border-radius: 6px;
+  box-shadow: 0 1px 8px #0001;
+}
+.ssrfshop-error {
+  color: #b71c1c;
+  background: #ffeaea;
+  padding: 8px;
+  border-radius: 5px;
+  margin-top: 8px;
+}
+.ssrfshop-success {
+  color: #388e3c;
+  margin-top: 8px;
+}
+
+.ssrfshop-modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.ssrfshop-modal-content {
+  background: #fff;
+  padding: 32px 24px 18px 24px;
+  border-radius: 10px;
+  max-width: 480px;
+  width: 90%;
+  box-shadow: 0 2px 18px #0003;
+  text-align: center;
+}
+.ssrfshop-modal-content pre {
+  text-align: left;
+  margin: 18px 0 12px 0;
+  font-size: 0.98em;
+}

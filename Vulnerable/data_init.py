@@ -14,7 +14,7 @@ os.makedirs('db', exist_ok=True)
 fake = Faker()
 
 # Conectar o crear la base de datos
-conn = sqlite3.connect('db/tienda.db')
+conn = sqlite3.connect('db/vulnerable.db')
 cursor = conn.cursor()
 
 # Diccionario de palabras clave para imágenes por categoría
@@ -30,7 +30,7 @@ keywords = {
 
 # Función para obtener imagen desde la API de Unsplash
 def obtener_imagen_desde_unsplash(query):
-    url = f"https://api.unsplash.com/photos/random?query= {query}&client_id={UNSPLASH_ACCESS_KEY}"
+    url = f"https://api.unsplash.com/photos/random?query={query}&client_id={UNSPLASH_ACCESS_KEY}"
     try:
         response = requests.get(url)
         if response.status_code == 200:
@@ -39,16 +39,17 @@ def obtener_imagen_desde_unsplash(query):
     except Exception as e:
         print(f"Error al obtener imagen para '{query}': {e}")
     # Fallback en caso de fallo
-    return "https://via.placeholder.com/300x200.png?text=Sin+Imagen "
+    return "https://via.placeholder.com/300x200.png?text=Sin+Imagen"
 
-# Crear tabla de usuarios
+# Crear tabla de usuarios con columna password
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS usuarios (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nombre TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
     ciudad TEXT,
-    fecha_registro DATE
+    fecha_registro DATE,
+    password TEXT
 )
 ''')
 
@@ -64,7 +65,7 @@ CREATE TABLE IF NOT EXISTS productos (
 )
 ''')
 
-# Función para generar usuarios ficticios
+# Función para generar usuarios ficticios con contraseña
 def generar_usuarios(n=10):
     usuarios = []
     for _ in range(n):
@@ -72,7 +73,8 @@ def generar_usuarios(n=10):
         email = fake.email()
         ciudad = fake.city()
         fecha_registro = fake.date_between(start_date='-1y', end_date='today')
-        usuarios.append((nombre, email, ciudad, fecha_registro))
+        password = fake.password(length=10)
+        usuarios.append((nombre, email, ciudad, fecha_registro, password))
     return usuarios
 
 # Función para generar productos ficticios con imagen real desde Unsplash
@@ -85,18 +87,39 @@ def generar_productos(n=20):
         categoria = random.choice(categorias)
         stock = random.randint(0, 100)
         keyword = keywords[categoria].strip().replace(" ", "+")
-        
         # Obtener imagen real desde la API de Unsplash
         imagen = obtener_imagen_desde_unsplash(keyword)
-
         productos.append((nombre, precio, categoria, stock, imagen))
     return productos
 
-# Insertar usuarios
+# Insertar usuario víctima para CSRF (si no existe)
+cursor.execute('''
+INSERT OR IGNORE INTO usuarios (nombre, email, ciudad, fecha_registro, password)
+VALUES (?, ?, ?, ?, ?)
+''', (
+    'victima',
+    'victima@demo.local',
+    'Ciudad Demo',
+    fake.date_between(start_date='-1y', end_date='today'),
+    'victima123'  # Contraseña original
+))
+
+cursor.execute('''
+INSERT OR IGNORE INTO usuarios (nombre, email, ciudad, fecha_registro, password)
+VALUES (?, ?, ?, ?, ?)
+''', (
+    'John',
+    'john@email.com',
+    'Ciudad John',
+    fake.date_between(start_date='-1y', end_date='today'),
+    'john'  # Contraseña original
+))
+
+# Insertar usuarios aleatorios con contraseña
 usuarios = generar_usuarios(10)
 cursor.executemany('''
-INSERT INTO usuarios (nombre, email, ciudad, fecha_registro)
-VALUES (?, ?, ?, ?)
+INSERT INTO usuarios (nombre, email, ciudad, fecha_registro, password)
+VALUES (?, ?, ?, ?, ?)
 ''', usuarios)
 
 # Insertar productos normales
@@ -117,8 +140,30 @@ INSERT INTO productos (nombre, precio, categoria, stock, imagen)
 VALUES (?, ?, ?, ?, ?)
 ''', productos_ocultos)
 
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS foro_comentarios (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    autor TEXT NOT NULL,
+    texto TEXT NOT NULL,
+    fecha TEXT NOT NULL
+)
+''')
+
+# Insertar comentarios iniciales (borrar antes si existen)
+cursor.execute("DELETE FROM foro_comentarios")
+comentarios_iniciales = [
+    ("victima", "¡Hola a todos! Este es mi primer comentario.", "2024-05-01"),
+    ("alice", "Bienvenido al foro, victima.", "2024-05-02"),
+    ("bob", "¿Alguien ha probado la nueva funcionalidad?", "2024-05-03"),
+    ("victima", "Sí, funciona bastante bien.", "2024-05-04"),
+]
+cursor.executemany(
+    "INSERT INTO foro_comentarios (autor, texto, fecha) VALUES (?, ?, ?)",
+    comentarios_iniciales
+)
+
 # Guardar cambios y cerrar conexión
 conn.commit()
 conn.close()
 
-print("✅ Base de datos creada exitosamente con imágenes válidas desde Unsplash.")
+print("✅ Base de datos creada exitosamente con imágenes válidas desde Unsplash y contraseñas para todos los usuarios.")

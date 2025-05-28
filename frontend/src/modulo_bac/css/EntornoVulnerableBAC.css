@@ -1,0 +1,118 @@
+.bac-container {
+  max-width: 430px;
+  margin: 32px auto;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px #0001;
+  padding: 32px 28px 24px 28px;
+}
+
+.bac-container h2 {
+  margin-bottom: 18px;
+  font-size: 1.35em;
+  color: #1a237e;
+}
+
+.bac-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.bac-url-bar {
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1.08em;
+  color: #333;
+}
+
+.bac-perfil-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.bac-perfil-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bac-perfil-row label {
+  width: 110px;
+  font-weight: 500;
+  color: #333;
+}
+
+.bac-perfil-row input[type="email"],
+.bac-perfil-row input[type="text"],
+.bac-perfil-row input[type="password"] {
+  flex: 1;
+  padding: 5px 8px;
+  border-radius: 5px;
+  border: 1px solid #bdbdbd;
+  font-size: 1em;
+}
+
+.bac-perfil-form button[type="submit"],
+.bac-login-form button[type="submit"] {
+  margin-top: 10px;
+  background: #3949ab;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 0;
+  font-size: 1.08em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.bac-perfil-form button[type="submit"]:hover,
+.bac-login-form button[type="submit"]:hover {
+  background: #283593;
+}
+
+.bac-mensaje {
+  margin-top: 18px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  background: #e3f2fd;
+  color: #1565c0;
+  font-weight: 500;
+  font-size: 1.04em;
+}
+
+.bac-error {
+  background: #ffebee;
+  color: #b71c1c;
+}
+
+/* Añade esto a tu archivo EntornoVulnerableBAC.css */
+.bac-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bac-modal {
+  background: #fff;
+  border-radius: 10px;
+  padding: 32px 28px 24px 28px;
+  box-shadow: 0 2px 18px #0003;
+  max-width: 350px;
+  text-align: center;
+}
+.bac-modal h3 {
+  margin-bottom: 12px;
+  color: #27ae60;
+}
+.bac-modal button {
+  margin-top: 18px;
+}

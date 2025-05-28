@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './css/AuthForm.css';
@@ -12,6 +12,13 @@ const RegisterPage = () => {
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
   const { login } = useAuth();
+  const {user} = useAuth();
+
+  useEffect(() => {
+      if (user) {
+        navigate('/'); // Redirige a la página principal si ya hay sesión
+      }
+    }, [user, navigate]);
 
   const handleRegister = async (e) => {
     e.preventDefault();

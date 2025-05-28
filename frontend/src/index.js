@@ -30,6 +30,14 @@ import LogrosUsuario from './logros/LogrosUsuario';
 import LogrosAdmin from './logros/LogrosAdmin';
 import ModulePageXSS from './modulo_xss/ModulePageXSS';
 import EntornoVulnerableXSS from './modulo_xss/EntornoVulnerableXSS';
+import ModulePageCSRF from './modulo_csrf/ModulePageCSRF';
+import EntornoVulnerableCSRF from './modulo_csrf/EntornoVulnerableCSRF';
+import EntornoVulnerableCSRFForo from './modulo_csrf/EntornoVulnerableCSRFForo';
+import ModulePageBAC from './modulo_bac/ModulePageBAC';
+import EntornoVulnerableBAC from './modulo_bac/EntornoVulnerableBAC';
+import ModulePageSSRF from './modulo_ssrf/ModulePageSSRF';
+import EntornoVulnerableSSRFShop from './modulo_ssrf/EntornoVulnerableSSRFShop';
+
 // Importa el layout principal
 import MainLayout from './components/MainLayout';
 
@@ -46,6 +54,11 @@ root.render(
           <Route path="/modulo/sql-inyeccion/tienda" element={<VulnerableShop />} />
           <Route path="/modulo/sql-inyeccion/tienda/producto" element={<ProductoDetalle />} />
           <Route path="/modulo/xss/entorno" element={<EntornoVulnerableXSS />} />
+          <Route path="/modulo/csrf/entorno" element={<EntornoVulnerableCSRF />} />
+          <Route path="/modulo/csrf/entorno-foro" element={<EntornoVulnerableCSRFForo />} />
+          <Route path="/modulo/bac/entorno" element={<EntornoVulnerableBAC />} />
+          <Route path="/modulo/bac/entorno/:id" element={<EntornoVulnerableBAC />} />
+          <Route path="/modulo/ssrf/entorno" element={<EntornoVulnerableSSRFShop />} />
 
           {/* Rutas CON layout */}
           <Route element={<MainLayout />}>
@@ -55,10 +68,12 @@ root.render(
             <Route path="/guias/:id" element={<GuiaDetalle />} />
             <Route path="/guias/crear" element={<GuiaCrear />} />
             <Route path="/guias/:id/editar" element={<GuiaEditar />} />
+
             <Route path="/modulo/sql-inyeccion" element={<ModulePageSQLi />} />
-
-
             <Route path="/modulo/xss" element={<ModulePageXSS />} />
+            <Route path="/modulo/csrf" element={<ModulePageCSRF />} />
+            <Route path="/modulo/bac" element={<ModulePageBAC />} />
+            <Route path="/modulo/ssrf" element={<ModulePageSSRF />} />
             
             {/* Rutas de máquinas virtuales */}
             <Route path="/machines" element={<VMListado />} />
