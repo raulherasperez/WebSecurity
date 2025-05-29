@@ -6,10 +6,12 @@ import InteractiveTest from '../components/InteractiveTest';
 import bacQuestions from './questions';
 import ModuleList from '../components/ModuleList';
 import ModuleComments from '../components/ModuleComments';
+import { pistas, soluciones, explicacionNivel } from './bacHints';
 
 function ModulePageBAC() {
   const { user } = useAuth();
 
+  const [nivel, setNivel] = useState('facil');
   const [showExample, setShowExample] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
   const [showHint, setShowHint] = useState(false);
@@ -53,6 +55,24 @@ function ModulePageBAC() {
             </li>
           </ul>
         </p>
+
+        {/* Selector de nivel de dificultad */}
+        <section>
+          <h2>Selecciona el nivel de dificultad</h2>
+          <label style={{ fontWeight: 600, marginRight: 8 }}>Nivel:</label>
+          <select value={nivel} onChange={e => setNivel(e.target.value)}>
+            <option value="facil">Fácil</option>
+            <option value="medio">Medio</option>
+            <option value="dificil">Difícil</option>
+            <option value="imposible">Imposible</option>
+          </select>
+          <div style={{ marginTop: 8, color: '#555', fontSize: '0.98em' }}>
+            {nivel === 'facil' && 'Sin control de acceso en backend, puedes ver y modificar cualquier perfil.'}
+            {nivel === 'medio' && 'Solo el frontend protege, pero el backend sigue vulnerable.'}
+            {nivel === 'dificil' && 'Solo puedes modificar tu perfil, pero puedes ver los de otros.'}
+            {nivel === 'imposible' && 'Solo puedes ver y modificar tu propio perfil, el backend comprueba todo.'}
+          </div>
+        </section>
 
         {/* Ejemplo en desplegable */}
         <section>
@@ -131,6 +151,8 @@ function ModulePageBAC() {
           <p>
             <strong>Contexto:</strong> Imagina que participas en una aplicación donde puedes ver y editar tus propios datos. Sin embargo, la aplicación no comprueba correctamente los permisos y podrías acceder o modificar datos de otros usuarios cambiando parámetros en la URL o en las peticiones.
           </p>
+          <p>Inicia sesión como John en el usuario y john en la contraseña, accederás a una página de edición de perfil.</p>
+          <p>¿Podrás ser capaz de ver y editar otros perfiles del entorno?</p>
           <button
             className="sandbox-button"
             style={{ marginTop: 12 }}
@@ -144,7 +166,7 @@ function ModulePageBAC() {
             </button>
             {showHint && (
               <div className="hint-box">
-                Prueba a cambiar el parámetro <code>id</code> en la URL o en las peticiones para acceder a datos de otros usuarios. Observa si puedes ver o modificar información ajena sin ser el propietario.
+                {pistas[nivel]}
               </div>
             )}
             <button className="hint-btn" onClick={() => setShowSolution(s => !s)}>
@@ -152,14 +174,7 @@ function ModulePageBAC() {
             </button>
             {showSolution && (
               <div className="hint-box solution-box">
-                <b>¿Cómo explotar Broken Access Control?</b>
-                <ol>
-                  <li>Inicia sesión como un usuario normal.</li>
-                  <li>Accede a tu perfil o datos personales.</li>
-                  <li>Cambia el parámetro <code>id</code> en la URL o en el cuerpo de la petición por el de otro usuario.</li>
-                  <li>Si puedes ver o modificar datos ajenos, la aplicación es vulnerable a Broken Access Control.</li>
-                </ol>
-                <b>Resumen:</b> La aplicación debe comprobar siempre en el backend que el usuario autenticado tiene permiso para acceder o modificar el recurso solicitado, sin confiar en el frontend ni en los parámetros enviados por el usuario.
+                {soluciones[nivel]}
               </div>
             )}
           </div>
@@ -174,7 +189,9 @@ function ModulePageBAC() {
           <button
             className="sandbox-button"
             style={{ marginTop: 12 }}
-            onClick={() => window.open('/modulo/bac/entorno', '_blank')}
+            onClick={() => {
+              localStorage.setItem('nivelBAC', nivel);
+              window.open('/modulo/bac/entorno', '_blank')}}
           >
             Abrir entorno vulnerable BAC
           </button>
@@ -183,8 +200,10 @@ function ModulePageBAC() {
               className="sandbox-button"
               style={{ background: '#e53935', color: '#fff' }}
               onClick={async () => {
+                localStorage.removeItem('nivelBAC');
                 await fetch('http://localhost:5001/bac-reset-usuarios', { method: 'POST', credentials: 'include' });
                 await fetch('http://localhost:5001/logout', { method: 'POST', credentials: 'include' });
+                await fetch('http://localhost:5001/reset-nivel-bac', { method: 'POST', credentials: 'include' });
                 window.alert('¡Usuarios y sesión restaurados! Tendrás que iniciar sesión de nuevo.');
               }}
               type="button"
@@ -200,30 +219,7 @@ function ModulePageBAC() {
             ¿Por qué funciona la vulnerabilidad? (ver explicación técnica)
           </summary>
           <div style={{ marginTop: 16 }}>
-            <p>
-              La vulnerabilidad Broken Access Control existe porque la aplicación no verifica correctamente los permisos del usuario autenticado antes de mostrar o modificar recursos. 
-              El backend confía en los parámetros enviados por el usuario (como el <code>id</code> en la URL) y no comprueba si realmente tiene permiso para acceder o modificar ese recurso.
-            </p>
-            <p>
-              Por ejemplo, si el backend permite acceder a <code>/perfil/usuario2</code> o <code>/perfil?id=2</code> sin comprobar que el usuario autenticado es realmente <code>usuario2</code> o el propietario del <code>id=2</code>, cualquier usuario podría ver o modificar datos ajenos.
-            </p>
-            <pre style={{ background: '#f7f7f7', padding: 12, borderRadius: 8, fontSize: '0.97em', overflowX: 'auto' }}>
-{String.raw`@app.route('/perfil/<usuario>', methods=['GET', 'POST'])
-def perfil(usuario):
-    # ...carga o modifica datos del usuario indicado...
-    return render_template('perfil.html', datos=datos_usuario)
-`}
-            </pre>
-            <p>
-              <strong>Solución:</strong> El backend debe comprobar siempre que el usuario autenticado tiene permiso para acceder o modificar el recurso solicitado. 
-              No confíes en los datos enviados por el cliente y valida los permisos en cada petición sensible.
-            </p>
-            <ul>
-              <li>Asocia cada recurso a un propietario y verifica la identidad del usuario autenticado.</li>
-              <li>No expongas identificadores predecibles si no es necesario.</li>
-              <li>Implementa controles de acceso centralizados y revisa los endpoints sensibles.</li>
-              <li>Realiza auditorías y pruebas de seguridad periódicas.</li>
-            </ul>
+            {explicacionNivel[nivel]}
           </div>
         </details>
 

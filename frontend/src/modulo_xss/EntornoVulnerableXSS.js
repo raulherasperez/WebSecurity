@@ -29,7 +29,33 @@ const ModalExito = ({ mensaje, onClose }) => (
   </div>
 );
 
-const EntornoVulnerableXSS = () => {
+// Obtiene el nivel desde props o localStorage
+const getNivel = (nivelProp) => {
+  if (nivelProp) return nivelProp;
+  return localStorage.getItem('nivelXSS') || 'facil';
+};
+
+// Función de sanitización según nivel
+function sanitizeXSS(text, nivel) {
+  if (nivel === 'facil') {
+    // No sanitiza nada
+    return text;
+  } else if (nivel === 'medio') {
+    // Elimina solo <script> pero permite otros vectores
+    return text.replace(/<\s*script.*?>.*?<\s*\/\s*script\s*>/gi, '');
+  } else if (nivel === 'dificil') {
+    // Escapa caracteres HTML básicos (pero permite eventos y URLs peligrosas)
+    const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+    return text.replace(/[&<>"']/g, m => map[m]);
+  } else { // imposible
+    // Sanitización robusta: elimina todas las etiquetas HTML (solo texto plano)
+    return text.replace(/<[^>]*>?/gm, '');
+  }
+}
+
+const EntornoVulnerableXSS = ({ nivel }) => {
+  const nivelFinal = getNivel(nivel);
+
   const [productos, setProductos] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [search, setSearch] = useState('');
@@ -55,7 +81,7 @@ const EntornoVulnerableXSS = () => {
           url += `&categoria=${encodeURIComponent(categoriaSeleccionada)}`;
         }
         const res = await axios.get(url);
-        setProductos(res.data);
+        setProductos(res.data.productos || []);
       } catch {
         setProductos([]);
       }
@@ -67,7 +93,7 @@ const EntornoVulnerableXSS = () => {
     const fetchCategorias = async () => {
       try {
         const res = await axios.get('http://localhost:5001/vulnerable-categorias');
-        setCategorias(res.data);
+        setCategorias(res.data || []);
       } catch {
         setCategorias([]);
       }
@@ -140,7 +166,7 @@ const EntornoVulnerableXSS = () => {
       </div>
       <div
         style={{ margin: '10px 0', background: '#fff', padding: 8, borderRadius: 6 }}
-        dangerouslySetInnerHTML={{ __html: `Resultados para: <b>${search}</b>` }}
+        dangerouslySetInnerHTML={{ __html: `Resultados para: <b>${sanitizeXSS(search, nivelFinal)}</b>` }}
       />
 
       <hr />
@@ -193,7 +219,7 @@ const EntornoVulnerableXSS = () => {
             <ul style={{ marginTop: 10 }}>
               {(comentarios[prod.id] || []).map((c, i) => (
                 <li key={i}>
-                  <span dangerouslySetInnerHTML={{ __html: c }} />
+                  <span dangerouslySetInnerHTML={{ __html: sanitizeXSS(c, nivelFinal) }} />
                 </li>
               ))}
             </ul>

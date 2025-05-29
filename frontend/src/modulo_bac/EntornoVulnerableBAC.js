@@ -4,6 +4,21 @@ import './css/EntornoVulnerableBAC.css';
 
 const API_URL = 'http://localhost:5001';
 
+// Obtiene el nivel BAC de localStorage
+function getNivelBAC() {
+  return localStorage.getItem('nivelBAC');
+}
+
+// Establece el nivel BAC en el backend (sesión)
+async function setNivelBAC(nivel) {
+  await fetch(`${API_URL}/set-nivel-bac`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nivel })
+  });
+}
+
 function EntornoVulnerableBAC() {
   const navigate = useNavigate();
   const { id: urlUserId } = useParams();
@@ -18,6 +33,14 @@ function EntornoVulnerableBAC() {
   const [error, setError] = useState('');
   const [userId, setUserId] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+
+  // Al entrar, establecer el nivel BAC en la sesión del backend
+  useEffect(() => {
+    const nivel = getNivelBAC();
+    setNivelBAC(nivel);
+    // eslint-disable-next-line
+  }, []);
 
   // Al montar, comprobar si hay sesión activa
   useEffect(() => {
@@ -43,33 +66,6 @@ function EntornoVulnerableBAC() {
     }
     // eslint-disable-next-line
   }, [loggedIn, userId]);
-
-  // Login
-  const handleLogin = async e => {
-    e.preventDefault();
-    setError('');
-    setMensaje('');
-    try {
-      const res = await fetch(`${API_URL}/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        credentials: 'include',
-        body: `usuario=${encodeURIComponent(loginUser)}&password=${encodeURIComponent(password)}`
-      });
-      const data = await res.json();
-      if (data.success) {
-        setLoggedIn(true);
-        setUserId(data.id);
-        setMensaje('');
-        setPassword('');
-        navigate(`/modulo/bac/entorno/${data.id}`);
-      } else {
-        setError(data.error || 'Credenciales incorrectas');
-      }
-    } catch {
-      setError('No se pudo conectar con el backend');
-    }
-  };
 
   // Cargar perfil según el id de la URL
   useEffect(() => {
@@ -98,6 +94,34 @@ function EntornoVulnerableBAC() {
     }
   }, [loggedIn, urlUserId, userId]);
 
+  // Login
+  const handleLogin = async e => {
+    e.preventDefault();
+    setError('');
+    setMensaje('');
+    try {
+      const res = await fetch(`${API_URL}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        credentials: 'include',
+        body: `usuario=${encodeURIComponent(loginUser)}&password=${encodeURIComponent(password)}`
+      });
+      const data = await res.json();
+      if (data.success) {
+        setLoggedIn(true);
+        setUserId(data.id);
+        setMensaje('');
+        setPassword('');
+        navigate(`/modulo/bac/entorno/${data.id}`);
+      } else {
+        setError(data.error || 'Credenciales incorrectas');
+      }
+    } catch {
+      setError('No se pudo conectar con el backend');
+    }
+  };
+
+  // Actualizar perfil (email)
   const handleSubmit = async e => {
     e.preventDefault();
     setMensaje('');
@@ -113,6 +137,10 @@ function EntornoVulnerableBAC() {
       if (data.success) {
         setMensaje('Perfil actualizado correctamente.');
         setPerfil(prev => ({ ...prev, email: nuevoEmail }));
+        // Mostrar modal si modifica el email de otro usuario
+        if (userId && String(userId) !== String(urlUserId)) {
+          setShowEditModal(true);
+        }
       } else {
         setError(data.error || 'Error al actualizar el perfil');
       }
@@ -199,7 +227,7 @@ function EntornoVulnerableBAC() {
       {mensaje && <div className="bac-mensaje">{mensaje}</div>}
       {error && <div className="bac-mensaje bac-error">{error}</div>}
 
-      {/* Modal BAC */}
+      {/* Modal BAC: acceso a otro perfil */}
       {showModal && (
         <div className="bac-modal-overlay">
           <div className="bac-modal">
@@ -209,6 +237,22 @@ function EntornoVulnerableBAC() {
               Esto demuestra un caso de Broken Access Control.
             </p>
             <button className="sandbox-button" onClick={() => setShowModal(false)}>
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal BAC: edición de email de otro usuario */}
+      {showEditModal && (
+        <div className="bac-modal-overlay">
+          <div className="bac-modal">
+            <h3>¡Ejercicio completado!</h3>
+            <p>
+              Has modificado el email de otro usuario.<br />
+              Has explotado completamente la vulnerabilidad de Broken Access Control.
+            </p>
+            <button className="sandbox-button" onClick={() => setShowEditModal(false)}>
               Cerrar
             </button>
           </div>

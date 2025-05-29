@@ -6,6 +6,7 @@ import InteractiveTest from '../components/InteractiveTest';
 import xssQuestions from './questions';
 import ModuleList from '../components/ModuleList';
 import ModuleComments from '../components/ModuleComments';
+import { pistas, soluciones, explicacionNivel } from './xssHints';
 
 function ModulePageXSS() {
   const { user } = useAuth();
@@ -17,6 +18,9 @@ function ModulePageXSS() {
   const [showSolution2, setShowSolution2] = useState(false);
   const [showExample, setShowExample] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
+
+  // Nivel de dificultad
+  const [nivel, setNivel] = useState('facil');
 
   return (
     <div className="ModulePage">
@@ -59,6 +63,24 @@ function ModulePageXSS() {
             </li>
           </ul>
         </p>
+
+        {/* Selector de nivel de dificultad */}
+        <section>
+          <h2>Selecciona el nivel de dificultad</h2>
+          <label style={{ fontWeight: 600, marginRight: 8 }}>Nivel:</label>
+          <select value={nivel} onChange={e => setNivel(e.target.value)}>
+            <option value="facil">Fácil</option>
+            <option value="medio">Medio</option>
+            <option value="dificil">Difícil</option>
+            <option value="imposible">Imposible</option>
+          </select>
+          <div style={{ marginTop: 8, color: '#555', fontSize: '0.98em' }}>
+            {nivel === 'facil' && 'Sin protección, vulnerable a cualquier XSS.'}
+            {nivel === 'medio' && 'Filtrado parcial, aún vulnerable a vectores conocidos.'}
+            {nivel === 'dificil' && 'Escape básico, pero quedan vectores avanzados.'}
+            {nivel === 'imposible' && 'Todas las protecciones activadas, no vulnerable.'}
+          </div>
+        </section>
 
         {/* Ejemplo en desplegable */}
         <section>
@@ -131,7 +153,7 @@ function ModulePageXSS() {
           <InteractiveTest questions={xssQuestions} />
         </section>
 
-         {/* Ejercicio 1 */}
+        {/* Ejercicio 1 */}
         <section>
           <h2>Ejercicio 1: XSS reflejado</h2>
           <p>
@@ -142,7 +164,7 @@ function ModulePageXSS() {
           </button>
           {showHint1 && (
             <div className="hint-box">
-              Si la aplicación es vulnerable, al buscar <code>&lt;script&gt;alert('XSS')&lt;/script&gt;</code> verás una alerta en pantalla. Esto ocurre porque el valor de búsqueda se muestra sin escapar en el HTML. También puedes probar con etiquetas <code>&lt;img&gt;</code> y atributos <code>onerror</code>.
+              {pistas[1][nivel]}
             </div>
           )}
           <button className="hint-btn" onClick={() => setShowSolution1(s => !s)}>
@@ -150,7 +172,7 @@ function ModulePageXSS() {
           </button>
           {showSolution1 && (
             <div className="hint-box solution-box">
-              Escribe <code>&lt;script&gt;alert('XSS')&lt;/script&gt;</code> o <code>&lt;img src=x onerror=alert('XSS')&gt;</code> en el campo de búsqueda y observa si se ejecuta el código al mostrar los resultados. Si ves la alerta, la aplicación es vulnerable a XSS reflejado.
+              {soluciones[1][nivel]}
             </div>
           )}
         </section>
@@ -166,7 +188,7 @@ function ModulePageXSS() {
           </button>
           {showHint2 && (
             <div className="hint-box">
-              Si el comentario se guarda y, al mostrarse en la lista, se ejecuta una alerta, la aplicación es vulnerable a XSS almacenado. Esto ocurre porque los comentarios se muestran usando <code>dangerouslySetInnerHTML</code> sin filtrar el contenido. Puedes probar también con otras etiquetas HTML y eventos.
+              {pistas[2][nivel]}
             </div>
           )}
           <button className="hint-btn" onClick={() => setShowSolution2(s => !s)}>
@@ -174,7 +196,7 @@ function ModulePageXSS() {
           </button>
           {showSolution2 && (
             <div className="hint-box solution-box">
-              Escribe un comentario como <code>&lt;img src=x onerror=alert('XSS')&gt;</code> o <code>&lt;script&gt;alert('XSS almacenado')&lt;/script&gt;</code> y envíalo. Luego, recarga la página o revisa la lista de comentarios para ver si se ejecuta el código. Si ves la alerta, la aplicación es vulnerable a XSS almacenado.
+              {soluciones[2][nivel]}
             </div>
           )}
         </section>
@@ -188,7 +210,10 @@ function ModulePageXSS() {
           <button
             className="sandbox-button"
             style={{ marginTop: 12 }}
-            onClick={() => window.open('/modulo/xss/entorno', '_blank')}
+            onClick={() => {
+              localStorage.setItem('nivelXSS', nivel); // Guardar nivel seleccionado
+              window.open('/modulo/xss/entorno', '_blank');
+            }}
           >
             Abrir entorno vulnerable XSS
           </button>
@@ -202,6 +227,7 @@ function ModulePageXSS() {
               onClick={() => {
                 localStorage.removeItem('xssLogin');
                 localStorage.removeItem('xssRetosCompletados');
+                localStorage.removeItem('nivelXSS');
                 window.location.reload();
               }}
             >
@@ -215,24 +241,7 @@ function ModulePageXSS() {
               ¿Por qué funciona la vulnerabilidad? (ver explicación técnica)
             </summary>
             <div style={{ marginTop: 16 }}>
-              <p>
-                La vulnerabilidad XSS existe porque la aplicación muestra directamente los datos introducidos por el usuario en el HTML, sin validarlos ni escaparlos. Esto permite que un atacante inserte etiquetas <code>&lt;script&gt;</code> o atributos peligrosos como <code>onerror</code> en imágenes, logrando ejecutar JavaScript en el navegador de cualquier usuario.
-              </p>
-              <p>
-                <strong>¿Cómo ocurre?</strong> Cuando los datos del usuario se insertan en el DOM sin escape, el navegador interpreta cualquier etiqueta HTML o JavaScript que se incluya. Esto puede suceder tanto en el backend (al renderizar plantillas) como en el frontend (al usar <code>dangerouslySetInnerHTML</code> en React, o <code>innerHTML</code> en JavaScript puro).
-              </p>
-              <p>
-                Por ejemplo, en el entorno vulnerable, el código de React utiliza <code>dangerouslySetInnerHTML</code> para mostrar el contenido sin filtrar:
-              </p>
-              <pre style={{ background: '#f7f7f7', padding: 12, borderRadius: 8, fontSize: '0.97em', overflowX: 'auto' }}>
-{String.raw`<div dangerouslySetInnerHTML={{ __html: comentarioUsuario }} />`}
-              </pre>
-              <p>
-                Si el usuario introduce <code>&lt;script&gt;alert('XSS')&lt;/script&gt;</code> o <code>&lt;img src=x onerror=alert('XSS')&gt;</code>, el navegador ejecutará ese código. Esto puede ser aprovechado para robar información, modificar la página, o realizar ataques más avanzados.
-              </p>
-              <p>
-                <strong>Solución:</strong> Para evitar XSS, nunca muestres datos del usuario sin escapar ni sanitizar. Utiliza funciones de escape o librerías de sanitización (como DOMPurify), valida y filtra todas las entradas, y evita <code>dangerouslySetInnerHTML</code> salvo que sea estrictamente necesario y seguro. Además, implementa políticas de seguridad como Content Security Policy (CSP) para mitigar el impacto de posibles XSS.
-              </p>
+              {explicacionNivel[nivel]}
             </div>
           </details>
         </section>

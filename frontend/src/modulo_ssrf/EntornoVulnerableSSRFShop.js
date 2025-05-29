@@ -1,5 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './css/EntornoVulnerableSSRFShop.css';
+
+const API_URL = 'http://localhost:5001';
+
+// Obtiene el nivel SSRF de localStorage
+function getNivelSSRF() {
+  return localStorage.getItem('nivelSSRF') || 'facil';
+}
+
+// Establece el nivel SSRF en el backend (sesión)
+async function setNivelSSRF(nivel) {
+  await fetch(`${API_URL}/set-nivel-ssrf`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nivel })
+  });
+}
 
 function EntornoVulnerableSSRFShop() {
   const [productos] = useState([
@@ -21,6 +38,13 @@ function EntornoVulnerableSSRFShop() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [internalContent, setInternalContent] = useState('');
 
+  // Al entrar, establecer el nivel SSRF en la sesión del backend
+  useEffect(() => {
+    const nivel = getNivelSSRF();
+    setNivelSSRF(nivel);
+    // eslint-disable-next-line
+  }, []);
+
   const handlePreview = async (e) => {
     e.preventDefault();
     setError('');
@@ -29,7 +53,9 @@ function EntornoVulnerableSSRFShop() {
     setInternalContent('');
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:5001/ssrf-producto-preview?url=${encodeURIComponent(imgUrl)}&t=${Date.now()}`);
+      const res = await fetch(`${API_URL}/ssrf-producto-preview?url=${encodeURIComponent(imgUrl)}&t=${Date.now()}`, {
+        credentials: 'include'
+      });
       if (res.ok) {
         const blob = await res.blob();
         if (blob.type.startsWith('image/')) {
@@ -44,8 +70,15 @@ function EntornoVulnerableSSRFShop() {
           }
         }
       } else {
-        const data = await res.json();
-        setError(data.error || 'Error al obtener la imagen');
+        // Puede devolver error en JSON o texto plano
+        let text = '';
+        try {
+          const data = await res.json();
+          text = data.error || 'Error al obtener la imagen';
+        } catch {
+          text = await res.text();
+        }
+        setError(text);
       }
     } catch (err) {
       setError('No se pudo conectar con el backend');

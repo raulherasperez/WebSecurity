@@ -32,6 +32,25 @@ function Modal({ open, onClose, children }) {
 
 const API_URL = 'http://localhost:5001';
 
+function getNivelCSRF() {
+  return localStorage.getItem('nivelCSRF') || 'facil';
+}
+
+async function obtenerCsrfToken() {
+  const res = await fetch(`${API_URL}/csrf-token`, { credentials: 'include' });
+  const data = await res.json();
+  return data.csrf_token;
+}
+
+async function setNivelCSRF(nivel) {
+  await fetch(`${API_URL}/set-nivel-csrf`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nivel })
+  });
+}
+
 function EntornoVulnerableCSRFForo() {
   const [comentarios, setComentarios] = useState([]);
   const [nuevoComentario, setNuevoComentario] = useState('');
@@ -42,10 +61,17 @@ function EntornoVulnerableCSRFForo() {
   // Para comparar la lista anterior y detectar cambios
   const prevComentariosRef = useRef([]);
 
+  // Al entrar, establecer el nivel CSRF en la sesión del backend
+  useEffect(() => {
+    const nivel = getNivelCSRF();
+    setNivelCSRF(nivel);
+    // eslint-disable-next-line
+  }, []);
+
   const fetchComentarios = async () => {
     setError('');
     try {
-      const res = await fetch(`${API_URL}/foro-comentarios`);
+      const res = await fetch(`${API_URL}/foro-comentarios`, { credentials: 'include' });
       const data = await res.json();
       setComentarios(data);
     } catch {
@@ -74,12 +100,23 @@ function EntornoVulnerableCSRFForo() {
     e.preventDefault();
     setMensaje('');
     setError('');
+    const nivel = getNivelCSRF();
+
     try {
       if (nuevoComentario.trim()) {
+        let body = `texto=${encodeURIComponent(nuevoComentario)}`;
+        let extraHeaders = {};
+        if (nivel === 'dificil') {
+          body += `&csrf_token=token123`;
+        } else if (nivel === 'imposible') {
+          const token = await obtenerCsrfToken();
+          body += `&csrf_token=${encodeURIComponent(token)}`;
+        }
         await fetch(`${API_URL}/foro-agregar-comentario`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: `texto=${encodeURIComponent(nuevoComentario)}`
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded', ...extraHeaders },
+          body
         });
         setMensaje('Comentario publicado correctamente.');
         setNuevoComentario('');

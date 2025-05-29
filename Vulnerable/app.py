@@ -1,4 +1,6 @@
-from flask import Flask, request, jsonify, Response
+from flask import Flask, request, jsonify, Response, session, send_from_directory
+import os
+from werkzeug.utils import secure_filename
 from flask_cors import CORS
 import sqlite3
 from flask import session
@@ -12,6 +14,7 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+# MODULO 1: Vulnerabilidades SQL
 # Ejercicio 1: Login vulnerable
 @app.route('/vulnerable-login', methods=['POST'])
 def vuln_login():
@@ -131,31 +134,10 @@ def vuln_categorias():
     categorias = [row['categoria'] for row in cursor.fetchall()]
     conn.close()
     return jsonify(categorias), 200
-# Endpoint vulnerable para cambiar la contraseña (sin protección CSRF)
-@app.route('/vulnerable-cambiar-password', methods=['POST'])
-def vuln_cambiar_password():
-    username = 'victima'  # Usuario de prueba
-    nuevo = request.form.get('nuevo_password')
-    if not nuevo:
-        return jsonify({"error": "Falta nueva contraseña"}), 400
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("UPDATE usuarios SET password = ? WHERE nombre = ?", (nuevo, username))
-    conn.commit()
-    conn.close()
-    return jsonify({"success": True, "msg": "Contraseña cambiada"}), 200
 
-# Endpoint para restaurar la contraseña original
-@app.route('/reset-csrf-password', methods=['POST'])
-def reset_csrf_password():
-    username = 'victima'
-    password_original = 'victima123'  # Cambia esto si tu contraseña original es otra
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("UPDATE usuarios SET password = ? WHERE nombre = ?", (password_original, username))
-    conn.commit()
-    conn.close()
-    return jsonify({"success": True, "msg": "Contraseña restaurada"}), 200
+# FIN MODULO 1
+
+# MODULO 3: Vulnerabilidades CSRF
 
 @app.route('/foro-comentarios', methods=['GET'])
 def foro_comentarios():
@@ -166,18 +148,6 @@ def foro_comentarios():
     conn.close()
     return jsonify(comentarios), 200
 
-# Borrar comentario (vulnerable a CSRF)
-@app.route('/foro-borrar-comentario', methods=['POST'])
-def foro_borrar_comentario():
-    id_comentario = request.form.get('id')
-    if not id_comentario:
-        return jsonify({"success": False, "error": "Falta id"}), 400
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM foro_comentarios WHERE id = ?", (id_comentario,))
-    conn.commit()
-    conn.close()
-    return jsonify({"success": True}), 200
 
 # Reiniciar comentarios del foro
 @app.route('/foro-reset-comentarios', methods=['POST'])
@@ -199,11 +169,45 @@ def foro_reset_comentarios():
     conn.commit()
     conn.close()
     return jsonify({"success": True}), 200
+
+@app.route('/set-nivel-csrf', methods=['POST'])
+def set_nivel_csrf():
+    nivel = request.json.get('nivel', 'facil')
+    session['nivel_csrf'] = nivel
+    return jsonify({"success": True, "nivel": nivel}), 200
+
+# --- NUEVO: Endpoint para reiniciar el nivel CSRF en la sesión ---
+@app.route('/reset-nivel-csrf', methods=['POST'])
+def reset_nivel_csrf():
+    session.pop('nivel_csrf', None)
+    return jsonify({"success": True}), 200
+
+# --- MODIFICADO: Usar nivel CSRF de la sesión en los endpoints sensibles ---
+
 @app.route('/foro-agregar-comentario', methods=['POST'])
 def foro_agregar_comentario():
+    nivel = session.get('nivel_csrf', 'facil')
     texto = request.form.get('texto', '').strip()
     if not texto:
         return jsonify({"success": False, "error": "Falta texto"}), 400
+
+    # Protección CSRF según nivel
+    if nivel == 'medio':
+        referer = request.headers.get('Referer', '')
+        if not referer.startswith('http://localhost:3000'):
+            return jsonify({"success": False, "error": "CSRF bloqueado (Referer)"}), 403
+    elif nivel == 'dificil':
+        token = request.form.get('csrf_token')
+        if token != 'token123':
+            return jsonify({"success": False, "error": "CSRF token inválido"}), 403
+    elif nivel == 'imposible':
+        token = request.form.get('csrf_token')
+        if 'csrf_token' not in session or token != session['csrf_token']:
+            return jsonify({"success": False, "error": "CSRF token inválido"}), 403
+        referer = request.headers.get('Referer', '')
+        if not referer.startswith('http://localhost:3000'):
+            return jsonify({"success": False, "error": "CSRF bloqueado (Referer)"}), 403
+
     # Por simplicidad, autor y fecha fijos
     autor = "victima"
     from datetime import date
@@ -218,6 +222,41 @@ def foro_agregar_comentario():
     conn.close()
     return jsonify({"success": True}), 200
 
+@app.route('/foro-borrar-comentario', methods=['POST'])
+def foro_borrar_comentario():
+    nivel = session.get('nivel_csrf', 'facil')
+    id_comentario = request.form.get('id')
+    if not id_comentario:
+        return jsonify({"success": False, "error": "Falta id"}), 400
+
+    # Protección CSRF según nivel
+    if nivel == 'medio':
+        referer = request.headers.get('Referer', '')
+        if not referer.startswith('http://localhost:3000'):
+            return jsonify({"success": False, "error": "CSRF bloqueado (Referer)"}), 403
+    elif nivel == 'dificil':
+        token = request.form.get('csrf_token')
+        if token != 'token123':
+            return jsonify({"success": False, "error": "CSRF token inválido"}), 403
+    elif nivel == 'imposible':
+        token = request.form.get('csrf_token')
+        if 'csrf_token' not in session or token != session['csrf_token']:
+            return jsonify({"success": False, "error": "CSRF token inválido"}), 403
+        referer = request.headers.get('Referer', '')
+        if not referer.startswith('http://localhost:3000'):
+            return jsonify({"success": False, "error": "CSRF bloqueado (Referer)"}), 403
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM foro_comentarios WHERE id = ?", (id_comentario,))
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True}), 200
+
+
+
+# MODULO 4: BAC
+
 @app.route('/usuarios', methods=['GET'])
 def get_usuarios():
     conn = get_db_connection()
@@ -227,11 +266,45 @@ def get_usuarios():
     conn.close()
     return jsonify(usuarios), 200
 
+# --- NUEVO: Endpoint para establecer el nivel BAC en la sesión ---
+@app.route('/set-nivel-bac', methods=['POST'])
+def set_nivel_bac():
+    nivel = request.json.get('nivel', 'facil')
+    session['nivel_bac'] = nivel
+    return jsonify({"success": True, "nivel": nivel}), 200
+
+# --- NUEVO: Endpoint para reiniciar el nivel BAC en la sesión ---
+@app.route('/reset-nivel-bac', methods=['POST'])
+def reset_nivel_bac():
+    session.pop('nivel_bac', None)
+    return jsonify({"success": True}), 200
+
+# --- MODIFICADO: Endpoint de perfil con niveles de dificultad BAC ---
 @app.route('/perfil', methods=['GET', 'POST'])
 def perfil_usuario():
     usuario_id = request.args.get('id')
     if not usuario_id:
         return jsonify({"error": "Falta parámetro id"}), 400
+
+    nivel = session.get('nivel_bac', 'facil')
+    usuario_sesion_id = session.get('usuario_id')
+
+    # Lógica de control de acceso según nivel
+    if nivel == 'facil':
+        # Sin comprobación: vulnerable total
+        pass
+    elif nivel == 'medio':
+        # Solo frontend protege, el backend sigue vulnerable (igual que fácil)
+        pass
+    elif nivel == 'dificil':
+        # Solo permite modificar tu propio perfil, pero puedes ver otros
+        if request.method == 'POST' and str(usuario_id) != str(usuario_sesion_id):
+            return jsonify({"error": "No tienes permiso para modificar este perfil"}), 403
+    elif nivel == 'imposible':
+        # Solo puedes ver y modificar tu propio perfil
+        if str(usuario_id) != str(usuario_sesion_id):
+            return jsonify({"error": "No tienes permiso para acceder a este perfil"}), 403
+
     conn = get_db_connection()
     cursor = conn.cursor()
     if request.method == 'POST':
@@ -241,6 +314,8 @@ def perfil_usuario():
             return jsonify({"error": "Falta email"}), 400
         cursor.execute("UPDATE usuarios SET email = ? WHERE id = ?", (nuevo_email, usuario_id))
         conn.commit()
+        # Para frontend: indicar éxito
+        return jsonify({"success": True}), 200
     cursor.execute("SELECT id, nombre, ciudad, fecha_registro, email FROM usuarios WHERE id = ?", (usuario_id,))
     datos = cursor.fetchone()
     conn.close()
@@ -281,13 +356,43 @@ def logout():
     session.clear()
     return jsonify({"success": True}), 200
 
+# Modulo 5: SSRF
+
+@app.route('/set-nivel-ssrf', methods=['POST'])
+def set_nivel_ssrf():
+    nivel = request.json.get('nivel', 'facil')
+    session['nivel_ssrf'] = nivel
+    return jsonify({"success": True, "nivel": nivel}), 200
+
+@app.route('/reset-nivel-ssrf', methods=['POST'])
+def reset_nivel_ssrf():
+    session.pop('nivel_ssrf', None)
+    return jsonify({"success": True}), 200
+
 @app.route('/ssrf-producto-preview', methods=['GET'])
 def ssrf_producto_preview():
     url = request.args.get('url')
     if not url:
         return jsonify({"error": "Falta el parámetro url"}), 400
+
+    nivel = session.get('nivel_ssrf', 'facil')
+
+    # --- Lógica de dificultad ---
+    if nivel == 'medio':
+        # Bloquea solo localhost y 127.0.0.1 literal
+        if 'localhost' in url or '127.0.0.1' in url:
+            return jsonify({"error": "Acceso a localhost bloqueado"}), 403
+    elif nivel == 'dificil':
+        # Bloquea rangos privados y metadatos cloud (básico)
+        import re
+        if re.search(r'127\.|localhost|10\.|192\.168\.|169\.254\.169\.254', url):
+            return jsonify({"error": "Acceso a IPs privadas/metadatos bloqueado"}), 403
+    elif nivel == 'imposible':
+        # Solo permite imágenes de Unsplash
+        if not url.startswith('https://images.unsplash.com/'):
+            return jsonify({"error": "Solo se permiten imágenes de Unsplash"}), 403
+
     try:
-        # Vulnerabilidad SSRF: descarga cualquier URL proporcionada por el usuario
         resp = requests.get(url, timeout=5)
         content_type = resp.headers.get('Content-Type', 'image/jpeg')
         return Response(resp.content, content_type=content_type)

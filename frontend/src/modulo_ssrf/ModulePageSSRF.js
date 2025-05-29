@@ -6,14 +6,22 @@ import InteractiveTest from '../components/InteractiveTest';
 import ssrfQuestions from './questions';
 import ModuleList from '../components/ModuleList';
 import ModuleComments from '../components/ModuleComments';
+import { pistas, soluciones, explicacionNivel } from './ssrfHints';
 
 function ModulePageSSRF() {
   const { user } = useAuth();
 
+  const [nivel, setNivel] = useState(localStorage.getItem('nivelSSRF') || 'facil');
   const [showExample, setShowExample] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
   const [showHint, setShowHint] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
+
+  // Guarda el nivel en localStorage al cambiarlo
+  const handleNivelChange = e => {
+    setNivel(e.target.value);
+    localStorage.setItem('nivelSSRF', e.target.value);
+  };
 
   return (
     <div className="ModulePage">
@@ -53,6 +61,24 @@ function ModulePageSSRF() {
             </li>
           </ul>
         </p>
+
+        {/* Selector de nivel de dificultad */}
+        <section>
+          <h2>Selecciona el nivel de dificultad</h2>
+          <label style={{ fontWeight: 600, marginRight: 8 }}>Nivel:</label>
+          <select value={nivel} onChange={handleNivelChange}>
+            <option value="facil">Fácil</option>
+            <option value="medio">Medio</option>
+            <option value="dificil">Difícil</option>
+            <option value="imposible">Imposible</option>
+          </select>
+          <div style={{ marginTop: 8, color: '#555', fontSize: '0.98em' }}>
+            {nivel === 'facil' && 'Sin validación, puedes acceder a cualquier recurso interno o externo.'}
+            {nivel === 'medio' && 'Filtrado básico de localhost y 127.0.0.1, pero puedes evadirlo.'}
+            {nivel === 'dificil' && 'Filtrado de IPs privadas y metadatos, pero aún hay técnicas de evasión.'}
+            {nivel === 'imposible' && 'Solo puedes acceder a imágenes de Unsplash, el backend valida correctamente.'}
+          </div>
+        </section>
 
         {/* Ejemplo en desplegable */}
         <section>
@@ -137,19 +163,14 @@ function ModulePageSSRF() {
             Tu objetivo es explotar esta funcionalidad para hacer que el servidor acceda a recursos internos o protegidos, demostrando la vulnerabilidad SSRF. 
             Puedes hacerlo directamente desde el formulario de vista previa de imagen en el entorno vulnerable, introduciendo URLs internas o de servicios sensibles.
           </p>
-          <ol>
-            <li>Accede al entorno vulnerable del panel de administración de la tienda.</li>
-            <li>En la sección <b>Vista previa de imagen de producto</b>, introduce una URL de imagen pública y observa la vista previa.</li>
-            <li>Ahora, prueba a introducir URLs internas como <code>http://localhost:5001/usuarios</code>, <code>http://127.0.0.1:5001/</code> o endpoints de metadatos en la nube (<code>http://169.254.169.254/</code>).</li>
-            <li>Observa si el backend responde con información interna o sensible en vez de una imagen.</li>
-          </ol>
+
           <div style={{ marginTop: 18 }}>
             <button className="hint-btn" onClick={() => setShowHint(h => !h)}>
               {showHint ? 'Ocultar pista' : 'Mostrar pista'}
             </button>
             {showHint && (
               <div className="hint-box">
-                Puedes explotar la vulnerabilidad directamente desde el formulario de vista previa de imagen del panel. Prueba a introducir URLs internas o protegidas y observa la respuesta del servidor.
+                {pistas[nivel]}
               </div>
             )}
             <button className="hint-btn" onClick={() => setShowSolution(s => !s)}>
@@ -157,13 +178,7 @@ function ModulePageSSRF() {
             </button>
             {showSolution && (
               <div className="hint-box solution-box">
-                <b>¿Cómo explotar SSRF?</b>
-                <ol>
-                  <li>En el panel de administración, ve a la sección de vista previa de imagen de producto.</li>
-                  <li>Introduce una URL interna como <code>http://localhost:5001/usuarios</code> o <code>http://169.254.169.254/latest/meta-data/</code> en el campo de URL.</li>
-                  <li>Si el backend responde mostrando datos internos o sensibles en vez de una imagen, la aplicación es vulnerable a SSRF.</li>
-                </ol>
-                <b>Resumen:</b> Puedes explotar la vulnerabilidad desde la propia interfaz, sin necesidad de herramientas externas ni manipulación avanzada.
+                {soluciones[nivel]}
               </div>
             )}
           </div>
@@ -178,7 +193,10 @@ function ModulePageSSRF() {
           <button
             className="sandbox-button"
             style={{ marginTop: 12 }}
-            onClick={() => window.open('/modulo/ssrf/entorno', '_blank')}
+            onClick={() => {
+              localStorage.setItem('nivelSSRF', nivel);
+              window.open('/modulo/ssrf/entorno', '_blank');
+            }}
           >
             Abrir entorno vulnerable SSRF
           </button>
@@ -187,7 +205,10 @@ function ModulePageSSRF() {
               className="sandbox-button"
               style={{ background: '#e53935', color: '#fff' }}
               onClick={async () => {
+                localStorage.removeItem('nivelSSRF');
                 await fetch('http://localhost:5001/ssrf-reset', { method: 'POST', credentials: 'include' });
+                await fetch('http://localhost:5001/reset-nivel-ssrf', { method: 'POST', credentials: 'include' });
+                localStorage.removeItem('levelSSRF');
                 window.alert('¡Estado del entorno SSRF restaurado!');
               }}
               type="button"
@@ -203,32 +224,7 @@ function ModulePageSSRF() {
             ¿Por qué funciona la vulnerabilidad? (ver explicación técnica)
           </summary>
           <div style={{ marginTop: 16 }}>
-            <p>
-              La vulnerabilidad SSRF existe porque el backend acepta URLs proporcionadas por el usuario y realiza peticiones sin validar el destino. 
-              Esto permite que un atacante fuerce al servidor a acceder a recursos internos, servicios privados o endpoints sensibles.
-            </p>
-            <p>
-              Por ejemplo, si el backend tiene un endpoint como:
-            </p>
-            <pre style={{ background: '#f7f7f7', padding: 12, borderRadius: 8, fontSize: '0.97em', overflowX: 'auto' }}>
-{String.raw`@app.route('/preview')
-def preview():
-    url = request.args.get('url')
-    # Descarga el recurso sin validar el destino
-    response = requests.get(url)
-    return response.content
-`}
-            </pre>
-            <p>
-              <strong>Solución:</strong> Para evitar SSRF, valida y restringe las URLs permitidas, evita acceder a direcciones internas o privadas, utiliza listas blancas de dominios y, si es posible, deshabilita el acceso a direcciones IP internas desde el backend.
-            </p>
-            <ul>
-              <li>Valida y filtra las URLs proporcionadas por el usuario.</li>
-              <li>Implementa listas blancas de dominios permitidos.</li>
-              <li>Evita que el backend acceda a direcciones IP privadas o de loopback.</li>
-              <li>Revisa y limita las capacidades de red del servidor.</li>
-              <li>Audita y revisa cualquier funcionalidad que realice peticiones externas.</li>
-            </ul>
+            {explicacionNivel[nivel]}
           </div>
         </details>
 

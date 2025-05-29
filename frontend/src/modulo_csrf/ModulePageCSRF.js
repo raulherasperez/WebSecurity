@@ -6,6 +6,7 @@ import InteractiveTest from '../components/InteractiveTest';
 import csrfQuestions from './questions';
 import ModuleList from '../components/ModuleList';
 import ModuleComments from '../components/ModuleComments';
+import { pistas, soluciones, explicacionNivel } from './csrfHints';
 
 function ModulePageCSRF() {
   const { user } = useAuth();
@@ -14,6 +15,12 @@ function ModulePageCSRF() {
   const [showSolution2, setShowSolution2] = useState(false);
   const [showExample, setShowExample] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
+
+  // Nivel de dificultad
+  const [nivel, setNivel] = useState('facil');
+
+  // Mensaje de éxito al reiniciar comentarios
+  const [resetMsg, setResetMsg] = useState('');
 
   return (
     <div className="ModulePage">
@@ -58,6 +65,24 @@ function ModulePageCSRF() {
             </li>
           </ul>
         </p>
+
+        {/* Selector de nivel de dificultad */}
+        <section>
+          <h2>Selecciona el nivel de dificultad</h2>
+          <label style={{ fontWeight: 600, marginRight: 8 }}>Nivel:</label>
+          <select value={nivel} onChange={e => setNivel(e.target.value)}>
+            <option value="facil">Fácil</option>
+            <option value="medio">Medio</option>
+            <option value="dificil">Difícil</option>
+            <option value="imposible">Imposible</option>
+          </select>
+          <div style={{ marginTop: 8, color: '#555', fontSize: '0.98em' }}>
+            {nivel === 'facil' && 'Sin protección, vulnerable a cualquier CSRF.'}
+            {nivel === 'medio' && 'Verificación básica de Referer/Origin, pero sin token.'}
+            {nivel === 'dificil' && 'Requiere token CSRF débil, pero puede ser predecible.'}
+            {nivel === 'imposible' && 'Token CSRF robusto y verificación estricta, no vulnerable.'}
+          </div>
+        </section>
 
         {/* Ejemplo en desplegable */}
         <section>
@@ -156,7 +181,10 @@ function ModulePageCSRF() {
           <button
             className="sandbox-button"
             style={{ marginTop: 12 }}
-            onClick={() => window.open('/modulo/csrf/entorno-foro', '_blank')}
+            onClick={() => {
+              localStorage.setItem('nivelCSRF', nivel);
+              window.open('/modulo/csrf/entorno-foro', '_blank');
+            }}
           >
             Abrir entorno vulnerable Foro
           </button>
@@ -166,14 +194,7 @@ function ModulePageCSRF() {
             </button>
             {showHint2 && (
               <div className="hint-box">
-                <ul>
-                  <li>Abre el entorno del foro y observa los IDs de los comentarios (se muestra como <code>ID: X</code> en cada comentario).</li>
-                  <li>Crea un archivo HTML externo con un formulario que haga POST a <code>/foro-borrar-comentario</code> con el parámetro <code>id</code> del comentario que quieras borrar.</li>
-                  <li>Abre ese archivo HTML en tu navegador mientras tienes la sesión iniciada en el foro.</li>
-                </ul>
-                <p>
-                  Recuerda: el ataque CSRF se realiza desde una web externa, no desde el propio foro.
-                </p>
+                {pistas[1][nivel]}
               </div>
             )}
             <button className="hint-btn" onClick={() => setShowSolution2(s => !s)}>
@@ -181,32 +202,7 @@ function ModulePageCSRF() {
             </button>
             {showSolution2 && (
               <div className="hint-box solution-box">
-                <b>¿Cómo realizar el ataque CSRF para borrar un comentario?</b>
-                <ol>
-                  <li>
-                    Inicia sesión en el foro vulnerable y asegúrate de que puedes ver y publicar comentarios (esto establece la cookie de sesión en tu navegador).
-                  </li>
-                  <li>
-                    Observa el <b>ID</b> del comentario que quieres borrar (se muestra como <code>ID: X</code> en cada comentario).
-                  </li>
-                  <li>
-                    Crea un archivo HTML externo en tu ordenador con el siguiente contenido, cambiando el valor de <code>id</code> por el del comentario que quieras borrar:
-                    <pre style={{ background: '#f7f7f7', padding: 8, borderRadius: 6 }}>
-{String.raw`<form action="http://localhost:5001/foro-borrar-comentario" method="POST">
-  <input type="hidden" name="id" value="1">
-  <input type="submit" value="Borrar">
-</form>
-<script>document.forms[0].submit()</script>`}
-                    </pre>
-                  </li>
-                  <li>
-                    Abre ese archivo HTML en tu navegador (doble clic o arrástralo a una pestaña nueva) mientras tienes la sesión iniciada en el foro.
-                  </li>
-                  <li>
-                    El comentario se borrará automáticamente si la aplicación es vulnerable a CSRF, ya que el navegador enviará la cookie de sesión junto con la petición POST.
-                  </li>
-                </ol>
-                <b>Resumen:</b> El ataque no se realiza desde el propio foro, sino desde una web externa (el archivo HTML), simulando cómo un atacante podría forzar acciones en tu cuenta sin tu consentimiento.
+                {soluciones[1][nivel]}
               </div>
             )}
           </div>
@@ -221,7 +217,10 @@ function ModulePageCSRF() {
           <button
             className="sandbox-button"
             style={{ marginTop: 12 }}
-            onClick={() => window.open('/modulo/csrf/entorno-foro', '_blank')}
+            onClick={() => {
+              localStorage.setItem('nivelCSRF', nivel);
+              window.open('/modulo/csrf/entorno-foro', '_blank');
+            }}
           >
             Abrir entorno vulnerable Foro
           </button>
@@ -233,12 +232,28 @@ function ModulePageCSRF() {
               className="sandbox-button"
               style={{ background: '#e53935', color: '#fff' }}
               onClick={async () => {
-                await fetch('http://localhost:5001/foro-reset-comentarios', { method: 'POST' });
-                window.alert('¡Comentarios restaurados!');
+                setResetMsg('');
+                // Reiniciar comentarios del foro
+                const res = await fetch('http://localhost:5001/foro-reset-comentarios', { method: 'POST' });
+                // Reiniciar nivel CSRF en el backend
+                await fetch('http://localhost:5001/reset-nivel-csrf', {
+                  method: 'POST',
+                  credentials: 'include'
+                });
+                if (res.ok) {
+                  setResetMsg('¡Comentarios del foro y nivel de dificultad restaurados correctamente!');
+                } else {
+                  setResetMsg('No se pudo reiniciar el foro. Inténtalo de nuevo.');
+                }
               }}
             >
               Reiniciar comentarios del foro
             </button>
+            {resetMsg && (
+              <div style={{ marginTop: 10, color: resetMsg.startsWith('¡') ? '#388e3c' : '#b71c1c', fontWeight: 500 }}>
+                {resetMsg}
+              </div>
+            )}
           </div>
         </section>
 
@@ -248,24 +263,7 @@ function ModulePageCSRF() {
             ¿Por qué funciona la vulnerabilidad? (ver explicación técnica)
           </summary>
           <div style={{ marginTop: 16 }}>
-            <p>
-              La vulnerabilidad CSRF existe porque la aplicación no verifica que las peticiones POST realmente provienen del usuario legítimo.
-              El backend confía en las cookies de sesión, pero no exige un token CSRF ni ninguna validación adicional.
-            </p>
-            <p>
-              Por ejemplo, el backend vulnerable acepta cualquier petición POST a <code>/foro-borrar-comentario</code> con el parámetro <code>id</code> del comentario, y lo borra sin comprobar si la petición proviene realmente del usuario legítimo.
-            </p>
-            <pre style={{ background: '#f7f7f7', padding: 12, borderRadius: 8, fontSize: '0.97em', overflowX: 'auto' }}>
-{String.raw`@app.route('/foro-borrar-comentario', methods=['POST'])
-def foro_borrar_comentario():
-    id_comentario = request.form.get('id')
-    # ...borra el comentario con ese id...
-    return jsonify({"success": True}), 200
-`}
-            </pre>
-            <p>
-              <strong>Solución:</strong> Para evitar CSRF, implementa tokens CSRF únicos por usuario y verifica su presencia en cada petición sensible. Además, puedes validar el encabezado <code>Origin</code> o <code>Referer</code> y usar SameSite cookies.
-            </p>
+            {explicacionNivel[nivel]}
           </div>
         </details>
 
