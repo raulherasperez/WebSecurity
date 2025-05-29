@@ -13,7 +13,7 @@ public class EmailService {
     public void sendVerificationEmail(String to, String token) {
         String link = "http://localhost:3000/activar-cuenta?token=" + token;
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("raulherasperez@gmail.com");
+        message.setFrom("rauherper.tfg@gmail.com");
         message.setTo(to);
         message.setSubject("Verifica tu cuenta");
         message.setText("Haz clic en el siguiente enlace para activar tu cuenta: " + link);
@@ -23,7 +23,7 @@ public class EmailService {
     public void sendResetPasswordEmail(String to, String token) {
         String link = "http://localhost:3000/restablecer-password?token=" + token;
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("raulherasperez@gmail.com");
+        message.setFrom("rauherper.tfg@gmail.com");
         message.setTo(to);
         message.setSubject("Recupera tu contraseña");
         message.setText("Haz clic en el siguiente enlace para restablecer tu contraseña: " + link + "\nEste enlace expirará en 15 minutos.");
