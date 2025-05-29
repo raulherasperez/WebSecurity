@@ -44,6 +44,7 @@ public class SecurityConfig {
                     "/api/guias/**" ,
                     "/uploads/**"
                     ).permitAll()
+                    .requestMatchers("/api/users/verify", "/api/users/register", "/api/users/forgot-password", "/api/users/reset-password").permitAll()
                     .requestMatchers("/api/upload/**").authenticated()
                     .requestMatchers(HttpMethod.GET, "/api/comentarios/**").permitAll()
                     .requestMatchers("/api/vms", "/api/vms/**").permitAll()

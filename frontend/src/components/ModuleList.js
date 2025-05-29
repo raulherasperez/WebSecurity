@@ -9,7 +9,7 @@ const ModuleList = () => {
     { id: 3, title: 'CSRF', path: '/modulo/csrf' },
     { id: 4, title: 'Broken Access Control', path: '/modulo/bac' },
     { id: 5, title: 'Server Side Request Forgery', path: '/modulo/ssrf' },
-    { id: 6, title: 'Sensitive Data Exposure', path: '/modulo/exposicion-datos' },
+    { id: 6, title: 'Broken Authentication', path: '/modulo/brokenauth' },
     { id: 7, title: 'Broken Access Control', path: '/modulo/acceso-roto' },
     { id: 8, title: 'Vulnerable Components', path: '/modulo/componentes-vulnerables' },
     { id: 9, title: 'Logging & Monitoring', path: '/modulo/logs-monitoring' },

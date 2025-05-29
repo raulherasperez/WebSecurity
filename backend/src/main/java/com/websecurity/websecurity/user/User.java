@@ -1,31 +1,23 @@
 package com.websecurity.websecurity.user;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "users")  // nombre de tabla en la BD
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Size(max = 30, message = "El nombre de usuario no puede tener más de 30 caracteres")
-    @Pattern(regexp = "^[A-Za-z0-9ÑñÁáÉéÍíÓóÚúÝýÜüÀàÈèÌìÒòÙùÂâÊêÎîÔôÛûÄäËëÏïÖöÜü._-]+$", message = "El nombre de usuario solo puede contener caracteres alfanuméricos, punto, guion y guion bajo")    
     @Column(unique = true)
     private String username;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @Lob
-    @Size(max = 5242880, message = "El tamaño de la imagen no puede ser mayor que 5 MB")
+    @Column(columnDefinition = "LONGBLOB")
     private byte[] foto;
 
     @Column(unique = true)
@@ -34,12 +26,23 @@ public class User {
 
     @Column(nullable = false)
     private Rol rol;
+
+    private boolean enabled = false;
+    @Column(unique = true)
+    private String resetToken;
+
+    @Column(unique = true)
+    private String verificationToken;
     
+    private LocalDateTime resetTokenExpiry;
+
     public enum Rol {
         USER, ADMIN, MODERATOR
     }
+
     public User() {
     }
+
     public User(String username, String password, byte[] foto, String email, Rol rol) {
         this.username = username;
         this.password = password;
@@ -47,6 +50,7 @@ public class User {
         this.email = email;
         this.rol = rol;
     }
+
     public Long getId() {
         return id;
     }
@@ -83,6 +87,31 @@ public class User {
     public void setRol(Rol rol) {
         this.rol = rol;
     }
+    public boolean isEnabled() {
+        return enabled;
+    }
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+    public String getVerificationToken() {
+        return verificationToken;
+    }
+    public void setVerificationToken(String verificationToken) {
+        this.verificationToken = verificationToken;
+    }
+    public String getResetToken() {
+        return resetToken;
+    }
+    public void setResetToken(String resetToken) {
+        this.resetToken = resetToken;
+    }
+    public LocalDateTime getResetTokenExpiry() {
+        return resetTokenExpiry;
+    }
+    public void setResetTokenExpiry(LocalDateTime resetTokenExpiry) {
+        this.resetTokenExpiry = resetTokenExpiry;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -92,6 +121,10 @@ public class User {
                 ", foto=" + (foto != null ? foto.length : 0) + " bytes" +
                 ", email='" + email + '\'' +
                 ", rol=" + rol +
+                ", enabled=" + enabled +
+                ", verificationToken=" + verificationToken +
+                ", resetToken=" + resetToken +
+                ", resetTokenExpiry=" + resetTokenExpiry +
                 '}';
     }
     @Override
@@ -101,6 +134,4 @@ public class User {
         User user = (User) o;
         return id != null && id.equals(user.id);
     }
-    
-
 }

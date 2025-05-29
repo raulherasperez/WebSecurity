@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import './css/AuthForm.css';
 import LogoHomeLink from '../components/LogoHomeLink';
 import { useAuth } from '../context/AuthContext';
@@ -10,15 +10,13 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
-  const { login } = useAuth();
-  const {user} = useAuth();
+  const { login, user } = useAuth();
 
   useEffect(() => {
     if (user) {
       navigate('/'); // Redirige a la página principal si ya hay sesión
     }
   }, [user, navigate]);
-  
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -43,7 +41,8 @@ const LoginPage = () => {
       }
     } catch (error) {
       if (error.response) {
-        setMessage(error.response.data || 'Login failed');
+        // Si la cuenta no está activada, el backend debería devolver un mensaje claro
+        setMessage(error.response.data || 'Usuario o contraseña incorrectos');
       } else {
         setMessage('Network error');
       }
@@ -78,6 +77,11 @@ const LoginPage = () => {
         <button type="submit" style={{ width: '100%' }}>Entrar</button>
       </form>
       {message && <p style={{ marginTop: 15 }}>{message}</p>}
+      <div style={{ marginTop: 20, textAlign: 'center' }}>
+        <Link to="/recuperar-password">¿Olvidaste tu contraseña?</Link>
+        <br />
+        <Link to="/activar-cuenta">¿No has activado tu cuenta?</Link>
+      </div>
     </div>
   );
 };

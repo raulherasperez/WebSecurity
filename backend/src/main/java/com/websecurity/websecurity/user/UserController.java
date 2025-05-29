@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
+import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -20,13 +21,12 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody User user) {
-        String result = usuarioService.register(user);
-        if (result.equals("User registered successfully")) {
-            return ResponseEntity.ok(result);
-        } else {
-            return ResponseEntity.badRequest().body(result);
-        }
+    String result = usuarioService.register(user);
+    if (result.startsWith("Registro exitoso")) {
+        return ResponseEntity.ok(result);
     }
+    return ResponseEntity.badRequest().body(result);
+}
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User user) {
@@ -34,7 +34,7 @@ public class UserController {
         if (token != null) {
             return ResponseEntity.ok().body("{\"token\": \"" + token + "\"}");
         }
-        return ResponseEntity.status(401).body("Invalid credentials");
+        return ResponseEntity.status(401).body("Credenciales inválidas");
     }
 
     @GetMapping("/{id}")
@@ -86,4 +86,36 @@ public class UserController {
         userRepository.save(user);
         return ResponseEntity.ok(user);
     }
+
+     @GetMapping("/verify")
+    public ResponseEntity<String> verify(@RequestParam String token) {
+        boolean ok = usuarioService.activateUser(token);
+        if (ok) {
+            return ResponseEntity.ok("Cuenta activada correctamente.");
+        }
+        return ResponseEntity.badRequest().body("Token inválido.");
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        usuarioService.sendPasswordReset(email);
+        // Siempre responde igual para evitar enumeración
+        return ResponseEntity.ok("Si el email existe, recibirás instrucciones para restablecer tu contraseña.");
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody Map<String, String> body) {
+    String token = body.get("token");
+    String newPassword = body.get("newPassword");
+    // Validación explícita para mensaje claro
+    if (!newPassword.matches("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{8,}$")) {
+        return ResponseEntity.badRequest().body("La contraseña debe tener al menos 8 caracteres, mayúsculas, minúsculas, número y símbolo");
+    }
+    boolean ok = usuarioService.resetPassword(token, newPassword);
+    if (ok) {
+        return ResponseEntity.ok("Contraseña restablecida correctamente.");
+    }
+    return ResponseEntity.badRequest().body("Token inválido o expirado.");
+}
 }

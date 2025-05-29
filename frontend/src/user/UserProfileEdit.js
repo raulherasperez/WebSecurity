@@ -103,8 +103,10 @@ return (
         style={{ width: '100%', marginBottom: 10 }}
       />
     </div>
+
     <button type="submit" className="user-profile-edit-btn">Guardar cambios</button>
     {message && <div style={{ marginTop: 12, color: '#1976d2' }}>{message}</div>}
+
   </form>
 );
 };

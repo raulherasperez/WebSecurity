@@ -8,49 +8,36 @@ import { useAuth } from '../context/AuthContext';
 const RegisterPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
-  const { login } = useAuth();
-  const {user} = useAuth();
+  const { user } = useAuth();
 
   useEffect(() => {
-      if (user) {
-        navigate('/'); // Redirige a la página principal si ya hay sesión
-      }
-    }, [user, navigate]);
+    if (user) {
+      navigate('/'); // Redirige a la página principal si ya hay sesión
+    }
+  }, [user, navigate]);
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setMessage('');
+    if (password !== confirmPassword) {
+      setMessage('Las contraseñas no coinciden');
+      return;
+    }
     try {
       const response = await axios.post('http://localhost:8080/api/users/register', {
         username,
         password,
         email
       });
-      setMessage(response.data);
-      if (response.data === 'User registered successfully') {
-        // Login automático después del registro
-        try {
-          const loginResponse = await axios.post('http://localhost:8080/api/users/login', {
-            username,
-            password
-          });
-          const data = typeof loginResponse.data === 'string' ? JSON.parse(loginResponse.data) : loginResponse.data;
-          if (data.token) {
-            // Obtener el usuario con el token y actualizar el contexto
-            const userRes = await axios.get('http://localhost:8080/api/users/me', {
-              headers: { Authorization: `Bearer ${data.token}` }
-            });
-            login(userRes.data, data.token);
-            navigate('/'); // Redirige a la página principal
-          } else {
-            setMessage('Registro exitoso, pero error al iniciar sesión.');
-          }
-        } catch (loginError) {
-          setMessage('Registro exitoso, pero error al iniciar sesión.');
-        }
+      // Si el backend responde con éxito, muestra mensaje de activación
+      if (response.data.startsWith('Registro exitoso')) {
+        setMessage('Registro exitoso. Revisa tu correo para activar tu cuenta antes de iniciar sesión.');
+      } else {
+        setMessage(response.data);
       }
     } catch (error) {
       if (error.response) {
@@ -92,6 +79,16 @@ const RegisterPage = () => {
             type="password"
             value={password}
             onChange={e => setPassword(e.target.value)}
+            required
+            style={{ width: '100%', marginBottom: 10 }}
+          />
+        </div>
+        <div>
+          <label>Repite la contraseña:</label>
+          <input
+            type="password"
+            value={confirmPassword}
+            onChange={e => setConfirmPassword(e.target.value)}
             required
             style={{ width: '100%', marginBottom: 10 }}
           />

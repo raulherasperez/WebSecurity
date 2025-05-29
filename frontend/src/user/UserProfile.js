@@ -6,6 +6,7 @@ import LogoHomeLink from '../components/LogoHomeLink';
 import { useAuth } from '../context/AuthContext';
 import { getLogrosDesbloqueados } from '../services/logroService';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const UserProfile = () => {
   const { user, setUser } = useAuth();
@@ -13,6 +14,7 @@ const UserProfile = () => {
   const [editMode, setEditMode] = useState(false);
   const [logros, setLogros] = useState([]);
   const [loadingLogros, setLoadingLogros] = useState(true);
+  const [resetMessage, setResetMessage] = useState('');
 
   useEffect(() => {
     const fetchLogros = async () => {
@@ -29,6 +31,16 @@ const UserProfile = () => {
     };
     fetchLogros();
   }, [user]);
+
+  const handleRequestPasswordReset = async () => {
+    setResetMessage('');
+    try {
+      await axios.post('http://localhost:8080/api/users/forgot-password', { email: user.email });
+      setResetMessage('Te hemos enviado un correo para restablecer tu contraseña.');
+    } catch {
+      setResetMessage('Error al solicitar el cambio de contraseña.');
+    }
+  };
 
   if (error) return <div>{error}</div>;
   if (!user) return <div>Cargando...</div>;
@@ -54,6 +66,16 @@ const UserProfile = () => {
         <button className="user-profile-edit-btn" onClick={() => setEditMode(true)}>
           Editar perfil
         </button>
+        <div style={{ marginTop: 24, textAlign: 'center' }}>
+          <button
+            className="user-profile-edit-btn"
+            style={{ marginBottom: 10 }}
+            onClick={handleRequestPasswordReset}
+          >
+            Solicitar cambio de contraseña por email
+          </button>
+          {resetMessage && <div style={{ marginTop: 10, color: '#1976d2' }}>{resetMessage}</div>}
+        </div>
         <div className="user-profile-logros">
           <h3>Logros desbloqueados</h3>
           <Link to="/logros" className="user-profile-logros-link">

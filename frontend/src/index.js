@@ -37,6 +37,11 @@ import ModulePageBAC from './modulo_bac/ModulePageBAC';
 import EntornoVulnerableBAC from './modulo_bac/EntornoVulnerableBAC';
 import ModulePageSSRF from './modulo_ssrf/ModulePageSSRF';
 import EntornoVulnerableSSRFShop from './modulo_ssrf/EntornoVulnerableSSRFShop';
+import ModulePageBrokenAuth from './modulo_broken_auth/ModulePageBrokenAuth';
+import EntornoVulnerableBrokenAuth from './modulo_broken_auth/EntornoVulnerableBrokenAuth';
+import ActivateAccountPage from './auth/ActivateAccountPage';
+import ForgotPasswordPage from './auth/ForgotPasswordPage';
+import ResetPasswordPage from './auth/ResetPasswordPage';
 
 // Importa el layout principal
 import MainLayout from './components/MainLayout';
@@ -51,6 +56,9 @@ root.render(
           {/* Rutas SIN layout */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/activar-cuenta" element={<ActivateAccountPage />} />
+          <Route path="/recuperar-password" element={<ForgotPasswordPage />} />
+          <Route path="/restablecer-password" element={<ResetPasswordPage />} />
           <Route path="/modulo/sql-inyeccion/tienda" element={<VulnerableShop />} />
           <Route path="/modulo/sql-inyeccion/tienda/producto" element={<ProductoDetalle />} />
           <Route path="/modulo/xss/entorno" element={<EntornoVulnerableXSS />} />
@@ -59,6 +67,7 @@ root.render(
           <Route path="/modulo/bac/entorno" element={<EntornoVulnerableBAC />} />
           <Route path="/modulo/bac/entorno/:id" element={<EntornoVulnerableBAC />} />
           <Route path="/modulo/ssrf/entorno" element={<EntornoVulnerableSSRFShop />} />
+          <Route path="/modulo/brokenauth/entorno" element={<EntornoVulnerableBrokenAuth />} />
 
           {/* Rutas CON layout */}
           <Route element={<MainLayout />}>
@@ -74,6 +83,7 @@ root.render(
             <Route path="/modulo/csrf" element={<ModulePageCSRF />} />
             <Route path="/modulo/bac" element={<ModulePageBAC />} />
             <Route path="/modulo/ssrf" element={<ModulePageSSRF />} />
+            <Route path="/modulo/brokenauth" element={<ModulePageBrokenAuth />} />
             
             {/* Rutas de máquinas virtuales */}
             <Route path="/machines" element={<VMListado />} />

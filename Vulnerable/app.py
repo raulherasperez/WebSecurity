@@ -5,6 +5,7 @@ from flask_cors import CORS
 import sqlite3
 from flask import session
 import requests
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True, origins=["http://localhost:3000"])
@@ -398,6 +399,114 @@ def ssrf_producto_preview():
         return Response(resp.content, content_type=content_type)
     except Exception as e:
         return jsonify({"error": f"Error al obtener la URL: {e}"}), 500
+    
+# --- MODULO 6: Broken Authentication ---
+
+# Reseteo de intentos fallidos (para el botón de reinicio)
+@app.route('/brokenauth-reset', methods=['POST'])
+def brokenauth_reset():
+    session.pop('brokenauth_attempts', None)
+    session.pop('brokenauth_blocked_until', None)
+    return jsonify({"success": True}), 200
+
+@app.route('/set-nivel-brokenauth', methods=['POST'])
+def set_nivel_brokenauth():
+    nivel = request.json.get('nivel', 'facil')
+    session['nivel_brokenauth'] = nivel
+    return jsonify({"success": True, "nivel": nivel}), 200
+
+@app.route('/reset-nivel-brokenauth', methods=['POST'])
+def reset_nivel_brokenauth():
+    session.pop('nivel_brokenauth', None)
+    return jsonify({"success": True}), 200
+
+@app.route('/brokenauth-login', methods=['POST'])
+def brokenauth_login():
+    data = request.get_json()
+    username = data.get('username', '')
+    password = data.get('password', '')
+    nivel = session.get('nivel_brokenauth', 'facil')
+
+    if nivel == 'facil':
+        usuarios = {
+            "admin": "admin123",
+            "victima": "password",
+            "usuario": "123456"
+        }
+    elif nivel == 'medio':
+        usuarios = {
+            "admin": "qwerty2024",
+            "victima": "letmein",
+            "usuario": "abc123"
+        }
+    elif nivel == 'dificil':
+        usuarios = {
+            "admin": "SuperSegura2024",
+            "victima": "DificilPass1",
+            "usuario": "Passw0rd!"
+        }
+    elif nivel == 'imposible':
+        usuarios = {
+            "admin": "AdminFuerte2024!",
+            "victima": "VictimaFuerte2024!",
+            "usuario": "UsuarioFuerte2024!"
+        }
+
+    # --- Lógica de dificultad ---
+    # Nivel difícil e imposible: límite de intentos y bloqueo temporal
+    if nivel in ['dificil', 'imposible']:
+        now = datetime.utcnow()
+        blocked_until = session.get('brokenauth_blocked_until')
+        if blocked_until and now < datetime.fromisoformat(blocked_until):
+            return jsonify({"success": False, "error": "Demasiados intentos. Inténtalo más tarde."}), 429
+
+        attempts = session.get('brokenauth_attempts', 0)
+        if attempts >= 5:
+            session['brokenauth_blocked_until'] = (now + timedelta(minutes=2)).isoformat()
+            session['brokenauth_attempts'] = 0
+            return jsonify({"success": False, "error": "Demasiados intentos. Inténtalo más tarde."}), 429
+
+    # Comprobación de usuario y contraseña
+    user_exists = username in usuarios
+    password_ok = user_exists and usuarios[username] == password
+
+    # Nivel fácil: mensajes distintos, sin límite de intentos
+    if nivel == 'facil':
+        if not user_exists:
+            return jsonify({"success": False, "error": "Usuario no encontrado"}), 401
+        if not password_ok:
+            return jsonify({"success": False, "error": "Contraseña incorrecta"}), 401
+        session['brokenauth_user'] = username
+        return jsonify({"success": True, "user": username}), 200
+
+    # Nivel medio: mensaje genérico, sin límite de intentos
+    if nivel == 'medio':
+        if not user_exists or not password_ok:
+            return jsonify({"success": False, "error": "Usuario o contraseña incorrectos"}), 401
+        session['brokenauth_user'] = username
+        return jsonify({"success": True, "user": username}), 200
+
+    # Nivel difícil: mensaje genérico, límite de intentos
+    if nivel == 'dificil':
+        if not user_exists or not password_ok:
+            session['brokenauth_attempts'] = session.get('brokenauth_attempts', 0) + 1
+            return jsonify({"success": False, "error": "Usuario o contraseña incorrectos"}), 401
+        session['brokenauth_attempts'] = 0
+        session['brokenauth_user'] = username
+        return jsonify({"success": True, "user": username}), 200
+
+    # Nivel imposible: mensaje genérico, límite de intentos, solo contraseñas fuertes
+    if nivel == 'imposible':
+        # Solo permite contraseñas fuertes (ejemplo simple)
+        import re
+        if not re.match(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$', password):
+            return jsonify({"success": False, "error": "Contraseña demasiado débil"}), 401
+        if not user_exists or not password_ok:
+            session['brokenauth_attempts'] = session.get('brokenauth_attempts', 0) + 1
+            return jsonify({"success": False, "error": "Usuario o contraseña incorrectos"}), 401
+        session['brokenauth_attempts'] = 0
+        session['brokenauth_user'] = username
+        return jsonify({"success": True, "user": username}), 200
 
 
 if __name__ == '__main__':
