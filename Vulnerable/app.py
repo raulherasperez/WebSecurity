@@ -508,6 +508,178 @@ def brokenauth_login():
         session['brokenauth_user'] = username
         return jsonify({"success": True, "user": username}), 200
 
+# ENTORNO SANDBOX
+@app.route('/sandbox/login', methods=['POST'])
+def sandbox_login():
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+    nivel = request.args.get('nivel', 'facil')
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        if nivel == 'facil':
+            # Vulnerable a SQLi
+            query = f"SELECT * FROM usuarios WHERE nombre = '{username}' AND password = '{password}'"
+            cursor.execute(query)
+        else:
+            # Seguro
+            query = "SELECT * FROM usuarios WHERE nombre = ? AND password = ?"
+            cursor.execute(query, (username, password))
+        user = cursor.fetchone()
+        conn.close()
+        if user:
+            session['sandbox_user'] = dict(user)
+            return jsonify({"success": True, "user": dict(user)}), 200
+        else:
+            return jsonify({"success": False, "error": "Credenciales inválidas"}), 401
+    except Exception as e:
+        conn.close()
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/sandbox/logout', methods=['POST'])
+def sandbox_logout():
+    session.pop('sandbox_user', None)
+    return jsonify({"success": True}), 200
+
+@app.route('/sandbox/whoami', methods=['GET'])
+def sandbox_whoami():
+    user = session.get('sandbox_user')
+    if user:
+        return jsonify({"loggedIn": True, "user": user}), 200
+    else:
+        return jsonify({"loggedIn": False}), 200
+
+# --- SANDBOX: PRODUCTOS ---
+@app.route('/sandbox/productos', methods=['GET'])
+def sandbox_productos():
+    search = request.args.get('search', '')
+    categoria = request.args.get('categoria', '')
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        if not search and not categoria:
+            # Sin búsqueda ni filtro: NO mostrar productos de categoría Oculta
+            cursor.execute("SELECT * FROM productos WHERE categoria != 'Oculta'")
+        else:
+            # Si hay búsqueda o filtro, permitir que el usuario fuerce la aparición (vulnerable)
+            query = "SELECT * FROM productos WHERE 1=1"
+            params = []
+            if search:
+                # Vulnerable a inyección SQL
+                query += f" AND nombre LIKE '%{search}%'"
+            if categoria:
+                query += f" AND categoria = '{categoria}'"
+            cursor.execute(query)
+        productos = [dict(row) for row in cursor.fetchall()]
+        conn.close()
+        return jsonify({"productos": productos}), 200
+    except Exception as e:
+        conn.close()
+        return jsonify({"productos": [], "error": str(e)}), 500
+
+@app.route('/sandbox/producto/<int:prod_id>', methods=['GET'])
+def sandbox_producto(prod_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM productos WHERE id = ?", (prod_id,))
+    producto = cursor.fetchone()
+    if not producto:
+        conn.close()
+        return jsonify({"error": "Producto no encontrado"}), 404
+    # Reviews
+    cursor.execute("SELECT * FROM reviews WHERE producto_id = ? ORDER BY fecha DESC", (prod_id,))
+    reviews = [dict(row) for row in cursor.fetchall()]
+    conn.close()
+    return jsonify({"producto": dict(producto), "reviews": reviews}), 200
+
+# --- SANDBOX: REVIEWS (Vulnerable a XSS) ---
+@app.route('/sandbox/producto/<int:prod_id>/review', methods=['POST'])
+def sandbox_add_review(prod_id):
+    data = request.get_json()
+    autor = data.get('autor', 'Anónimo')
+    texto = data.get('texto', '')
+    fecha = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO reviews (producto_id, autor, texto, fecha) VALUES (?, ?, ?, ?)",
+        (prod_id, autor, texto, fecha)
+    )
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True}), 200
+
+@app.route('/sandbox/cambiar-email', methods=['POST'])
+def sandbox_cambiar_email():
+    # No se comprueba autenticación ni CSRF
+    data = request.form
+    username = data.get('username')
+    nuevo_email = data.get('nuevo_email')
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE usuarios SET email = ? WHERE nombre = ?", (nuevo_email, username))
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True, "msg": "Email actualizado"}), 200
+
+# Obtener todos los usuarios (con rol)
+@app.route('/sandbox/admin/usuarios', methods=['GET'])
+def sandbox_admin_usuarios():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, nombre, email, rol FROM usuarios")
+    usuarios = [dict(row) for row in cursor.fetchall()]
+    conn.close()
+    return jsonify({"usuarios": usuarios}), 200
+
+# Ver detalles de usuario (incluye historial de compras)
+@app.route('/sandbox/admin/usuario/<int:user_id>', methods=['GET'])
+def sandbox_admin_usuario_detalle(user_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, nombre, email, rol FROM usuarios WHERE id = ?", (user_id,))
+    usuario = cursor.fetchone()
+    if not usuario:
+        conn.close()
+        return jsonify({"error": "Usuario no encontrado"}), 404
+    cursor.execute("""
+        SELECT c.id, p.nombre, p.precio, c.fecha
+        FROM compras c
+        JOIN productos p ON c.producto_id = p.id
+        WHERE c.usuario_id = ?
+        ORDER BY c.fecha DESC
+    """, (user_id,))
+    compras = [dict(row) for row in cursor.fetchall()]
+    conn.close()
+    return jsonify({"usuario": dict(usuario), "compras": compras}), 200
+
+# Editar usuario (nombre, email, rol)
+@app.route('/sandbox/admin/usuario/<int:user_id>/editar', methods=['POST'])
+def sandbox_admin_usuario_editar(user_id):
+    data = request.json
+    nombre = data.get('nombre')
+    email = data.get('email')
+    rol = data.get('rol')
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "UPDATE usuarios SET nombre = ?, email = ?, rol = ? WHERE id = ?",
+        (nombre, email, rol, user_id)
+    )
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True}), 200
+
+# Eliminar usuario
+@app.route('/sandbox/admin/usuario/<int:user_id>/eliminar', methods=['POST'])
+def sandbox_admin_usuario_eliminar(user_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM usuarios WHERE id = ?", (user_id,))
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True}), 200
 
 if __name__ == '__main__':
     app.run(port=5001, debug=True)

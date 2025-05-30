@@ -30,3 +30,22 @@
   color: #1976d2;
   cursor: pointer;
 }
+
+.sandbox-access-btn {
+  background-color: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 16px;
+}
+
+.sandbox-access-btn:hover,
+.sandbox-access-btn:focus {
+  background-color: #125ea2;
+  outline: none;
+}

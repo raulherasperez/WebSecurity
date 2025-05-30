@@ -1,0 +1,698 @@
+.sandbox-shop-main {
+  max-width: 1100px;
+  margin: 40px auto 0 auto;
+  padding: 0 16px 32px 16px;
+}
+
+.sandbox-shop-title {
+  color: #1976d2;
+  font-weight: 700;
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.sandbox-catalogo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+  justify-content: center;
+}
+
+.sandbox-product-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(25, 118, 210, 0.10);
+  width: 220px;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 18px 12px 16px 12px;
+}
+
+.sandbox-product-card:hover {
+  box-shadow: 0 4px 24px rgba(25, 118, 210, 0.18);
+  transform: translateY(-4px) scale(1.03);
+}
+
+.sandbox-product-img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 14px;
+  background: #f5f5f5;
+}
+
+.sandbox-product-info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sandbox-product-name {
+  font-size: 1.08rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #222;
+}
+
+.sandbox-product-price {
+  color: #1976d2;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.sandbox-product-detail-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(25, 118, 210, 0.10);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sandbox-product-detail {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 32px rgba(25, 118, 210, 0.18);
+  padding: 32px 28px 24px 28px;
+  max-width: 420px;
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sandbox-detail-close {
+  position: absolute;
+  top: 12px;
+  right: 18px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #1976d2;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.sandbox-detail-img {
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 18px;
+  background: #f5f5f5;
+}
+
+.sandbox-detail-desc {
+  margin: 10px 0 8px 0;
+  color: #444;
+  text-align: center;
+}
+
+.sandbox-detail-price {
+  color: #1976d2;
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+
+.sandbox-review-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.sandbox-review-autor,
+.sandbox-review-text {
+  width: 100%;
+  border: 1px solid #bdbdbd;
+  border-radius: 5px;
+  padding: 8px;
+  font-size: 1rem;
+}
+
+.sandbox-review-text {
+  min-height: 48px;
+  resize: vertical;
+}
+
+.sandbox-review-btn {
+  background-color: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.sandbox-review-btn:hover,
+.sandbox-review-btn:focus {
+  background-color: #125ea2;
+}
+
+.sandbox-review-msg {
+  color: #1976d2;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.sandbox-review-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.sandbox-review-item {
+  border-top: 1px solid #e0e0e0;
+  padding: 8px 0;
+  font-size: 0.98rem;
+  color: #333;
+}
+.sandbox-shop-main {
+  max-width: 1100px;
+  margin: 40px auto 0 auto;
+  padding: 0 16px 32px 16px;
+}
+
+.sandbox-shop-title {
+  color: #1976d2;
+  font-weight: 700;
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.sandbox-toolbar {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
+.sandbox-search {
+  flex: 2;
+  padding: 10px 12px;
+  border: 1px solid #bdbdbd;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.sandbox-select {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #bdbdbd;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.sandbox-btn {
+  background-color: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.sandbox-btn:hover,
+.sandbox-btn:focus {
+  background-color: #125ea2;
+}
+
+.sandbox-catalogo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+  justify-content: center;
+}
+
+.sandbox-product-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(25, 118, 210, 0.10);
+  width: 220px;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 18px 12px 16px 12px;
+}
+
+.sandbox-product-card:hover {
+  box-shadow: 0 4px 24px rgba(25, 118, 210, 0.18);
+  transform: translateY(-4px) scale(1.03);
+}
+
+.sandbox-product-img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 14px;
+  background: #f5f5f5;
+}
+
+.sandbox-product-info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sandbox-product-name {
+  font-size: 1.08rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #222;
+}
+
+.sandbox-product-price {
+  color: #1976d2;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.sandbox-product-detail-page {
+  max-width: 1100px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 10px;
+  padding: 32px;
+  box-shadow: 0 4px 16px rgba(44,62,80,0.08);
+}
+
+.sandbox-product-detail-page h3 {
+  color: #2c3e50;
+  margin-bottom: 18px;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.sandbox-product {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 18px 18px 16px 18px;
+  background: #fafbfc;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: box-shadow 0.2s;
+  max-width: 350px;
+  margin: 0 auto 24px auto;
+}
+
+.sandbox-product-img-wrap {
+  width: 100%;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.sandbox-product-img {
+  max-width: 100%;
+  max-height: 130px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: #eaeaea;
+}
+
+.sandbox-product-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.sandbox-product-price {
+  color: #27ae60;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.sandbox-product-stock {
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.sandbox-detail-desc {
+  margin-top: 10px;
+  color: #444;
+  text-align: center;
+}
+
+.sandbox-btn {
+  padding: 10px 24px;
+  border-radius: 6px;
+  background: #3498db;
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.sandbox-btn:hover {
+  background: #217dbb;
+}
+
+.sandbox-review-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+  margin-top: 18px;
+}
+
+.sandbox-review-autor,
+.sandbox-review-text {
+  width: 100%;
+  border: 1px solid #bdbdbd;
+  border-radius: 5px;
+  padding: 8px;
+  font-size: 1rem;
+}
+
+.sandbox-review-text {
+  min-height: 48px;
+  resize: vertical;
+}
+
+.sandbox-review-btn {
+  background-color: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.sandbox-review-btn:hover,
+.sandbox-review-btn:focus {
+  background-color: #125ea2;
+}
+
+.sandbox-review-msg {
+  color: #1976d2;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.sandbox-review-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.sandbox-review-item {
+  border-top: 1px solid #e0e0e0;
+  padding: 8px 0;
+  font-size: 0.98rem;
+  color: #333;
+}
+
+/* ...otros estilos previos... */
+
+.sandbox-reviews-section {
+  margin-top: 36px;
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 24px 18px 18px 18px;
+  box-shadow: 0 2px 8px rgba(44,62,80,0.06);
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.sandbox-reviews-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #1976d2;
+  margin-bottom: 18px;
+  letter-spacing: 0.5px;
+}
+
+.sandbox-review-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.sandbox-review-autor,
+.sandbox-review-text {
+  width: 100%;
+  border: 1px solid #bdbdbd;
+  border-radius: 5px;
+  padding: 8px;
+  font-size: 1rem;
+  background: #fff;
+}
+
+.sandbox-review-text {
+  min-height: 48px;
+  resize: vertical;
+}
+
+.sandbox-review-btn {
+  background-color: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.sandbox-review-btn:hover,
+.sandbox-review-btn:focus {
+  background-color: #125ea2;
+}
+
+.sandbox-review-msg {
+  color: #1976d2;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.sandbox-review-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.sandbox-review-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border-top: 1px solid #e0e0e0;
+  padding: 14px 0 8px 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.sandbox-review-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #e3eaf6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #1976d2;
+  font-size: 1.1rem;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.sandbox-review-content {
+  flex: 1;
+}
+
+.sandbox-review-author {
+  font-weight: 600;
+  color: #1976d2;
+  margin-right: 8px;
+}
+
+.sandbox-review-date {
+  font-size: 0.93rem;
+  color: #888;
+  margin-left: 4px;
+}
+
+.sandbox-review-text-content {
+  margin-top: 2px;
+  margin-bottom: 0;
+  color: #222;
+  word-break: break-word;
+}
+
+.sandbox-shop-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.sandbox-profile-link {
+  background: none;
+  border: none;
+  color: #1976d2;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.sandbox-profile-link:hover,
+.sandbox-profile-link:focus {
+  background: #e3eaf6;
+  outline: none;
+}
+
+.sandbox-profile-user {
+  margin-right: 2px;
+}
+
+/* Tabla de usuarios en admin */
+.sandbox-admin-table {
+  width: 100%;
+  margin-top: 18px;
+  background: #fff;
+  border-radius: 8px;
+  border-collapse: collapse;
+  box-shadow: 0 2px 8px rgba(44,62,80,0.06);
+}
+
+.sandbox-admin-table th,
+.sandbox-admin-table td {
+  padding: 10px 8px;
+  border-bottom: 1px solid #e0e0e0;
+  text-align: left;
+}
+
+.sandbox-admin-table th {
+  background: #f5f8fa;
+  font-weight: 700;
+  color: #1976d2;
+}
+
+.sandbox-admin-table tr:last-child td {
+  border-bottom: none;
+}
+
+.sandbox-btn[style*="background:#e74c3c"] {
+  background: #e74c3c !important;
+  color: #fff !important;
+}
+.sandbox-btn[style*="background:#e74c3c"]:hover {
+  background: #c0392b !important;
+}
+
+/* Detalle de usuario */
+.sandbox-user-detail-page {
+  max-width: 500px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 10px;
+  padding: 32px 28px 24px 28px;
+  box-shadow: 0 4px 16px rgba(44,62,80,0.08);
+}
+
+.sandbox-user-detail-page h4 {
+  color: #1976d2;
+  margin-bottom: 18px;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.sandbox-user-detail-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 340px;
+  margin-bottom: 18px;
+}
+
+.sandbox-user-detail-form label {
+  font-weight: 500;
+  color: #333;
+}
+
+.sandbox-user-detail-form input,
+.sandbox-user-detail-form select {
+  width: 100%;
+  border: 1px solid #bdbdbd;
+  border-radius: 5px;
+  padding: 8px;
+  font-size: 1rem;
+  margin-top: 2px;
+}
+
+.sandbox-user-detail-form button {
+  margin-top: 8px;
+}
+
+.sandbox-user-purchases {
+  margin-top: 18px;
+  background: #f8fafc;
+  border-radius: 6px;
+  padding: 14px 12px;
+}
+
+.sandbox-user-purchases h5 {
+  margin-bottom: 10px;
+  color: #1976d2;
+  font-size: 1.05rem;
+}
+
+.sandbox-user-purchases ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sandbox-user-purchases li {
+  padding: 6px 0;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 0.98rem;
+  color: #333;
+}
+
+.sandbox-user-purchases li:last-child {
+  border-bottom: none;
+}

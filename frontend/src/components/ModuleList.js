@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './css/ModuleList.css'; // Importamos los estilos
 
 const ModuleList = () => {
@@ -10,11 +10,9 @@ const ModuleList = () => {
     { id: 4, title: 'Broken Access Control', path: '/modulo/bac' },
     { id: 5, title: 'Server Side Request Forgery', path: '/modulo/ssrf' },
     { id: 6, title: 'Broken Authentication', path: '/modulo/brokenauth' },
-    { id: 7, title: 'Broken Access Control', path: '/modulo/acceso-roto' },
-    { id: 8, title: 'Vulnerable Components', path: '/modulo/componentes-vulnerables' },
-    { id: 9, title: 'Logging & Monitoring', path: '/modulo/logs-monitoring' },
-    { id: 10, title: 'API Security', path: '/modulo/api-security' }
   ];
+
+  const navigate = useNavigate();
 
   return (
     <aside className="module-sidebar">
@@ -26,6 +24,13 @@ const ModuleList = () => {
           </li>
         ))}
       </ul>
+      <button
+        className="sandbox-access-btn"
+        style={{ marginTop: 24, width: '100%' }}
+        onClick={() => window.open('/sandbox-tienda')}
+      >
+        Acceder al Sandbox
+      </button>
     </aside>
   );
 };

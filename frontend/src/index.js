@@ -42,6 +42,10 @@ import EntornoVulnerableBrokenAuth from './modulo_broken_auth/EntornoVulnerableB
 import ActivateAccountPage from './auth/ActivateAccountPage';
 import ForgotPasswordPage from './auth/ForgotPasswordPage';
 import ResetPasswordPage from './auth/ResetPasswordPage';
+import SandboxApp from './sandbox/SandboxApp';
+import SandboxProductDetail from './sandbox/SandboxProductDetail';
+import SandboxProfile from './sandbox/SandboxProfile';
+import SandboxAdmin from './sandbox/SandboxAdmin';
 
 // Importa el layout principal
 import MainLayout from './components/MainLayout';
@@ -68,6 +72,7 @@ root.render(
           <Route path="/modulo/bac/entorno/:id" element={<EntornoVulnerableBAC />} />
           <Route path="/modulo/ssrf/entorno" element={<EntornoVulnerableSSRFShop />} />
           <Route path="/modulo/brokenauth/entorno" element={<EntornoVulnerableBrokenAuth />} />
+          <Route path="/sandbox-tienda/*" element={<SandboxApp />} />
 
           {/* Rutas CON layout */}
           <Route element={<MainLayout />}>

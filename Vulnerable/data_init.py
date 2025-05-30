@@ -162,6 +162,84 @@ cursor.executemany(
     comentarios_iniciales
 )
 
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS reviews (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    producto_id INTEGER,
+    autor TEXT,
+    texto TEXT,
+    fecha TEXT
+)
+''')
+
+# --- Inicializar reviews de ejemplo para productos del sandbox ---
+def generar_reviews(productos, usuarios, n=30):
+    reviews = []
+    for _ in range(n):
+        producto = random.choice(productos)
+        autor = random.choice(usuarios)[0]  # nombre del usuario
+        texto = fake.sentence(nb_words=12)
+        fecha = fake.date_between(start_date='-1y', end_date='today').strftime('%Y-%m-%d %H:%M:%S')
+        reviews.append((producto[0], autor, texto, fecha))  # producto_id, autor, texto, fecha
+    return reviews
+
+# Obtener IDs de productos y nombres de usuarios para reviews
+cursor.execute("SELECT id FROM productos")
+producto_ids = [row[0] for row in cursor.fetchall()]
+cursor.execute("SELECT nombre FROM usuarios")
+usuario_nombres = [(row[0],) for row in cursor.fetchall()]
+
+# Si hay productos y usuarios, insertar reviews de ejemplo
+if producto_ids and usuario_nombres:
+    # Emparejar producto_id con nombre de usuario
+    productos_para_reviews = [(pid,) for pid in producto_ids]
+    reviews = []
+    for _ in range(30):
+        producto_id = random.choice(producto_ids)
+        autor = random.choice(usuario_nombres)[0]
+        texto = fake.sentence(nb_words=12)
+        fecha = fake.date_between(start_date='-1y', end_date='today').strftime('%Y-%m-%d %H:%M:%S')
+        reviews.append((producto_id, autor, texto, fecha))
+    cursor.executemany('''
+        INSERT INTO reviews (producto_id, autor, texto, fecha)
+        VALUES (?, ?, ?, ?)
+    ''', reviews)
+
+cursor.execute("PRAGMA table_info(usuarios)")
+cols = [col[1] for col in cursor.fetchall()]
+if 'rol' not in cols:
+    cursor.execute("ALTER TABLE usuarios ADD COLUMN rol TEXT DEFAULT 'usuario'")
+
+# Crear tabla de compras
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS compras (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    usuario_id INTEGER,
+    producto_id INTEGER,
+    fecha TEXT
+)
+''')
+
+# Insertar roles y compras de ejemplo
+cursor.execute("UPDATE usuarios SET rol = 'admin' WHERE nombre = 'John'")
+cursor.execute("UPDATE usuarios SET rol = 'usuario' WHERE nombre != 'John'")
+
+# Insertar compras aleatorias
+cursor.execute("SELECT id FROM usuarios")
+usuario_ids = [row[0] for row in cursor.fetchall()]
+cursor.execute("SELECT id FROM productos")
+producto_ids = [row[0] for row in cursor.fetchall()]
+compras = []
+for _ in range(30):
+    usuario_id = random.choice(usuario_ids)
+    producto_id = random.choice(producto_ids)
+    fecha = fake.date_between(start_date='-1y', end_date='today').strftime('%Y-%m-%d')
+    compras.append((usuario_id, producto_id, fecha))
+cursor.executemany(
+    "INSERT INTO compras (usuario_id, producto_id, fecha) VALUES (?, ?, ?)",
+    compras
+)
+
 # Guardar cambios y cerrar conexión
 conn.commit()
 conn.close()
