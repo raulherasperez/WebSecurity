@@ -8,6 +8,9 @@ import ModuleList from '../components/ModuleList';
 import ModuleComments from '../components/ModuleComments';
 import { pistas, soluciones, explicacionNivel } from './csrfHints';
 
+import CodeQuiz from '../codequiz/CodeQuiz';
+import CODE_QUIZ from '../codequiz/quizData';
+
 function ModulePageCSRF() {
   const { user } = useAuth();
 
@@ -15,12 +18,15 @@ function ModulePageCSRF() {
   const [showSolution2, setShowSolution2] = useState(false);
   const [showExample, setShowExample] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
+  const [showCodeQuiz, setShowCodeQuiz] = useState(false);
 
   // Nivel de dificultad
   const [nivel, setNivel] = useState('facil');
 
   // Mensaje de éxito al reiniciar comentarios
   const [resetMsg, setResetMsg] = useState('');
+
+  const csrfQuizQuestions = CODE_QUIZ.filter(q => q.type === "csrf");
 
   return (
     <div className="ModulePage">
@@ -257,6 +263,27 @@ function ModulePageCSRF() {
           </div>
         </section>
 
+        <section>
+          <details style={{ marginTop: 32 }}>
+            <summary
+              style={{
+                cursor: 'pointer',
+                fontWeight: 600,
+                fontSize: '1.08em',
+                marginBottom: 8
+              }}
+              onClick={() => setShowCodeQuiz(s => !s)}
+            >
+              ¿Reconoces el código vulnerable? (quiz interactivo)
+            </summary>
+            {showCodeQuiz && (
+              <div style={{ marginTop: 18 }}>
+                <CodeQuiz questions={csrfQuizQuestions} />
+              </div>
+            )}
+          </details>
+        </section>
+
         {/* Explicación técnica de la vulnerabilidad en un desplegable */}
         <details style={{ marginTop: 32 }}>
           <summary style={{ cursor: 'pointer', fontWeight: 600, fontSize: '1.08em' }}>
@@ -272,7 +299,7 @@ function ModulePageCSRF() {
       </main>
       <ModuleList />
       <footer className="App-footer">
-        <button className="sandbox-button">Sandbox</button>
+
       </footer>
     </div>
   );

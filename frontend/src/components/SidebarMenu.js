@@ -74,6 +74,9 @@ const SidebarMenu = () => {
             <li>
               <Link to="/glosario" onClick={() => setIsMenuOpen(false)}>Glosario</Link>
             </li>
+            <li>
+              <Link to="/retos-codigo/sesion">Sesión de retos</Link>
+            </li>
           </ul>
         </nav>
       </aside>

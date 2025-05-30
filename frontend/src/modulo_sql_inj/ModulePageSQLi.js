@@ -9,6 +9,9 @@ import ModuleList from '../components/ModuleList';
 import ModuleComments from '../components/ModuleComments';
 import { pistas, soluciones, explicacionNivel } from './sqliHints';
 
+import CodeQuiz from '../codequiz/CodeQuiz';
+import CODE_QUIZ from '../codequiz/quizData';
+
 function ModulePageSQLi() {
   const [showDetails, setShowDetails] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
@@ -21,10 +24,15 @@ function ModulePageSQLi() {
   const [showSolution2, setShowSolution2] = useState(false);
   const [showHint3, setShowHint3] = useState(false);
   const [showSolution3, setShowSolution3] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  
 
   // Nivel de dificultad
   const [nivel, setNivel] = useState('facil');
+
+  const [showCodeQuiz, setShowCodeQuiz] = useState(false);
+
+  // Filtra solo las preguntas de SQLi
+  const sqliQuizQuestions = CODE_QUIZ.filter(q => q.type === "sqli");
 
   return (
     <div className="ModulePage">
@@ -264,6 +272,21 @@ function ModulePageSQLi() {
             </button>
           </div>
 
+           {/* Quiz de código SQLi en desplegable */}
+          <details style={{ marginTop: 32 }}>
+            <summary
+              style={{ cursor: 'pointer', fontWeight: 600, fontSize: '1.08em', marginBottom: 8 }}
+              onClick={() => setShowCodeQuiz(s => !s)}
+            >
+              ¿Reconoces el código vulnerable? (quiz interactivo)
+            </summary>
+            {showCodeQuiz && (
+              <div style={{ marginTop: 18 }}>
+                <CodeQuiz questions={sqliQuizQuestions} />
+              </div>
+            )}
+          </details>
+
           {/* Explicación técnica de la vulnerabilidad en un desplegable */}
           <details style={{ marginTop: 32 }}>
           <summary style={{ cursor: 'pointer', fontWeight: 600, fontSize: '1.08em' }}>
@@ -280,7 +303,6 @@ function ModulePageSQLi() {
       </main>
       <ModuleList />
       <footer className="App-footer">
-        <button className="sandbox-button">Sandbox</button>
       </footer>
     </div>
   );

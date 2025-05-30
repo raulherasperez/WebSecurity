@@ -8,6 +8,9 @@ import ModuleList from '../components/ModuleList';
 import ModuleComments from '../components/ModuleComments';
 import { pistas, soluciones, explicacionNivel } from './xssHints';
 
+import CodeQuiz from '../codequiz/CodeQuiz';
+import CODE_QUIZ from '../codequiz/quizData';
+
 function ModulePageXSS() {
   const { user } = useAuth();
 
@@ -18,9 +21,12 @@ function ModulePageXSS() {
   const [showSolution2, setShowSolution2] = useState(false);
   const [showExample, setShowExample] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
+  const [showCodeQuiz, setShowCodeQuiz] = useState(false);
 
   // Nivel de dificultad
   const [nivel, setNivel] = useState('facil');
+
+   const xssQuizQuestions = CODE_QUIZ.filter(q => q.type === "xss");
 
   return (
     <div className="ModulePage">
@@ -235,6 +241,20 @@ function ModulePageXSS() {
             </button>
           </div>
 
+          <details style={{ marginTop: 32 }}>
+            <summary
+              style={{ cursor: 'pointer', fontWeight: 600, fontSize: '1.08em', marginBottom: 8 }}
+              onClick={() => setShowCodeQuiz(s => !s)}
+            >
+              ¿Reconoces el código vulnerable? (quiz interactivo)
+            </summary>
+            {showCodeQuiz && (
+              <div style={{ marginTop: 18 }}>
+                <CodeQuiz questions={xssQuizQuestions} />
+              </div>
+            )}
+          </details>
+
           {/* Explicación técnica de la vulnerabilidad en un desplegable */}
           <details style={{ marginTop: 32 }}>
             <summary style={{ cursor: 'pointer', fontWeight: 600, fontSize: '1.08em' }}>
@@ -251,7 +271,6 @@ function ModulePageXSS() {
       </main>
       <ModuleList />
       <footer className="App-footer">
-        <button className="sandbox-button">Sandbox</button>
       </footer>
     </div>
   );

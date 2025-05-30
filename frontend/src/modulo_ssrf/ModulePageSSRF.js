@@ -8,6 +8,10 @@ import ModuleList from '../components/ModuleList';
 import ModuleComments from '../components/ModuleComments';
 import { pistas, soluciones, explicacionNivel } from './ssrfHints';
 
+import CodeQuiz from '../codequiz/CodeQuiz';
+import CODE_QUIZ from '../codequiz/quizData';
+
+
 function ModulePageSSRF() {
   const { user } = useAuth();
 
@@ -16,12 +20,15 @@ function ModulePageSSRF() {
   const [showVideo, setShowVideo] = useState(false);
   const [showHint, setShowHint] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
+  const [showCodeQuiz, setShowCodeQuiz] = useState(false);
 
   // Guarda el nivel en localStorage al cambiarlo
   const handleNivelChange = e => {
     setNivel(e.target.value);
     localStorage.setItem('nivelSSRF', e.target.value);
   };
+
+  const ssrfQuizQuestions = CODE_QUIZ.filter(q => q.type === "ssrf");
 
   return (
     <div className="ModulePage">
@@ -218,6 +225,27 @@ function ModulePageSSRF() {
           </div>
         </section>
 
+        <section>
+          <details style={{ marginTop: 32 }}>
+            <summary
+              style={{
+                cursor: 'pointer',
+                fontWeight: 600,
+                fontSize: '1.08em',
+                marginBottom: 8
+              }}
+              onClick={() => setShowCodeQuiz(s => !s)}
+            >
+              ¿Reconoces el código vulnerable? (quiz interactivo)
+            </summary>
+            {showCodeQuiz && (
+              <div style={{ marginTop: 18 }}>
+                <CodeQuiz questions={ssrfQuizQuestions} />
+              </div>
+            )}
+          </details>
+        </section>
+
         {/* Explicación técnica de la vulnerabilidad en un desplegable */}
         <details style={{ marginTop: 32 }}>
           <summary style={{ cursor: 'pointer', fontWeight: 600, fontSize: '1.08em' }}>
@@ -233,7 +261,6 @@ function ModulePageSSRF() {
       </main>
       <ModuleList />
       <footer className="App-footer">
-        <button className="sandbox-button">Sandbox</button>
       </footer>
     </div>
   );

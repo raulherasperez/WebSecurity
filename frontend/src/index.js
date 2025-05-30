@@ -43,9 +43,8 @@ import ActivateAccountPage from './auth/ActivateAccountPage';
 import ForgotPasswordPage from './auth/ForgotPasswordPage';
 import ResetPasswordPage from './auth/ResetPasswordPage';
 import SandboxApp from './sandbox/SandboxApp';
-import SandboxProductDetail from './sandbox/SandboxProductDetail';
-import SandboxProfile from './sandbox/SandboxProfile';
-import SandboxAdmin from './sandbox/SandboxAdmin';
+import CodeQuizPage from './codequiz/CodeQuizPage';
+import CodeQuizSession from './codequiz/CodeQuizSession';
 
 // Importa el layout principal
 import MainLayout from './components/MainLayout';
@@ -73,6 +72,7 @@ root.render(
           <Route path="/modulo/ssrf/entorno" element={<EntornoVulnerableSSRFShop />} />
           <Route path="/modulo/brokenauth/entorno" element={<EntornoVulnerableBrokenAuth />} />
           <Route path="/sandbox-tienda/*" element={<SandboxApp />} />
+          
 
           {/* Rutas CON layout */}
           <Route element={<MainLayout />}>
@@ -107,6 +107,8 @@ root.render(
             <Route path="/sugerencias/crear" element={<SugerenciaCrear />} />
             <Route path="/logros" element={<LogrosUsuario />} />
              <Route path="/logros/admin" element={<LogrosAdmin />} />
+             <Route path="/retos-codigo" element={<CodeQuizPage />} />
+             <Route path="/retos-codigo/sesion" element={<CodeQuizSession />} />
           </Route>
         </Routes>
       </BrowserRouter>
