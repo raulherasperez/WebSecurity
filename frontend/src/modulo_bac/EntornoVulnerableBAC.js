@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams, useLocation, Navigate } from 'react-router-dom';
 import './css/EntornoVulnerableBAC.css';
 
-const API_URL = 'http://localhost:5001';
+const API_URL = process.env.REACT_APP_VULNERABLE_URL;
 
 // Obtiene el nivel BAC de localStorage
 function getNivelBAC() {

@@ -4,6 +4,8 @@ import axios from 'axios';
 import MDEditor from '@uiw/react-md-editor';
 import './css/GuiaCrear.css';
 
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
 const GuiaEditar = () => {
   const { id } = useParams();
   const [titulo, setTitulo] = useState('');
@@ -20,7 +22,7 @@ const GuiaEditar = () => {
   useEffect(() => {
     const fetchGuia = async () => {
       try {
-        const res = await axios.get(`http://localhost:8080/api/guias/${id}`);
+        const res = await axios.get(`${API_URL}/api/guias/${id}`);
         if (res.data.usuario?.username !== username) {
           setError('No tienes permiso para editar esta guía.');
         } else {
@@ -41,7 +43,7 @@ const GuiaEditar = () => {
     setMessage('');
     try {
       await axios.put(
-        `http://localhost:8080/api/guias/${id}`,
+        `${API_URL}/api/guias/${id}`,
         { titulo, contenido },
         {
           headers: { Authorization: `Bearer ${token}` }
@@ -60,7 +62,7 @@ const GuiaEditar = () => {
     formData.append('file', file);
 
     try {
-      const res = await axios.post('http://localhost:8080/api/upload/image', formData, {
+      const res = await axios.post(`${API_URL}/api/upload/image`, formData, {
         headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` }
       });
       const url = res.data;

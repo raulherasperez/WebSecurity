@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './css/UserProfile.css';
 
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
 const UserProfileEdit = ({ onProfileUpdated }) => {
   const [user, setUser] = useState(null);
   const [username, setUsername] = useState('');
@@ -14,7 +16,7 @@ const UserProfileEdit = ({ onProfileUpdated }) => {
     const fetchUser = async () => {
       const token = localStorage.getItem('authToken');
       try {
-        const response = await axios.get('http://localhost:8080/api/users/me', {
+        const response = await axios.get(`${API_URL}/api/users/me`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setUser(response.data);
@@ -44,7 +46,7 @@ const UserProfileEdit = ({ onProfileUpdated }) => {
     if (foto) formData.append('foto', foto);
 
     try {
-      await axios.put('http://localhost:8080/api/users/me', formData, {
+      await axios.put(`${API_URL}/api/users/me`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
@@ -59,56 +61,56 @@ const UserProfileEdit = ({ onProfileUpdated }) => {
 
   if (!user) return <div>Cargando...</div>;
 
-return (
-  <form className="user-profile-container" onSubmit={handleSubmit}>
-    <div>
-      <label>Foto de perfil:</label><br />
-      <input
-        type="file"
-        id="foto-input"
-        accept="image/*"
-        style={{ display: 'none' }}
-        onChange={handleFotoChange}
-      />
-      {preview && (
-        <img src={preview} alt="Preview" className="user-profile-photo" style={{ marginTop: 10 }} />
-      )}
-      <button
-        type="button"
-        className="user-profile-edit-btn"
-        onClick={() => document.getElementById('foto-input').click()}
-        style={{ marginTop: 10, marginBottom: 10 }}
-      >
-        Seleccionar archivo
-      </button>
-      {foto && <span style={{ marginLeft: 8 }}>{foto.name}</span>}
-    </div>
-    <div>
-      <label>Nombre de usuario:</label>
-      <input
-        type="text"
-        value={username}
-        onChange={e => setUsername(e.target.value)}
-        required
-        style={{ width: '100%', marginBottom: 10 }}
-      />
-    </div>
-    <div>
-      <label>Email:</label>
-      <input
-        type="email"
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-        required
-        style={{ width: '100%', marginBottom: 10 }}
-      />
-    </div>
+  return (
+    <form className="user-profile-container" onSubmit={handleSubmit}>
+      <div>
+        <label>Foto de perfil:</label><br />
+        <input
+          type="file"
+          id="foto-input"
+          accept="image/*"
+          style={{ display: 'none' }}
+          onChange={handleFotoChange}
+        />
+        {preview && (
+          <img src={preview} alt="Preview" className="user-profile-photo" style={{ marginTop: 10 }} />
+        )}
+        <button
+          type="button"
+          className="user-profile-edit-btn"
+          onClick={() => document.getElementById('foto-input').click()}
+          style={{ marginTop: 10, marginBottom: 10 }}
+        >
+          Seleccionar archivo
+        </button>
+        {foto && <span style={{ marginLeft: 8 }}>{foto.name}</span>}
+      </div>
+      <div>
+        <label>Nombre de usuario:</label>
+        <input
+          type="text"
+          value={username}
+          onChange={e => setUsername(e.target.value)}
+          required
+          style={{ width: '100%', marginBottom: 10 }}
+        />
+      </div>
+      <div>
+        <label>Email:</label>
+        <input
+          type="email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          required
+          style={{ width: '100%', marginBottom: 10 }}
+        />
+      </div>
 
-    <button type="submit" className="user-profile-edit-btn">Guardar cambios</button>
-    {message && <div style={{ marginTop: 12, color: '#1976d2' }}>{message}</div>}
+      <button type="submit" className="user-profile-edit-btn">Guardar cambios</button>
+      {message && <div style={{ marginTop: 12, color: '#1976d2' }}>{message}</div>}
 
-  </form>
-);
+    </form>
+  );
 };
 
 export default UserProfileEdit;

@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import './css/Glosario.css';
 
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
 const GlosarioEditar = () => {
   const { id } = useParams();
   const [termino, setTermino] = useState('');
@@ -14,7 +16,7 @@ const GlosarioEditar = () => {
   useEffect(() => {
     const fetchTermino = async () => {
       try {
-        const res = await axios.get(`http://localhost:8080/api/glosario/${id}`);
+        const res = await axios.get(`${API_URL}/api/glosario/${id}`);
         setTermino(res.data.termino);
         setSignificado(res.data.significado);
         setEnlaceReferencia(res.data.enlaceReferencia || '');
@@ -30,7 +32,7 @@ const GlosarioEditar = () => {
     setMessage('');
     try {
       const token = localStorage.getItem('authToken');
-      await axios.put(`http://localhost:8080/api/glosario/${id}`, {
+      await axios.put(`${API_URL}/api/glosario/${id}`, {
         termino,
         significado,
         enlaceReferencia

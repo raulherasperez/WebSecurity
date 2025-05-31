@@ -5,6 +5,8 @@ import './css/AuthForm.css';
 import LogoHomeLink from '../components/LogoHomeLink';
 import { useAuth } from '../context/AuthContext';
 
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
 const RegisterPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -28,7 +30,7 @@ const RegisterPage = () => {
       return;
     }
     try {
-      const response = await axios.post('http://localhost:8080/api/users/register', {
+      const response = await axios.post(`${API_URL}/api/users/register`, {
         username,
         password,
         email

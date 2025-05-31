@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './css/EntornoVulnerableSSRFShop.css';
 
-const API_URL = 'http://localhost:5001';
+const API_URL = process.env.REACT_APP_VULNERABLE_URL;
 
 // Obtiene el nivel SSRF de localStorage
 function getNivelSSRF() {

@@ -4,6 +4,8 @@ import axios from 'axios';
 import MDEditor from '@uiw/react-md-editor';
 import './css/GuiaDetalle.css';
 
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
 const GuiaDetalle = () => {
   const { id } = useParams();
   const [guia, setGuia] = useState(null);
@@ -19,7 +21,7 @@ const GuiaDetalle = () => {
   useEffect(() => {
     const fetchGuia = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/api/guias/${id}`);
+        const response = await axios.get(`${API_URL}/api/guias/${id}`);
         setGuia(response.data);
       } catch (err) {
         setError('No se pudo cargar la guía.');
@@ -31,7 +33,7 @@ const GuiaDetalle = () => {
   const handleDelete = async () => {
     setDeleting(true);
     try {
-      await axios.delete(`http://localhost:8080/api/guias/${id}`, {
+      await axios.delete(`${API_URL}/api/guias/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

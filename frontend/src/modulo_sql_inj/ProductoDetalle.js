@@ -23,7 +23,7 @@ const ProductoDetalle = () => {
     }
     const fetchDetalle = async () => {
       try {
-        const res = await axios.get(`http://localhost:5001/vulnerable-producto?id=${id}`);
+        const res = await axios.get(`${process.env.REACT_APP_VULNERABLE_URL}/vulnerable-producto?id=${id}`);
         setDetalle(res.data);
         setError('');
         // Detectar reto 2: detalle de producto oculto

@@ -30,7 +30,7 @@ function Modal({ open, onClose, children }) {
   );
 }
 
-const API_URL = 'http://localhost:5001';
+const API_URL = process.env.REACT_APP_VULNERABLE_URL;
 
 function getNivelCSRF() {
   return localStorage.getItem('nivelCSRF') || 'facil';

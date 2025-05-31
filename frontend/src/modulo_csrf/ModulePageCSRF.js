@@ -240,9 +240,9 @@ function ModulePageCSRF() {
               onClick={async () => {
                 setResetMsg('');
                 // Reiniciar comentarios del foro
-                const res = await fetch('http://localhost:5001/foro-reset-comentarios', { method: 'POST' });
+                const res = await fetch(`${process.env.REACT_APP_VULNERABLE_URL}/foro-reset-comentarios`, { method: 'POST' });
                 // Reiniciar nivel CSRF en el backend
-                await fetch('http://localhost:5001/reset-nivel-csrf', {
+                await fetch(`${process.env.REACT_APP_VULNERABLE_URL}/reset-nivel-csrf`, {
                   method: 'POST',
                   credentials: 'include'
                 });

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const API_URL = process.env.REACT_APP_API_URL_BROKENAUTH || 'http://localhost:5001';
+const API_URL = process.env.REACT_APP_VULNERABLE_URL;
 
 function EntornoVulnerableBrokenAuth() {
   const [username, setUsername] = useState('');

@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './css/SandboxShop.css';
 
+const API_URL = process.env.REACT_APP_VULNERABLE_URL;
+
 const SandboxUserDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -12,7 +14,7 @@ const SandboxUserDetail = () => {
   useEffect(() => {
     const fetchDetalle = async () => {
       try {
-        const res = await axios.get(`http://localhost:5001/sandbox/admin/usuario/${id}`);
+        const res = await axios.get(`${API_URL}/sandbox/admin/usuario/${id}`);
         setDetalle(res.data);
         setMsg('');
       } catch {
@@ -26,7 +28,7 @@ const SandboxUserDetail = () => {
     e.preventDefault();
     const { id, nombre, email, rol } = detalle.usuario;
     try {
-      await axios.post(`http://localhost:5001/sandbox/admin/usuario/${id}/editar`, { nombre, email, rol });
+      await axios.post(`${API_URL}/sandbox/admin/usuario/${id}/editar`, { nombre, email, rol });
       setMsg('Usuario editado');
     } catch {
       setMsg('Error al editar usuario');

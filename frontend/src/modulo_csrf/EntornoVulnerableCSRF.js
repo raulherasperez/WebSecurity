@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './css/EntornoVulnerableCSRF.css';
 
-const API_URL = 'http://localhost:5001';
+const API_URL = process.env.REACT_APP_VULNERABLE_URL;
 
 // Modal igual que el de VulnerableShop
 function Modal({ open, onClose, children }) {

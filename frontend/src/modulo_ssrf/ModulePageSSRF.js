@@ -213,8 +213,8 @@ function ModulePageSSRF() {
               style={{ background: '#e53935', color: '#fff' }}
               onClick={async () => {
                 localStorage.removeItem('nivelSSRF');
-                await fetch('http://localhost:5001/ssrf-reset', { method: 'POST', credentials: 'include' });
-                await fetch('http://localhost:5001/reset-nivel-ssrf', { method: 'POST', credentials: 'include' });
+                await fetch(`${process.env.REACT_APP_VULNERABLE_URL}/ssrf-reset`, { method: 'POST', credentials: 'include' });
+                await fetch(`${process.env.REACT_APP_VULNERABLE_URL}/reset-nivel-ssrf`, { method: 'POST', credentials: 'include' });
                 localStorage.removeItem('levelSSRF');
                 window.alert('¡Estado del entorno SSRF restaurado!');
               }}

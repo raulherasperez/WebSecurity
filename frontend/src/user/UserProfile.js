@@ -32,15 +32,17 @@ const UserProfile = () => {
     fetchLogros();
   }, [user]);
 
+  // ...existing code...
   const handleRequestPasswordReset = async () => {
     setResetMessage('');
     try {
-      await axios.post('http://localhost:8080/api/users/forgot-password', { email: user.email });
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/users/forgot-password`, { email: user.email });
       setResetMessage('Te hemos enviado un correo para restablecer tu contraseña.');
     } catch {
       setResetMessage('Error al solicitar el cambio de contraseña.');
     }
   };
+// ...existing code...
 
   if (error) return <div>{error}</div>;
   if (!user) return <div>Cargando...</div>;

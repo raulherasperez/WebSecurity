@@ -3,6 +3,8 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './css/SandboxShop.css';
 
+const API_URL = process.env.REACT_APP_VULNERABLE_URL;
+
 const SandboxProductDetail = ({ user }) => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -22,7 +24,7 @@ const SandboxProductDetail = ({ user }) => {
     }
     const fetchDetalle = async () => {
       try {
-        const res = await axios.get(`http://localhost:5001/sandbox/producto/${id}`);
+        const res = await axios.get(`${API_URL}/sandbox/producto/${id}`);
         setDetalle(res.data.producto);
         setReviews(res.data.reviews || []);
         setError('');
@@ -39,7 +41,7 @@ const SandboxProductDetail = ({ user }) => {
     e.preventDefault();
     setMessage('');
     try {
-      await axios.post(`http://localhost:5001/sandbox/producto/${id}/review`, { autor, texto: review });
+      await axios.post(`${API_URL}/sandbox/producto/${id}/review`, { autor, texto: review });
       setReviews([{ autor, texto: review, fecha: new Date().toISOString() }, ...reviews]);
       setReview('');
       setMessage('¡Review enviada!');

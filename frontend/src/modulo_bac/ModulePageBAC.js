@@ -201,15 +201,15 @@ function ModulePageBAC() {
           >
             Abrir entorno vulnerable BAC
           </button>
-          <div style={{ marginTop: 18 }}>
+           <div style={{ marginTop: 18 }}>
             <button
               className="sandbox-button"
               style={{ background: '#e53935', color: '#fff' }}
               onClick={async () => {
                 localStorage.removeItem('nivelBAC');
-                await fetch('http://localhost:5001/bac-reset-usuarios', { method: 'POST', credentials: 'include' });
-                await fetch('http://localhost:5001/logout', { method: 'POST', credentials: 'include' });
-                await fetch('http://localhost:5001/reset-nivel-bac', { method: 'POST', credentials: 'include' });
+                await fetch(`${process.env.REACT_APP_VULNERABLE_URL}/bac-reset-usuarios`, { method: 'POST', credentials: 'include' });
+                await fetch(`${process.env.REACT_APP_VULNERABLE_URL}/logout`, { method: 'POST', credentials: 'include' });
+                await fetch(`${process.env.REACT_APP_VULNERABLE_URL}/reset-nivel-bac`, { method: 'POST', credentials: 'include' });
                 window.alert('¡Usuarios y sesión restaurados! Tendrás que iniciar sesión de nuevo.');
               }}
               type="button"

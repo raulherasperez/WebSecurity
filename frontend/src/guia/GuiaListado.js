@@ -6,6 +6,8 @@ import SidebarMenu from '../components/SidebarMenu';
 import LogoHomeLink from '../components/LogoHomeLink';
 import MDEditor from '@uiw/react-md-editor';
 
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
 const GuiaListado = () => {
   const [guias, setGuias] = useState([]);
   const [error, setError] = useState('');
@@ -14,7 +16,7 @@ const GuiaListado = () => {
   useEffect(() => {
     const fetchGuias = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/guias');
+        const response = await axios.get(`${API_URL}/api/guias`);
         setGuias(response.data);
       } catch (err) {
         setError('No se pudieron cargar las guías.');

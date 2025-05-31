@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import './css/Sugerencia.css';
-import SidebarMenu from '../components/SidebarMenu';
-import LogoHomeLink from '../components/LogoHomeLink';
-import Footer from '../components/Footer';
+
+
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const SugerenciaListado = () => {
   const [sugerencias, setSugerencias] = useState([]);
@@ -16,7 +16,7 @@ const SugerenciaListado = () => {
     const fetchSugerencias = async () => {
       try {
         const token = localStorage.getItem('authToken');
-        const res = await axios.get('http://localhost:8080/api/sugerencias', {
+        const res = await axios.get(`${API_URL}/api/sugerencias`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setSugerencias(res.data);

@@ -6,6 +6,8 @@ import SidebarMenu from '../components/SidebarMenu';
 import LogoHomeLink from '../components/LogoHomeLink';
 import { useAuth } from '../context/AuthContext';
 
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
 const GlosarioListado = () => {
   const [terminos, setTerminos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,7 +21,7 @@ const GlosarioListado = () => {
   useEffect(() => {
     const fetchTerminos = async () => {
       try {
-        const res = await axios.get('http://localhost:8080/api/glosario');
+        const res = await axios.get(`${API_URL}/api/glosario`);
         setTerminos(res.data);
       } catch {
         setError('No se pudo cargar el glosario.');
@@ -44,7 +46,7 @@ const GlosarioListado = () => {
     if (!terminoToDelete) return;
     try {
       const token = localStorage.getItem('authToken');
-      await axios.delete(`http://localhost:8080/api/glosario/${terminoToDelete.id}`, {
+      await axios.delete(`${API_URL}/api/glosario/${terminoToDelete.id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setTerminos(terminos.filter(t => t.id !== terminoToDelete.id));

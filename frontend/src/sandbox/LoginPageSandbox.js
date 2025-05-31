@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './css/LoginPageSandbox.css';
 
+const API_URL = process.env.REACT_APP_VULNERABLE_URL;
+
 const LoginPageSandbox = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -11,7 +13,7 @@ const LoginPageSandbox = ({ onLogin }) => {
     e.preventDefault();
     setMessage('');
     try {
-      const res = await axios.post('http://localhost:5001/sandbox/login', { username, password });
+      const res = await axios.post(`${API_URL}/sandbox/login`, { username, password });
       if (res.data.success) {
         onLogin(res.data.user);
       } else {

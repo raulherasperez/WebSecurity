@@ -5,6 +5,8 @@ import './css/AuthForm.css';
 import LogoHomeLink from '../components/LogoHomeLink';
 import { useAuth } from '../context/AuthContext';
 
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
 const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -22,7 +24,7 @@ const LoginPage = () => {
     e.preventDefault();
     setMessage('');
     try {
-      const response = await axios.post('http://localhost:8080/api/users/login', {
+      const response = await axios.post(`${API_URL}/api/users/login`, {
         username,
         password,
       });
@@ -30,7 +32,7 @@ const LoginPage = () => {
       if (data.token) {
         localStorage.setItem('authToken', data.token);
         // Ahora obtenemos el usuario con el token
-        const userRes = await axios.get('http://localhost:8080/api/users/me', {
+        const userRes = await axios.get(`${API_URL}/api/users/me`, {
           headers: { Authorization: `Bearer ${data.token}` }
         });
         login(userRes.data, data.token); // Actualiza el contexto y localStorage

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './css/SandboxShop.css';
 
+const API_URL = process.env.REACT_APP_VULNERABLE_URL;
+
 const SandboxProfile = ({ user }) => {
   const [nuevoEmail, setNuevoEmail] = useState('');
   const [msg, setMsg] = useState('');
@@ -14,7 +16,7 @@ const SandboxProfile = ({ user }) => {
       const form = new FormData();
       form.append('username', user.nombre);
       form.append('nuevo_email', nuevoEmail);
-      const res = await axios.post('http://localhost:5001/sandbox/cambiar-email', form);
+      const res = await axios.post(`${API_URL}/sandbox/cambiar-email`, form);
       setMsg(res.data.msg || '¡Email actualizado!');
     } catch {
       setMsg('Error al actualizar email');

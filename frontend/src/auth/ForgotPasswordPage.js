@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -8,7 +10,7 @@ const ForgotPasswordPage = () => {
     e.preventDefault();
     setMessage('');
     try {
-      const res = await axios.post('http://localhost:8080/api/users/forgot-password', { email });
+      const res = await axios.post(`${API_URL}/api/users/forgot-password`, { email });
       setMessage(res.data);
     } catch (err) {
       setMessage(err.response?.data || 'Error al solicitar recuperación');

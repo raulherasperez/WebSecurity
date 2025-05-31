@@ -3,6 +3,8 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './css/VMDetalle.css';
 
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
 const VMDetalle = () => {
   const { id } = useParams();
   const [vm, setVM] = useState(null);
@@ -18,7 +20,7 @@ const VMDetalle = () => {
   useEffect(() => {
     const fetchVM = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/api/vms/${id}`);
+        const response = await axios.get(`${API_URL}/api/vms/${id}`);
         setVM(response.data);
       } catch (err) {
         setError('No se pudo cargar la máquina virtual.');
@@ -33,7 +35,7 @@ const VMDetalle = () => {
   const handleDelete = async () => {
     setDeleting(true);
     try {
-      await axios.delete(`http://localhost:8080/api/vms/${id}`, {
+      await axios.delete(`${API_URL}/api/vms/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       navigate('/machines');

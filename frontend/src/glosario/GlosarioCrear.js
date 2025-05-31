@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './css/Glosario.css';
 
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
 const GlosarioCrear = () => {
   const [termino, setTermino] = useState('');
   const [significado, setSignificado] = useState('');
@@ -15,7 +17,7 @@ const GlosarioCrear = () => {
     setMessage('');
     try {
       const token = localStorage.getItem('authToken');
-      await axios.post('http://localhost:8080/api/glosario', {
+      await axios.post(`${API_URL}/api/glosario`, {
         termino,
         significado,
         enlaceReferencia

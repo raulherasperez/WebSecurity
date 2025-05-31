@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './css/SandboxShop.css';
 
+const API_URL = process.env.REACT_APP_VULNERABLE_URL;
+
 const SandboxShop = ({ user }) => {
   const [productos, setProductos] = useState([]);
   const [categorias, setCategorias] = useState([]);
@@ -18,7 +20,7 @@ const SandboxShop = ({ user }) => {
 
   const fetchCategorias = async () => {
     try {
-      const res = await axios.get('http://localhost:5001/vulnerable-categorias');
+      const res = await axios.get(`${API_URL}/vulnerable-categorias`);
       setCategorias(res.data);
     } catch {
       setCategorias([]);
@@ -27,7 +29,7 @@ const SandboxShop = ({ user }) => {
 
   const fetchProductos = async () => {
     try {
-      let url = `http://localhost:5001/sandbox/productos`;
+      let url = `${API_URL}/sandbox/productos`;
       if (search) url += `?search=${encodeURIComponent(search)}`;
       if (categoriaSeleccionada) {
         url += (url.includes('?') ? '&' : '?') + `categoria=${encodeURIComponent(categoriaSeleccionada)}`;

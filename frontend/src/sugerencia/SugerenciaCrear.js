@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './css/Sugerencia.css';
 
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
 const SugerenciaCrear = () => {
   const [titulo, setTitulo] = useState('');
   const [texto, setTexto] = useState('');
@@ -14,7 +16,7 @@ const SugerenciaCrear = () => {
     setMessage('');
     try {
       const token = localStorage.getItem('authToken');
-      await axios.post('http://localhost:8080/api/sugerencias', { titulo, texto }, {
+      await axios.post(`${API_URL}/api/sugerencias`, { titulo, texto }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       navigate('/sugerencias');

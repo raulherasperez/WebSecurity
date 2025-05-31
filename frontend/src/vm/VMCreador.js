@@ -3,6 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import './css/VMCreador.css';
 
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
 const VMCreador = () => {
   const { id } = useParams();
   const [nombre, setNombre] = useState('');
@@ -18,7 +20,7 @@ const VMCreador = () => {
     if (id) {
       const fetchVM = async () => {
         try {
-          const res = await axios.get(`http://localhost:8080/api/vms/${id}`);
+          const res = await axios.get(`${API_URL}/api/vms/${id}`);
           if (res.data.usuario?.username !== username) {
             setMessage('No tienes permiso para editar esta máquina.');
           } else {
@@ -34,7 +36,7 @@ const VMCreador = () => {
       };
       fetchVM();
     }
-  }, [id, username]);
+  }, [id, username, API_URL]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,14 +44,14 @@ const VMCreador = () => {
     try {
       if (id) {
         await axios.put(
-          `http://localhost:8080/api/vms/${id}`,
+          `${API_URL}/api/vms/${id}`,
           { nombre, descripcion, enlaceDescarga },
           { headers: { Authorization: `Bearer ${token}` } }
         );
         navigate(`/machines/${id}`);
       } else {
         await axios.post(
-          'http://localhost:8080/api/vms',
+          `${API_URL}/api/vms`,
           { nombre, descripcion, enlaceDescarga },
           { headers: { Authorization: `Bearer ${token}` } }
         );

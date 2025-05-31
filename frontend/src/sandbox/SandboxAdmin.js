@@ -3,18 +3,22 @@ import axios from 'axios';
 import './css/SandboxShop.css';
 import { useNavigate } from 'react-router-dom';
 
+const API_URL = process.env.REACT_APP_VULNERABLE_URL;
+
 const SandboxAdmin = () => {
   const [usuarios, setUsuarios] = useState([]);
   const [detalle, setDetalle] = useState(null);
   const [msg, setMsg] = useState('');
   const navigate = useNavigate();
+
   useEffect(() => {
     fetchUsuarios();
+    // eslint-disable-next-line
   }, []);
 
   const fetchUsuarios = async () => {
     try {
-      const res = await axios.get('http://localhost:5001/sandbox/admin/usuarios');
+      const res = await axios.get(`${API_URL}/sandbox/admin/usuarios`);
       setUsuarios(res.data.usuarios || []);
     } catch {
       setMsg('Error al cargar usuarios');
@@ -23,7 +27,7 @@ const SandboxAdmin = () => {
 
   const verDetalle = async (id) => {
     try {
-      const res = await axios.get(`http://localhost:5001/sandbox/admin/usuario/${id}`);
+      const res = await axios.get(`${API_URL}/sandbox/admin/usuario/${id}`);
       setDetalle(res.data);
       setMsg('');
     } catch {
@@ -34,7 +38,7 @@ const SandboxAdmin = () => {
   const handleEliminar = async (id) => {
     if (!window.confirm('¿Seguro que quieres eliminar este usuario?')) return;
     try {
-      await axios.post(`http://localhost:5001/sandbox/admin/usuario/${id}/eliminar`);
+      await axios.post(`${API_URL}/sandbox/admin/usuario/${id}/eliminar`);
       setUsuarios(usuarios.filter(u => u.id !== id));
       setDetalle(null);
     } catch {
@@ -46,7 +50,7 @@ const SandboxAdmin = () => {
     e.preventDefault();
     const { id, nombre, email, rol } = detalle.usuario;
     try {
-      await axios.post(`http://localhost:5001/sandbox/admin/usuario/${id}/editar`, { nombre, email, rol });
+      await axios.post(`${API_URL}/sandbox/admin/usuario/${id}/editar`, { nombre, email, rol });
       setMsg('Usuario editado');
       fetchUsuarios();
     } catch {
@@ -76,28 +80,40 @@ const SandboxAdmin = () => {
               <td>{u.email}</td>
               <td>{u.rol}</td>
               <td>
-                <button className="sandbox-btn" style={{padding:'4px 10px', fontSize:'0.95rem', marginRight:6}} onClick={() => navigate(`/sandbox-tienda/admin/usuario/${u.id}`)}>Ver</button>
-                <button className="sandbox-btn" style={{padding:'4px 10px', fontSize:'0.95rem', background:'#e74c3c'}} onClick={() => handleEliminar(u.id)}>Eliminar</button>
+                <button
+                  className="sandbox-btn"
+                  style={{ padding: '4px 10px', fontSize: '0.95rem', marginRight: 6 }}
+                  onClick={() => verDetalle(u.id)}
+                >
+                  Ver
+                </button>
+                <button
+                  className="sandbox-btn"
+                  style={{ padding: '4px 10px', fontSize: '0.95rem', background: '#e74c3c' }}
+                  onClick={() => handleEliminar(u.id)}
+                >
+                  Eliminar
+                </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
       {detalle && (
-        <div style={{marginTop:32, background:'#f8fafc', borderRadius:8, padding:24}}>
+        <div style={{ marginTop: 32, background: '#f8fafc', borderRadius: 8, padding: 24 }}>
           <h4>Detalle de usuario</h4>
-          <form onSubmit={handleEditar} style={{display:'flex', flexDirection:'column', gap:8, maxWidth:340}}>
-            <label>Nombre: <input value={detalle.usuario.nombre} onChange={e => setDetalle({...detalle, usuario: {...detalle.usuario, nombre: e.target.value}})} /></label>
-            <label>Email: <input value={detalle.usuario.email} onChange={e => setDetalle({...detalle, usuario: {...detalle.usuario, email: e.target.value}})} /></label>
+          <form onSubmit={handleEditar} style={{ display: 'flex', flexDirection: 'column', gap: 8, maxWidth: 340 }}>
+            <label>Nombre: <input value={detalle.usuario.nombre} onChange={e => setDetalle({ ...detalle, usuario: { ...detalle.usuario, nombre: e.target.value } })} /></label>
+            <label>Email: <input value={detalle.usuario.email} onChange={e => setDetalle({ ...detalle, usuario: { ...detalle.usuario, email: e.target.value } })} /></label>
             <label>Rol:
-              <select value={detalle.usuario.rol} onChange={e => setDetalle({...detalle, usuario: {...detalle.usuario, rol: e.target.value}})}>
+              <select value={detalle.usuario.rol} onChange={e => setDetalle({ ...detalle, usuario: { ...detalle.usuario, rol: e.target.value } })}>
                 <option value="usuario">usuario</option>
                 <option value="admin">admin</option>
               </select>
             </label>
             <button className="sandbox-btn" type="submit">Guardar cambios</button>
           </form>
-          <h5 style={{marginTop:18}}>Historial de compras</h5>
+          <h5 style={{ marginTop: 18 }}>Historial de compras</h5>
           <ul>
             {detalle.compras.length === 0 && <li>No hay compras</li>}
             {detalle.compras.map(c => (

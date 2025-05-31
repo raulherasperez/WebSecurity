@@ -5,6 +5,7 @@ import './css/Reporte.css';
 import SidebarMenu from '../components/SidebarMenu';
 import LogoHomeLink from '../components/LogoHomeLink';
 
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const ReporteListado = () => {
   const [reportes, setReportes] = useState([]);
@@ -16,7 +17,7 @@ const ReporteListado = () => {
     const fetchReportes = async () => {
       try {
         const token = localStorage.getItem('authToken');
-        const res = await axios.get('http://localhost:8080/api/reportes', {
+        const res = await axios.get(`${API_URL}/api/reportes`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setReportes(res.data);
@@ -33,7 +34,6 @@ const ReporteListado = () => {
   if (error) return <div className="reporte-error">{error}</div>;
 
   return (
-
     <div className="reporte-container">
       <h2>Reportes de errores</h2>
       <a href="/reportes/crear" className="reporte-crear-btn">+ Nuevo reporte</a>
@@ -52,7 +52,6 @@ const ReporteListado = () => {
         ))}
       </ul>
     </div>
-
   );
 };
 

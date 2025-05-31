@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API = 'http://localhost:8080/api/logros';
+const API = `${process.env.REACT_APP_BACKEND_URL}/api/logros`;
 
 export const getLogrosDesbloqueados = async (token) =>
   axios.get(`${API}/usuario/desbloqueados`, {

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
 const ResetPasswordPage = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
@@ -18,7 +20,7 @@ const ResetPasswordPage = () => {
       return;
     }
     try {
-      const res = await axios.post('http://localhost:8080/api/users/reset-password', { token, newPassword });
+      const res = await axios.post(`${API_URL}/api/users/reset-password`, { token, newPassword });
       setMessage(res.data);
       if (res.data && res.data.toLowerCase().includes('contraseña restablecida')) {
         setTimeout(() => {

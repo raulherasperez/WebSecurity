@@ -4,6 +4,8 @@ import axios from 'axios';
 import MDEditor from '@uiw/react-md-editor';
 import './css/GuiaCrear.css';
 
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
 const GuiaCrear = () => {
   const [titulo, setTitulo] = useState('');
   const [contenido, setContenido] = useState('');
@@ -17,7 +19,7 @@ const GuiaCrear = () => {
     e.preventDefault();
     setMessage('');
     try {
-      await axios.post('http://localhost:8080/api/guias', {
+      await axios.post(`${API_URL}/api/guias`, {
         titulo,
         contenido
       }, {
@@ -38,7 +40,7 @@ const GuiaCrear = () => {
     formData.append('file', file);
 
     try {
-      const res = await axios.post('http://localhost:8080/api/upload/image', formData, {
+      const res = await axios.post(`${API_URL}/api/upload/image`, formData, {
         headers: { 'Content-Type': 'multipart/form-data',
             Authorization: `Bearer ${token}`
          }

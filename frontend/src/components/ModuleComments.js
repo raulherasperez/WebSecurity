@@ -2,21 +2,21 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './css/ModuleComments.css';
 
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 function ModuleComments({ moduleId, user }) {
   const [comments, setComments] = useState([]);
   const [text, setText] = useState('');
-  
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/comentarios/${moduleId}`).then(res => setComments(res.data));
+    axios.get(`${API_URL}/api/comentarios/${moduleId}`).then(res => setComments(res.data));
   }, [moduleId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!text.trim()) return;
     const token = localStorage.getItem('authToken');
-    const res = await axios.post('http://localhost:8080/api/comentarios', { modulo: moduleId, texto: text }, {
+    const res = await axios.post(`${API_URL}/api/comentarios`, { modulo: moduleId, texto: text }, {
       headers: { Authorization: `Bearer ${token}` }
     });
     setComments([...comments, { ...res.data, usuario: { username: user.username } }]);
@@ -25,7 +25,7 @@ function ModuleComments({ moduleId, user }) {
 
   const handleDelete = async (id) => {
     const token = localStorage.getItem('authToken');
-    await axios.delete(`http://localhost:8080/api/comentarios/${id}`, {
+    await axios.delete(`${API_URL}/api/comentarios/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     setComments(comments.filter(c => c.id !== id));

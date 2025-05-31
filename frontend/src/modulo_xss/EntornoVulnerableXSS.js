@@ -76,7 +76,7 @@ const EntornoVulnerableXSS = ({ nivel }) => {
   useEffect(() => {
     const fetchProductos = async () => {
       try {
-        let url = `http://localhost:5001/vulnerable-productos?search=${encodeURIComponent(search)}`;
+        let url = `${process.env.REACT_APP_VULNERABLE_URL}/vulnerable-productos?search=${encodeURIComponent(search)}`;
         if (categoriaSeleccionada) {
           url += `&categoria=${encodeURIComponent(categoriaSeleccionada)}`;
         }
@@ -92,7 +92,7 @@ const EntornoVulnerableXSS = ({ nivel }) => {
   useEffect(() => {
     const fetchCategorias = async () => {
       try {
-        const res = await axios.get('http://localhost:5001/vulnerable-categorias');
+        const res = await axios.get(`${process.env.REACT_APP_VULNERABLE_URL}/vulnerable-categorias`);
         setCategorias(res.data || []);
       } catch {
         setCategorias([]);

@@ -18,6 +18,8 @@ const LOGRO_APRENDIZ_SQL = {
   icono: 'aprendiz_sql.png'
 };
 
+const API_URL = process.env.REACT_APP_VULNERABLE_URL;
+
 const getNivel = (nivelProp) => {
   if (nivelProp) return nivelProp;
   return localStorage.getItem('nivelSQLi') || 'facil';
@@ -73,7 +75,7 @@ const VulnerableShop = ({ nivel }) => {
     if (!loginSuccess) return;
     const fetchCategorias = async () => {
       try {
-        const res = await axios.get(`http://localhost:5001/vulnerable-categorias?nivel=${nivelFinal}`);
+        const res = await axios.get(`${API_URL}/vulnerable-categorias?nivel=${nivelFinal}`);
         setCategorias(res.data);
       } catch {
         setCategorias([]);
@@ -87,7 +89,7 @@ const VulnerableShop = ({ nivel }) => {
   // Buscar productos
   const fetchProductos = async () => {
     try {
-      let url = `http://localhost:5001/vulnerable-productos?search=${encodeURIComponent(search)}&nivel=${nivelFinal}`;
+      let url = `${API_URL}/vulnerable-productos?search=${encodeURIComponent(search)}&nivel=${nivelFinal}`;
       if (categoriaSeleccionada) {
         url += `&categoria=${encodeURIComponent(categoriaSeleccionada)}`;
       }
@@ -109,7 +111,7 @@ const VulnerableShop = ({ nivel }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`http://localhost:5001/vulnerable-login?nivel=${nivelFinal}`, {
+      const res = await axios.post(`${API_URL}/vulnerable-login?nivel=${nivelFinal}`, {
         username,
         password
       });

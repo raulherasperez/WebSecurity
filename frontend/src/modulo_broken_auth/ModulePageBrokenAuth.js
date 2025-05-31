@@ -201,8 +201,8 @@ function ModulePageBrokenAuth() {
               style={{ background: '#e53935', color: '#fff' }}
               onClick={async () => {
                 localStorage.removeItem('nivelBrokenAuth');
-                await fetch('http://localhost:5001/brokenauth-reset', { method: 'POST', credentials: 'include' });
-                await fetch('http://localhost:5001/reset-nivel-brokenauth', { method: 'POST', credentials: 'include' });
+                await fetch(`${process.env.REACT_APP_VULNERABLE_URL}/brokenauth-reset`, { method: 'POST', credentials: 'include' });
+                await fetch(`${process.env.REACT_APP_VULNERABLE_URL}/reset-nivel-brokenauth`, { method: 'POST', credentials: 'include' });
                 window.alert('¡Estado del entorno Broken Authentication restaurado!');
               }}
               type="button"
