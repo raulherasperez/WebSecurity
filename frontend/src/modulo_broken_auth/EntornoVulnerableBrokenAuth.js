@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { desbloquearLogro } from '../services/logroService';
+import ModalLogroDesbloqueado from '../components/ModalLogroDesbloqueado';
 
 const API_URL = process.env.REACT_APP_VULNERABLE_URL;
 
@@ -9,6 +11,7 @@ function EntornoVulnerableBrokenAuth() {
   const [usuarioLogueado, setUsuarioLogueado] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [logroDesbloqueado, setLogroDesbloqueado] = useState(null);
 
   const handleLogin = async e => {
     e.preventDefault();
@@ -26,6 +29,15 @@ function EntornoVulnerableBrokenAuth() {
         setUsuarioLogueado(data.user);
         setMensaje('¡Login correcto! Has accedido como ' + data.user);
         setShowSuccessModal(true);
+
+        // Desbloquear logro "Broken Auth Hunter" y mostrar modal
+        try {
+          const token = localStorage.getItem('authToken');
+          const resLogro = await desbloquearLogro(token, "Suplantación de identidad");
+          if (resLogro) {
+            setLogroDesbloqueado(resLogro);
+          }
+        } catch {}
       } else {
         setUsuarioLogueado(null);
         setMensaje(data.error || 'Error desconocido');
@@ -121,6 +133,14 @@ function EntornoVulnerableBrokenAuth() {
             </button>
           </div>
         </div>
+      )}
+
+      {/* Modal de logro desbloqueado */}
+      {logroDesbloqueado && (
+        <ModalLogroDesbloqueado
+          logro={logroDesbloqueado}
+          onClose={() => setLogroDesbloqueado(null)}
+        />
       )}
     </div>
   );

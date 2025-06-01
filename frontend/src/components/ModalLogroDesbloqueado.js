@@ -12,9 +12,9 @@ const ModalLogroDesbloqueado = ({ logro, onClose }) => (
       <div>{logro.descripcion}</div>
       {logro.icono && (
         <img
-          src={logro.icono.startsWith('http') ? logro.icono : `/uploads/${logro.icono}`}
+          src={`data:image/png;base64,${logro.icono}`}
           alt={logro.nombre}
-          style={{ height: 48, marginTop: 16 }}
+          style={{ height: 36, width: 36, marginTop: 16, objectFit: 'contain' }}
         />
       )}
     </div>

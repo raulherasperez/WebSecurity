@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './css/EntornoVulnerableSSRFShop.css';
+import { desbloquearLogro } from '../services/logroService';
+import ModalLogroDesbloqueado from '../components/ModalLogroDesbloqueado';
 
 const API_URL = process.env.REACT_APP_VULNERABLE_URL;
 
@@ -37,6 +39,7 @@ function EntornoVulnerableSSRFShop() {
   const [loading, setLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [internalContent, setInternalContent] = useState('');
+  const [logroDesbloqueado, setLogroDesbloqueado] = useState(null);
 
   // Al entrar, establecer el nivel SSRF en la sesión del backend
   useEffect(() => {
@@ -67,6 +70,15 @@ function EntornoVulnerableSSRFShop() {
           if (text && text.trim().length > 0) {
             setInternalContent(text);
             setShowSuccessModal(true);
+
+            // Desbloquear logro "SSRF Hunter" y mostrar modal
+            try {
+              const token = localStorage.getItem('authToken');
+              const resLogro = await desbloquearLogro(token, "Misión código SSRF");
+              if (resLogro) {
+                setLogroDesbloqueado(resLogro);
+              }
+            } catch {}
           }
         }
       } else {
@@ -182,6 +194,12 @@ function EntornoVulnerableSSRFShop() {
             </button>
           </div>
         </div>
+      )}
+      {logroDesbloqueado && (
+        <ModalLogroDesbloqueado
+          logro={logroDesbloqueado}
+          onClose={() => setLogroDesbloqueado(null)}
+        />
       )}
     </div>
   );

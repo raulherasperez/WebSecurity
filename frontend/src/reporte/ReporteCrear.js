@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './css/Reporte.css';
+import ModalLogroDesbloqueado from '../components/ModalLogroDesbloqueado';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -9,6 +10,7 @@ const ReporteCrear = () => {
   const [titulo, setTitulo] = useState('');
   const [texto, setTexto] = useState('');
   const [message, setMessage] = useState('');
+  const [logroDesbloqueado, setLogroDesbloqueado] = useState(null);
   const navigate = useNavigate();
 
   const handleSubmit = async e => {
@@ -16,13 +18,23 @@ const ReporteCrear = () => {
     setMessage('');
     try {
       const token = localStorage.getItem('authToken');
-      await axios.post(`${API_URL}/api/reportes`, { titulo, texto }, {
+      const res = await axios.post(`${API_URL}/api/reportes`, { titulo, texto }, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      navigate('/reportes');
+      // Si el backend devuelve un logro desbloqueado, muéstralo
+      if (res.data.logroDesbloqueado) {
+        setLogroDesbloqueado(res.data.logroDesbloqueado);
+      } else {
+        navigate('/reportes');
+      }
     } catch {
       setMessage('No se pudo enviar el reporte.');
     }
+  };
+
+  const handleCloseModal = () => {
+    setLogroDesbloqueado(null);
+    navigate('/reportes');
   };
 
   return (
@@ -36,6 +48,9 @@ const ReporteCrear = () => {
         <button type="submit" className="reporte-crear-btn">Enviar</button>
         {message && <div className="reporte-error">{message}</div>}
       </form>
+      {logroDesbloqueado && (
+        <ModalLogroDesbloqueado logro={logroDesbloqueado} onClose={handleCloseModal} />
+      )}
     </div>
   );
 };

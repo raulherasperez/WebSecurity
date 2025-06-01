@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import MDEditor from '@uiw/react-md-editor';
 import './css/GuiaCrear.css';
+import ModalLogroDesbloqueado from '../components/ModalLogroDesbloqueado';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -10,6 +11,7 @@ const GuiaCrear = () => {
   const [titulo, setTitulo] = useState('');
   const [contenido, setContenido] = useState('');
   const [message, setMessage] = useState('');
+  const [logroDesbloqueado, setLogroDesbloqueado] = useState(null);
   const navigate = useNavigate();
   const token = localStorage.getItem('authToken');
   const fileInputRef = useRef();
@@ -19,7 +21,7 @@ const GuiaCrear = () => {
     e.preventDefault();
     setMessage('');
     try {
-      await axios.post(`${API_URL}/api/guias`, {
+      const res = await axios.post(`${API_URL}/api/guias`, {
         titulo,
         contenido
       }, {
@@ -27,7 +29,11 @@ const GuiaCrear = () => {
           Authorization: `Bearer ${token}`
         }
       });
-      navigate('/guias');
+      if (res.data.logroDesbloqueado) {
+        setLogroDesbloqueado(res.data.logroDesbloqueado);
+      } else {
+        navigate('/guias');
+      }
     } catch (err) {
       setMessage('No se pudo crear la guía.');
     }
@@ -67,6 +73,11 @@ const GuiaCrear = () => {
     } catch {
       alert('Error subiendo la imagen');
     }
+  };
+
+  const handleCloseModal = () => {
+    setLogroDesbloqueado(null);
+    navigate('/guias');
   };
 
   return (
@@ -112,6 +123,9 @@ const GuiaCrear = () => {
         <button type="submit" className="guia-crear-btn">Publicar guía</button>
         {message && <p className="guia-crear-error">{message}</p>}
       </form>
+      {logroDesbloqueado && (
+        <ModalLogroDesbloqueado logro={logroDesbloqueado} onClose={handleCloseModal} />
+      )}
     </div>
   );
 };

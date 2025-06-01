@@ -101,3 +101,12 @@
 .user-profile-logros-link:hover {
   color: #125ea7;
 }
+
+.user-profile-logro-item img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  margin-left: 10px;
+  vertical-align: middle;
+  margin-right: 10px;
+}

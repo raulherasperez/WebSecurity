@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { desbloquearLogro } from '../services/logroService';
+import ModalLogroDesbloqueado from '../components/ModalLogroDesbloqueado';
 import './css/CodeQuiz.css';
 
 // Función para mezclar un array y devolver los primeros n elementos
@@ -13,6 +15,12 @@ const CodeQuiz = ({ questions }) => {
   const [selected, setSelected] = useState(null);
   const [showResult, setShowResult] = useState(false);
   const [completed, setCompleted] = useState(false);
+  const [logroDesbloqueado, setLogroDesbloqueado] = useState(null);
+
+  // Solo desbloquear el logro la primera vez
+  const [quizCompletado, setQuizCompletado] = useState(
+    localStorage.getItem('codeQuizCompletado') === 'true'
+  );
 
   const quiz = quizSet[current];
 
@@ -21,13 +29,26 @@ const CodeQuiz = ({ questions }) => {
     setShowResult(true);
   };
 
-  const nextQuiz = () => {
+  const nextQuiz = async () => {
     setSelected(null);
     setShowResult(false);
     if (current + 1 < quizSet.length) {
       setCurrent(c => c + 1);
     } else {
       setCompleted(true);
+
+      // Desbloquear logro solo la primera vez
+      if (!quizCompletado) {
+        setQuizCompletado(true);
+        localStorage.setItem('codeQuizCompletado', 'true');
+        try {
+          const token = localStorage.getItem('authToken');
+          const resLogro = await desbloquearLogro(token, "Identificador novato");
+          if (resLogro) {
+            setLogroDesbloqueado(resLogro);
+          }
+        } catch {}
+      }
     }
   };
 
@@ -48,6 +69,12 @@ const CodeQuiz = ({ questions }) => {
         <button className="sandbox-btn" onClick={reshuffle}>
           Remezclar preguntas y volver a empezar
         </button>
+        {logroDesbloqueado && (
+          <ModalLogroDesbloqueado
+            logro={logroDesbloqueado}
+            onClose={() => setLogroDesbloqueado(null)}
+          />
+        )}
       </div>
     );
   }
@@ -86,6 +113,12 @@ const CodeQuiz = ({ questions }) => {
       <div style={{ marginTop: 12, color: '#888', fontSize: '0.97em' }}>
         Pregunta {current + 1} de {quizSet.length}
       </div>
+      {logroDesbloqueado && (
+        <ModalLogroDesbloqueado
+          logro={logroDesbloqueado}
+          onClose={() => setLogroDesbloqueado(null)}
+        />
+      )}
     </div>
   );
 };

@@ -82,9 +82,9 @@ public class LogroController {
     @PostMapping("/usuario/desbloquear")
     public ResponseEntity<?> desbloquearLogro(@RequestHeader("Authorization") String authHeader, @RequestParam String nombreLogro) {
         String username = usuarioService.getUsernameFromToken(authHeader.replace("Bearer ", ""));
-        boolean desbloqueado = logroService.desbloquearLogro(username, nombreLogro);
-        if (desbloqueado) {
-            return ResponseEntity.ok("Logro desbloqueado");
+        Logro logro = logroService.desbloquearLogro(username, nombreLogro);
+        if (logro != null) {
+            return ResponseEntity.ok(logro);
         } else {
             return ResponseEntity.badRequest().body("Ya desbloqueado o logro inexistente");
         }

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './css/EntornoVulnerableXSS.css';
+import { desbloquearLogro } from '../services/logroService';
+import ModalLogroDesbloqueado from '../components/ModalLogroDesbloqueado';
 
 // Modal simple reutilizable
 const ModalExito = ({ mensaje, onClose }) => (
@@ -72,6 +74,9 @@ const EntornoVulnerableXSS = ({ nivel }) => {
   );
   const [modalMensaje, setModalMensaje] = useState(null);
 
+  // Estado para modal de logro desbloqueado
+  const [logroDesbloqueado, setLogroDesbloqueado] = useState(null);
+
   // Cargar productos y categorías del backend al montar
   useEffect(() => {
     const fetchProductos = async () => {
@@ -105,20 +110,30 @@ const EntornoVulnerableXSS = ({ nivel }) => {
   const getProductImage = (prod) => prod.imagen || `https://picsum.photos/300/200?grayscale&blur=2`;
 
   // Detectar XSS reflejado (ejercicio 1)
-  useEffect(() => {
-    if (!ejercicio1Completado) {
-      // Detecta si el usuario ha introducido un payload típico de XSS
-      if (
-        /<script.*?>.*?<\/script>/i.test(search) ||
-        /onerror\s*=\s*["']?alert/i.test(search) ||
-        /<img\s+[^>]*onerror\s*=/i.test(search)
-      ) {
-        setEjercicio1Completado(true);
-        localStorage.setItem('xssEj1Completado', 'true');
-        setModalMensaje('¡Has completado el ejercicio de XSS reflejado! Has conseguido ejecutar código JavaScript a través del campo de búsqueda.');
-      }
+useEffect(() => {
+  if (!ejercicio1Completado) {
+    if (
+      /<script.*?>.*?<\/script>/i.test(search) ||
+      /onerror\s*=/i.test(search) ||
+      /<img[^>]+onerror\s*=/i.test(search)
+    ) {
+      setEjercicio1Completado(true);
+      localStorage.setItem('xssEj1Completado', 'true');
+      setModalMensaje('¡Has completado el ejercicio de XSS reflejado! Has conseguido ejecutar código JavaScript a través del campo de búsqueda.');
+
+      // Desbloquear logro "XSS Hunter" al completar el ejercicio 1
+      (async () => {
+        try {
+          const token = localStorage.getItem('authToken');
+          const resLogro = await desbloquearLogro(token, "XSS Hunter");
+          if (resLogro) {
+            setLogroDesbloqueado(resLogro);
+          }
+        } catch {}
+      })();
     }
-  }, [search, ejercicio1Completado]);
+  }
+}, [search, ejercicio1Completado]);
 
   // Detectar XSS almacenado (ejercicio 2)
   useEffect(() => {
@@ -233,6 +248,13 @@ const EntornoVulnerableXSS = ({ nivel }) => {
         <ModalExito
           mensaje={modalMensaje}
           onClose={() => setModalMensaje(null)}
+        />
+      )}
+      {/* Modal de logro desbloqueado */}
+      {logroDesbloqueado && (
+        <ModalLogroDesbloqueado
+          logro={logroDesbloqueado}
+          onClose={() => setLogroDesbloqueado(null)}
         />
       )}
     </div>

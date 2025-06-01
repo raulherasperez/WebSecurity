@@ -5,18 +5,11 @@ import { desbloquearLogro } from '../services/logroService';
 import ModalLogroDesbloqueado from '../components/ModalLogroDesbloqueado';
 import './css/VulnerableShop.css';
 
-// Añade aquí el nivel de dificultad recibido como prop
 const RETOS = [
   { id: 1, nombre: 'Login vulnerable', descripcion: 'Has iniciado sesión usando inyección SQL.' },
   { id: 2, nombre: 'Detalle de producto vulnerable', descripcion: 'Has accedido a un producto usando inyección SQL en el detalle.' },
   { id: 3, nombre: 'Filtrar productos ocultos', descripcion: 'Has mostrado productos de la categoría "Oculta" usando filtros e inyección SQL.' }
 ];
-
-const LOGRO_APRENDIZ_SQL = {
-  nombre: 'Aprendiz SQL',
-  descripcion: 'Has completado el módulo de SQL Injection.',
-  icono: 'aprendiz_sql.png'
-};
 
 const API_URL = process.env.REACT_APP_VULNERABLE_URL;
 
@@ -93,7 +86,6 @@ const VulnerableShop = ({ nivel }) => {
       if (categoriaSeleccionada) {
         url += `&categoria=${encodeURIComponent(categoriaSeleccionada)}`;
       }
-      console.log(`Fetching productos from: ${url}`);
       const res = await axios.get(url);
       setProductos(res.data.productos || []);
       setError('');
@@ -120,6 +112,15 @@ const VulnerableShop = ({ nivel }) => {
         localStorage.setItem('vshopLogin', 'true');
         marcarRetoCompletado(1);
         setRetoCompletado(1);
+
+        // Desbloquear logro "Aprendiz SQL" solo al completar el reto 1
+        try {
+          const token = localStorage.getItem('authToken');
+          const resLogro = await desbloquearLogro(token, "Aprendiz SQL");
+          if (resLogro) {
+            setLogroDesbloqueado(resLogro);
+          }
+        } catch {}
       } else {
         setLoginSuccess(false);
       }
@@ -128,20 +129,12 @@ const VulnerableShop = ({ nivel }) => {
     }
   };
 
-  // Marcar reto como completado y desbloquear logro si corresponde
-  const marcarRetoCompletado = async (idReto) => {
+  // Marcar reto como completado (ya no desbloquea el logro aquí)
+  const marcarRetoCompletado = (idReto) => {
     if (!retosCompletados.includes(idReto)) {
       const nuevos = [...retosCompletados, idReto];
       setRetosCompletados(nuevos);
       localStorage.setItem('vshopRetosCompletados', JSON.stringify(nuevos));
-      // Si los tres retos están completados, desbloquea el logro
-      if ([1, 2, 3].every(id => nuevos.includes(id))) {
-        try {
-          const token = localStorage.getItem('authToken');
-          await desbloquearLogro(token, LOGRO_APRENDIZ_SQL.nombre);
-          setLogroDesbloqueado(LOGRO_APRENDIZ_SQL);
-        } catch {}
-      }
     }
   };
 
@@ -255,44 +248,44 @@ const VulnerableShop = ({ nivel }) => {
           </button>
         </div>
         {error && <div className="vshop-error">{error}</div>}
-       <div className="vshop-grid">
-  {productos.map(prod => {
-    const esOculto = prod.categoria === "Oculta";
-    return (
-      <div
-        key={prod.id}
-        className="vshop-product"
-        style={{
-          cursor: esOculto ? 'not-allowed' : 'pointer',
-          opacity: esOculto ? 0.65 : 1,
-          pointerEvents: esOculto ? 'none' : 'auto'
-        }}
-        onClick={
-          esOculto
-            ? undefined
-            : () => navigate(`/modulo/sql-inyeccion/tienda/producto?id=${prod.id}`)
-        }
-      >
-        <div className="vshop-product-img-wrap">
-          <img
-            src={getProductImage(prod)}
-            alt={prod.nombre}
-            className="vshop-product-img"
-            loading="lazy"
-            onError={e => { e.target.src = "https://picsum.photos/300/200?grayscale&blur=2"; }}
-          />
+        <div className="vshop-grid">
+          {productos.map(prod => {
+            const esOculto = prod.categoria === "Oculta";
+            return (
+              <div
+                key={prod.id}
+                className="vshop-product"
+                style={{
+                  cursor: esOculto ? 'not-allowed' : 'pointer',
+                  opacity: esOculto ? 0.65 : 1,
+                  pointerEvents: esOculto ? 'none' : 'auto'
+                }}
+                onClick={
+                  esOculto
+                    ? undefined
+                    : () => navigate(`/modulo/sql-inyeccion/tienda/producto?id=${prod.id}`)
+                }
+              >
+                <div className="vshop-product-img-wrap">
+                  <img
+                    src={getProductImage(prod)}
+                    alt={prod.nombre}
+                    className="vshop-product-img"
+                    loading="lazy"
+                    onError={e => { e.target.src = "https://picsum.photos/300/200?grayscale&blur=2"; }}
+                  />
+                </div>
+                <div className="vshop-product-name">{prod.nombre}</div>
+                <div className="vshop-product-cat">{prod.categoria}</div>
+                <div className="vshop-product-price">{prod.precio} €</div>
+                <div className="vshop-product-stock">Stock: {prod.stock}</div>
+                <div style={{ marginTop: 8, color: '#2980b9', fontSize: '0.95rem' }}>
+                  {esOculto ? "No disponible" : "Ver detalle"}
+                </div>
+              </div>
+            );
+          })}
         </div>
-        <div className="vshop-product-name">{prod.nombre}</div>
-        <div className="vshop-product-cat">{prod.categoria}</div>
-        <div className="vshop-product-price">{prod.precio} €</div>
-        <div className="vshop-product-stock">Stock: {prod.stock}</div>
-        <div style={{ marginTop: 8, color: '#2980b9', fontSize: '0.95rem' }}>
-          {esOculto ? "No disponible" : "Ver detalle"}
-        </div>
-      </div>
-    );
-  })}
-</div>
         {productos.length === 0 && <div className="vshop-empty">No hay productos para mostrar.</div>}
       </section>
 

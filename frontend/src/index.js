@@ -19,6 +19,7 @@ import ProductoDetalle from './modulo_sql_inj/ProductoDetalle';
 import VMListado from './vm/VMListado';
 import VMDetalle from './vm/VMDetalle';
 import VMCreador from './vm/VMCreador';
+import VMEdicion from './vm/VMEdicion';
 import GlosarioListado from './glosario/GlosarioListado';
 import GlosarioCrear from './glosario/GlosarioCrear';
 import GlosarioEditar from './glosario/GlosarioEditar';
@@ -94,7 +95,7 @@ root.render(
             <Route path="/machines" element={<VMListado />} />
             <Route path="/machines/crear" element={<VMCreador />} />
             <Route path="/machines/:id" element={<VMDetalle />} />
-            <Route path="/machines/:id/editar" element={<VMCreador />} />
+            <Route path="/machines/:id/editar" element={<VMEdicion />} />
             {/* Rutas del glosario */}
             <Route path="/glosario" element={<GlosarioListado />} />
             <Route path="/glosario/crear" element={<GlosarioCrear />} />

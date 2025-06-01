@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams, useLocation, Navigate } from 'react-router-dom';
 import './css/EntornoVulnerableBAC.css';
+import { desbloquearLogro } from '../services/logroService';
+import ModalLogroDesbloqueado from '../components/ModalLogroDesbloqueado';
 
 const API_URL = process.env.REACT_APP_VULNERABLE_URL;
 
@@ -34,6 +36,7 @@ function EntornoVulnerableBAC() {
   const [userId, setUserId] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [logroDesbloqueado, setLogroDesbloqueado] = useState(null);
 
   // Al entrar, establecer el nivel BAC en la sesión del backend
   useEffect(() => {
@@ -74,7 +77,7 @@ function EntornoVulnerableBAC() {
         credentials: 'include'
       })
         .then(res => res.json())
-        .then(data => {
+        .then(async data => {
           if (data.error) {
             setPerfil(null);
             setError(data.error);
@@ -85,6 +88,14 @@ function EntornoVulnerableBAC() {
             // Mostrar modal si accede a otro perfil distinto al suyo
             if (userId && String(userId) !== String(urlUserId)) {
               setShowModal(true);
+              // Desbloquear logro BAC: "Control de Acceso Roto"
+              try {
+                const token = localStorage.getItem('authToken');
+                const resLogro = await desbloquearLogro(token, "Rompedor de accesos");
+                if (resLogro) {
+                  setLogroDesbloqueado(resLogro);
+                }
+              } catch {}
             } else {
               setShowModal(false);
             }
@@ -140,6 +151,14 @@ function EntornoVulnerableBAC() {
         // Mostrar modal si modifica el email de otro usuario
         if (userId && String(userId) !== String(urlUserId)) {
           setShowEditModal(true);
+          // Desbloquear logro BAC: "Control de Acceso Roto (edición)"
+          try {
+            const token = localStorage.getItem('authToken');
+            const resLogro = await desbloquearLogro(token, "Rompedor de accesos");
+            if (resLogro) {
+              setLogroDesbloqueado(resLogro);
+            }
+          } catch {}
         }
       } else {
         setError(data.error || 'Error al actualizar el perfil');
@@ -257,6 +276,14 @@ function EntornoVulnerableBAC() {
             </button>
           </div>
         </div>
+      )}
+
+      {/* Modal de logro desbloqueado */}
+      {logroDesbloqueado && (
+        <ModalLogroDesbloqueado
+          logro={logroDesbloqueado}
+          onClose={() => setLogroDesbloqueado(null)}
+        />
       )}
     </div>
   );

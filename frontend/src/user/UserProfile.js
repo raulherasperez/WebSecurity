@@ -91,16 +91,14 @@ const UserProfile = () => {
             <ul className="user-profile-logros-list">
               {logros.map(logro => (
                 <li key={logro.id} className="user-profile-logro-item">
+                  
+                  {logro.icono && (
+                    <img src={`data:image/png;base64,${logro.icono}`} alt={logro.nombre} />
+                  )}
                   <span>
                     <strong>{logro.nombre}</strong> - {logro.descripcion}
                   </span>
-                  {logro.icono && (
-                    <img
-                      src={logro.icono.startsWith('http') ? logro.icono : `/uploads/${logro.icono}`}
-                      alt={logro.nombre}
-                      style={{ height: 32, marginLeft: 8 }}
-                    />
-                  )}
+                  
                 </li>
               ))}
             </ul>

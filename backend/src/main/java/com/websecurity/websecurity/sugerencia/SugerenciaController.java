@@ -1,13 +1,15 @@
-// filepath: backend/src/main/java/com/websecurity/websecurity/sugerencia/SugerenciaController.java
 package com.websecurity.websecurity.sugerencia;
 
 import com.websecurity.websecurity.user.UsuarioService;
 import com.websecurity.websecurity.user.User;
+import com.websecurity.websecurity.logro.Logro;
+import com.websecurity.websecurity.logro.LogroService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/sugerencias")
@@ -19,6 +21,9 @@ public class SugerenciaController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private LogroService logroService;
 
     // Listar sugerencias según rol
     @GetMapping
@@ -48,6 +53,17 @@ public class SugerenciaController {
     public ResponseEntity<?> createSugerencia(@RequestBody Sugerencia sugerencia, @RequestHeader("Authorization") String authHeader) {
         String username = usuarioService.getUsernameFromToken(authHeader.replace("Bearer ", ""));
         Sugerencia nueva = sugerenciaService.save(sugerencia, username);
-        return ResponseEntity.ok(nueva);
+
+        // Desbloquear logro "Colaborador" si es la primera vez
+        Logro logroDesbloqueado = logroService.desbloquearLogro(username, "Colaborador");
+
+        // Devuelve la sugerencia y, si corresponde, el logro desbloqueado (sin Map.of para evitar null)
+        Map<String, Object> response = new java.util.HashMap<>();
+        response.put("sugerencia", nueva);
+        if (logroDesbloqueado != null) {
+            response.put("logroDesbloqueado", logroDesbloqueado);
+        }
+
+        return ResponseEntity.ok(response);
     }
 }

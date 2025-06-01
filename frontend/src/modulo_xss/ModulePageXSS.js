@@ -234,6 +234,8 @@ function ModulePageXSS() {
                 localStorage.removeItem('xssLogin');
                 localStorage.removeItem('xssRetosCompletados');
                 localStorage.removeItem('nivelXSS');
+                localStorage.removeItem('xssEj1Completado');
+                localStorage.removeItem('xssEj2Completado');
                 window.location.reload();
               }}
             >

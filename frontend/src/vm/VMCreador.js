@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import './css/VMCreador.css';
+import ModalLogroDesbloqueado from '../components/ModalLogroDesbloqueado';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -12,6 +13,7 @@ const VMCreador = () => {
   const [enlaceDescarga, setEnlaceDescarga] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(!!id);
+  const [logroDesbloqueado, setLogroDesbloqueado] = useState(null);
   const navigate = useNavigate();
   const token = localStorage.getItem('authToken');
   const username = localStorage.getItem('username');
@@ -36,7 +38,7 @@ const VMCreador = () => {
       };
       fetchVM();
     }
-  }, [id, username, API_URL]);
+  }, [id, username]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,16 +52,25 @@ const VMCreador = () => {
         );
         navigate(`/machines/${id}`);
       } else {
-        await axios.post(
+        const res = await axios.post(
           `${API_URL}/api/vms`,
           { nombre, descripcion, enlaceDescarga },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        navigate('/machines');
+        if (res.data.logroDesbloqueado) {
+          setLogroDesbloqueado(res.data.logroDesbloqueado);
+        } else {
+          navigate('/machines');
+        }
       }
     } catch {
       setMessage('No se pudo guardar la máquina.');
     }
+  };
+
+  const handleCloseModal = () => {
+    setLogroDesbloqueado(null);
+    navigate('/machines');
   };
 
   if (loading) return <div className="vm-detalle-loading">Cargando...</div>;
@@ -101,6 +112,9 @@ const VMCreador = () => {
         <button type="submit" className="vm-crear-btn">{id ? 'Guardar cambios' : 'Publicar máquina'}</button>
         {message && <p className="vm-crear-error">{message}</p>}
       </form>
+      {logroDesbloqueado && (
+        <ModalLogroDesbloqueado logro={logroDesbloqueado} onClose={handleCloseModal} />
+      )}
     </div>
   );
 };

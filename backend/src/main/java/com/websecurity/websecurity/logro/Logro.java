@@ -16,8 +16,9 @@ public class Logro {
     private String descripcion;
 
     // Puede ser una URL o el nombre de un archivo en /uploads
-    @Column(nullable = false)
-    private String icono;
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] icono;
 
     // Getters y setters
     public Long getId() { return id; }
@@ -29,6 +30,6 @@ public class Logro {
     public String getDescripcion() { return descripcion; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
 
-    public String getIcono() { return icono; }
-    public void setIcono(String icono) { this.icono = icono; }
+    public byte[] getIcono() { return icono; }
+    public void setIcono(byte[] icono) { this.icono = icono; }
 }

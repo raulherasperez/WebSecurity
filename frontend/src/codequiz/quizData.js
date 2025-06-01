@@ -646,6 +646,143 @@ const CODE_QUIZ = [
     ],
     vulnerableLine: 2,
     explanation: "La línea 3 es vulnerable porque permite al usuario controlar la URL de la petición."
+  },
+  {
+    id: 51,
+    type: "broken_auth",
+    title: "Login sin comprobación de contraseña",
+    code: [
+      "def login():",
+      "    user = get_user(request.form['username'])",
+      "    if user:",
+      "        session['user'] = user.username",
+      "        return redirect('/dashboard')"
+    ],
+    vulnerableLine: 2,
+    explanation: "La línea 3 es vulnerable porque permite iniciar sesión sin comprobar la contraseña."
+  },
+  {
+    id: 52,
+    type: "broken_auth",
+    title: "Contraseña hardcodeada",
+    code: [
+      "def login():",
+      "    if request.form['password'] == 'admin123':",
+      "        session['user'] = request.form['username']",
+      "        return redirect('/admin')"
+    ],
+    vulnerableLine: 1,
+    explanation: "La línea 2 es vulnerable porque utiliza una contraseña hardcodeada."
+  },
+  {
+    id: 53,
+    type: "broken_auth",
+    title: "Token de sesión predecible",
+    code: [
+      "def login():",
+      "    user = get_user(request.form['username'])",
+      "    if user and user.password == request.form['password']:",
+      "        session['token'] = user.username + '123'",
+      "        return redirect('/dashboard')"
+    ],
+    vulnerableLine: 3,
+    explanation: "La línea 4 es vulnerable porque genera un token de sesión predecible."
+  },
+  {
+    id: 54,
+    type: "broken_auth",
+    title: "Sin expiración de sesión",
+    code: [
+      "def login():",
+      "    user = get_user(request.form['username'])",
+      "    if user and user.password == request.form['password']:",
+      "        session['user'] = user.username",
+      "        # No se establece expiración de sesión"
+    ],
+    vulnerableLine: 4,
+    explanation: "La línea 5 es vulnerable porque no se establece expiración de sesión."
+  },
+  {
+    id: 55,
+    type: "broken_auth",
+    title: "Cambio de contraseña sin autenticación",
+    code: [
+      "def cambiar_pass():",
+      "    user = get_user(request.form['username'])",
+      "    user.password = request.form['new_pass']",
+      "    db.session.commit()"
+    ],
+    vulnerableLine: 2,
+    explanation: "La línea 3 es vulnerable porque permite cambiar la contraseña sin autenticación previa."
+  },
+  {
+    id: 56,
+    type: "broken_auth",
+    title: "Restablecimiento de contraseña sin token",
+    code: [
+      "def reset_pass():",
+      "    user = get_user(request.form['username'])",
+      "    user.password = request.form['new_pass']",
+      "    db.session.commit()"
+    ],
+    vulnerableLine: 2,
+    explanation: "La línea 3 es vulnerable porque permite restablecer la contraseña sin un token seguro."
+  },
+  {
+    id: 57,
+    type: "broken_auth",
+    title: "Logout inseguro",
+    code: [
+      "def logout():",
+      "    session.pop('user', None)",
+      "    # No se invalida el token de sesión"
+    ],
+    vulnerableLine: 2,
+    explanation: "La línea 3 es vulnerable porque no se invalida el token de sesión."
+  },
+  {
+    id: 58,
+    type: "broken_auth",
+    title: "Permitir múltiples sesiones activas",
+    code: [
+      "def login():",
+      "    user = get_user(request.form['username'])",
+      "    if user and user.password == request.form['password']:",
+      "        session['user'] = user.username",
+      "        # No se invalidan otras sesiones activas"
+    ],
+    vulnerableLine: 4,
+    explanation: "La línea 5 es vulnerable porque no se invalidan otras sesiones activas del usuario."
+  },
+  {
+    id: 59,
+    type: "broken_auth",
+    title: "Sin bloqueo tras múltiples intentos fallidos",
+    code: [
+      "def login():",
+      "    user = get_user(request.form['username'])",
+      "    if user and user.password == request.form['password']:",
+      "        session['user'] = user.username",
+      "        return redirect('/dashboard')"
+    ],
+    vulnerableLine: 0,
+    explanation: "La función es vulnerable porque no implementa bloqueo tras múltiples intentos fallidos."
+  },
+  {
+    id: 60,
+    type: "broken_auth",
+    title: "Exposición de información sensible en error",
+    code: [
+      "def login():",
+      "    try:",
+      "        user = get_user(request.form['username'])",
+      "        if user.password == request.form['password']:",
+      "            session['user'] = user.username",
+      "    except Exception as e:",
+      "        return str(e)"
+    ],
+    vulnerableLine: 6,
+    explanation: "La línea 7 es vulnerable porque expone información sensible en el mensaje de error."
   }
 ];
 

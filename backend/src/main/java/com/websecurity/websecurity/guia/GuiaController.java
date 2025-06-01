@@ -4,6 +4,9 @@ import com.websecurity.websecurity.user.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.websecurity.websecurity.logro.Logro;
+import com.websecurity.websecurity.logro.LogroService;
+import java.util.Map;
 
 import java.util.List;
 
@@ -17,6 +20,9 @@ public class GuiaController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private LogroService logroService;
 
     // Obtener todas las guías (público)
     @GetMapping
@@ -37,7 +43,18 @@ public class GuiaController {
     public ResponseEntity<?> createGuia(@RequestBody Guia guia, @RequestHeader("Authorization") String authHeader) {
         String username = usuarioService.getUsernameFromToken(authHeader.replace("Bearer ", ""));
         Guia nueva = guiaService.save(guia, username);
-        return ResponseEntity.ok(nueva);
+
+        // Desbloquear logro "Alma de guía" si es la primera vez
+        Logro logroDesbloqueado = logroService.desbloquearLogro(username, "Alma de guía");
+
+        // Devuelve la guía y, si corresponde, el logro desbloqueado
+        Map<String, Object> response = new java.util.HashMap<>();
+        response.put("guia", nueva);
+        if (logroDesbloqueado != null) {
+            response.put("logroDesbloqueado", logroDesbloqueado);
+        }
+
+        return ResponseEntity.ok(response);
     }
 
     // Editar guía (solo autor)

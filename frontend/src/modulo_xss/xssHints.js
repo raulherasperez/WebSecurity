@@ -18,7 +18,20 @@ const soluciones = {
     facil: (
       <div>
         <ol>
-          <li>En el campo de búsqueda, escribe: <code>{`<script>alert('XSS')</script>`}</code></li>
+          <li>
+            En el campo de búsqueda, escribe: <code>{`<script>alert('XSS')</script>`}</code>
+            <br />
+            <small style={{ color: '#888' }}>
+              (Nota: Por protección del navegador, este script puede ejecutarse solo la primera vez. Si no ves la alerta, prueba en ventana privada o usa otro vector.)
+            </small>
+          </li>
+          <li>
+            Alternativamente, prueba con: <code>{`<img src=x onerror=alert(1)>`}</code>
+            <br />
+            <small style={{ color: '#888' }}>
+              (Este vector suele funcionar siempre, incluso si el navegador bloquea <code>&lt;script&gt;</code>.)
+            </small>
+          </li>
           <li>Pulsa Enter o Buscar.</li>
           <li>Si ves una alerta, la aplicación es vulnerable a XSS reflejado.</li>
         </ol>

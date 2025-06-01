@@ -21,7 +21,7 @@ function ModulePageBrokenAuth() {
   const [showSolution, setShowSolution] = useState(false);
   const [showCodeQuiz, setShowCodeQuiz] = useState(false);
 
-  const brokenAuthQuizQuestions = CODE_QUIZ.filter(q => q.type === "brokenauth");
+  const brokenAuthQuizQuestions = CODE_QUIZ.filter(q => q.type === "broken_auth");
 
   // Guarda el nivel en localStorage al cambiarlo
   const handleNivelChange = e => {

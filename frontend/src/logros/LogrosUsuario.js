@@ -51,13 +51,17 @@ const LogrosUsuario = () => {
       <ul>
         {desbloqueados.length === 0 && <li>No has desbloqueado logros aún.</li>}
         {desbloqueados.map(logro => (
-          <li key={logro.id}>
-            <strong>{logro.nombre}</strong> - {logro.descripcion}
-            {logro.icono && (
-              <img src={logro.icono.startsWith('http') ? logro.icono : `/uploads/${logro.icono}`} alt={logro.nombre} style={{ height: 32, marginLeft: 8 }} />
-            )}
-          </li>
-        ))}
+        <li key={logro.id}>
+          {logro.icono && (
+            <img
+              src={`data:image/png;base64,${logro.icono}`}
+              alt={logro.nombre}
+              style={{ height: 28, width: 28, marginLeft: 8, verticalAlign: 'middle', objectFit: 'contain' ,marginRight: 8}}
+            />
+          )}
+          <strong>{logro.nombre}</strong> - {logro.descripcion}
+        </li>
+      ))}
       </ul>
       <h2>Logros pendientes</h2>
         <ul>

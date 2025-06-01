@@ -5,6 +5,9 @@ import com.websecurity.websecurity.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.websecurity.websecurity.logro.Logro;
+import com.websecurity.websecurity.logro.LogroService;
+import java.util.Map;
 
 import java.util.List;
 
@@ -18,6 +21,9 @@ public class VirtualMachineController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private LogroService logroService;
 
     // Obtener todas las máquinas virtuales (público)
     @GetMapping
@@ -38,7 +44,18 @@ public class VirtualMachineController {
     public ResponseEntity<?> createVM(@RequestBody VirtualMachine vm, @RequestHeader("Authorization") String authHeader) {
         String username = usuarioService.getUsernameFromToken(authHeader.replace("Bearer ", ""));
         VirtualMachine nueva = vmService.save(vm, username);
-        return ResponseEntity.ok(nueva);
+
+        // Desbloquear logro "¿Cómo estan los máquinas?" si es la primera vez
+        Logro logroDesbloqueado = logroService.desbloquearLogro(username, "¿Cómo estan los máquinas?");
+
+        // Devuelve la máquina y, si corresponde, el logro desbloqueado
+        Map<String, Object> response = new java.util.HashMap<>();
+        response.put("vm", nueva);
+        if (logroDesbloqueado != null) {
+            response.put("logroDesbloqueado", logroDesbloqueado);
+        }
+
+        return ResponseEntity.ok(response);
     }
 
     // Editar máquina virtual (solo autor)

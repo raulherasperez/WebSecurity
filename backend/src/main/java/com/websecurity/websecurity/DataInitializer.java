@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.io.InputStream;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -60,7 +61,8 @@ public class DataInitializer implements CommandLineRunner {
         createUserIfNotExists("user1", "user1@websec.com", "user1pass", User.Rol.USER, loadFoto("user1.jpg"));
         createUserIfNotExists("user2", "user2@websec.com", "user2pass", User.Rol.USER, loadFoto("user2.jpg"));
         createUserIfNotExists("user3", "user3@websec.com", "user3pass", User.Rol.USER, loadFoto("user3.jpg"));
-
+        createUserIfNotExists("user4", "user4@websec.com", "user4pass", User.Rol.USER, loadFoto("user3.jpg"));
+        createUserIfNotExists("user5", "user5@websec.com", "user5pass", User.Rol.USER, loadFoto("user3.jpg"));
         // Admin con foto
         createUserIfNotExists("admin", "admin@websec.com", "adminpass", User.Rol.ADMIN, loadFoto("admin.jpg"));
 
@@ -88,18 +90,24 @@ public class DataInitializer implements CommandLineRunner {
         createReporteIfNotExists("user3", "Error de user3", "Descripción del error reportado por user3.");
 
         // Logros de prueba y desbloqueo para cada usuario
-        createLogroIfNotExists("Primer Logro", "Has desbloqueado tu primer logro.", "primer_logro.png");
+        createLogroIfNotExists("Primer Logro", "Has desbloqueado tu primer logro.");
         desbloquearLogroIfNotExists("user1", "Primer Logro");
         desbloquearLogroIfNotExists("user2", "Primer Logro");
         desbloquearLogroIfNotExists("user3", "Primer Logro");
 
-        createLogroIfNotExists("Explorador", "Has visitado todas las secciones de la plataforma.", "explorador.png");
-        createLogroIfNotExists("Reportero", "Has enviado tu primer reporte de error.", "reportero.png");
-        createLogroIfNotExists("Colaborador", "Has enviado una sugerencia aceptada.", "colaborador.png");
-        createLogroIfNotExists("Maestro de Guías", "Has publicado 5 guías.", "maestro_guias.png");
-        createLogroIfNotExists("Cazador de Bugs", "Has reportado 3 errores diferentes.", "cazador_bugs.png");
-        createLogroIfNotExists("Aprendiz SQL", "Has completado el módulo de SQL Injection.", "aprendiz_sql.png");
-        createLogroIfNotExists("XSS Hunter", "Has completado el módulo de XSS.", "xss_hunter.png");
+        createLogroIfNotExists("Primer Logro", "Has desbloqueado tu primer logro.");
+        createLogroIfNotExists("Reportero", "Has enviado tu primer reporte de error.");
+        createLogroIfNotExists("Colaborador", "Has enviado una sugerencia por primera vez.");
+        createLogroIfNotExists("¿Cómo estan los máquinas?", "Has publicado tu primera máquina virtual.");
+        createLogroIfNotExists("Alma de guía", "Has publicado tu primera guía.");
+        createLogroIfNotExists("Aprendiz SQL", "Has realizado una inyección SQL.");
+        createLogroIfNotExists("XSS Hunter", "Has conseguido hacer un ataque XSS exitoso.");
+        createLogroIfNotExists("Maestro del CSRF", "Has realizado un ataque de CSRF.");
+        createLogroIfNotExists("Rompedor de accesos", "Has completado el ataque de Broken Access Control.");
+        createLogroIfNotExists("Misión código SSRF", "Has completado el ataque de SSRF.");
+        createLogroIfNotExists("Suplantación de identidad", "Has explotado una vulnerabilidad Broken Authentication.");
+        createLogroIfNotExists("Estudiante aprendiz", "Has completado tu primer test teórico");
+        createLogroIfNotExists("Identificador novato", "Has completado tu primer test de código vulnerable");
 
         // Términos de prueba para el glosario
         createTerminoIfNotExists(
@@ -137,8 +145,12 @@ public class DataInitializer implements CommandLineRunner {
             }
 
     private byte[] loadFoto(String filename) {
-    try {
-        byte[] data = Files.readAllBytes(Paths.get("src/main/resources/fotos/" + filename));
+    try (InputStream is = getClass().getClassLoader().getResourceAsStream("fotos/" + filename)) {
+        if (is == null) {
+            System.err.println("No se pudo encontrar la foto: " + filename);
+            return null;
+        }
+        byte[] data = is.readAllBytes();
         System.out.println("Foto cargada: " + filename + " (" + data.length + " bytes)");
         return data;
     } catch (Exception e) {
@@ -146,6 +158,7 @@ public class DataInitializer implements CommandLineRunner {
         return null;
     }
 }
+
 
     private void createGuiaIfNotExists(String username, String titulo, String contenido) {
         User user = userRepository.findByUsername(username).orElse(null);
@@ -196,15 +209,15 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 
-    private void createLogroIfNotExists(String nombre, String descripcion, String icono) {
-        if (logroRepository.findByNombre(nombre) == null) {
-            Logro logro = new Logro();
-            logro.setNombre(nombre);
-            logro.setDescripcion(descripcion);
-            logro.setIcono(icono);
-            logroRepository.save(logro);
-        }
+    private void createLogroIfNotExists(String nombre, String descripcion) {
+    if (logroRepository.findByNombre(nombre) == null) {
+        Logro logro = new Logro();
+        logro.setNombre(nombre);
+        logro.setDescripcion(descripcion);
+        logro.setIcono(loadFoto("logro.png"));
+        logroRepository.save(logro);
     }
+}
 
     private void desbloquearLogroIfNotExists(String username, String nombreLogro) {
         User user = userRepository.findByUsername(username).orElse(null);

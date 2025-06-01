@@ -46,17 +46,17 @@ public class LogroService {
     }
 
     // ----------- MECANISMO DE DESBLOQUEO DE LOGROS -----------
-    public boolean desbloquearLogro(String username, String nombreLogro) {
-        User user = userRepository.findByUsername(username).orElseThrow();
-        Logro logro = logroRepository.findByNombre(nombreLogro);
-        if (logro == null) return false;
-        if (!usuarioLogroRepository.existsByUsuarioAndLogro(user, logro)) {
-            UsuarioLogro ul = new UsuarioLogro();
-            ul.setUsuario(user);
-            ul.setLogro(logro);
-            usuarioLogroRepository.save(ul);
-            return true;
-        }
-        return false; // Ya desbloqueado
+    public Logro desbloquearLogro(String username, String nombreLogro) {
+    User user = userRepository.findByUsername(username).orElseThrow();
+    Logro logro = logroRepository.findByNombre(nombreLogro);
+    if (logro == null) return null;
+    if (!usuarioLogroRepository.existsByUsuarioAndLogro(user, logro)) {
+        UsuarioLogro ul = new UsuarioLogro();
+        ul.setUsuario(user);
+        ul.setLogro(logro);
+        usuarioLogroRepository.save(ul);
+        return logro;
     }
+    return null; // Ya desbloqueado
+}
 }

@@ -2,10 +2,13 @@
 package com.websecurity.websecurity.reporte;
 
 import com.websecurity.websecurity.user.UsuarioService;
+import com.websecurity.websecurity.logro.LogroService;
 import com.websecurity.websecurity.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.websecurity.websecurity.logro.Logro;
+import java.util.Map;
 
 import java.util.List;
 
@@ -19,6 +22,9 @@ public class ReporteErrorController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private LogroService logroService;
 
     // Listar reportes según rol
     @GetMapping
@@ -48,6 +54,15 @@ public class ReporteErrorController {
     public ResponseEntity<?> createReporte(@RequestBody ReporteError reporte, @RequestHeader("Authorization") String authHeader) {
         String username = usuarioService.getUsernameFromToken(authHeader.replace("Bearer ", ""));
         ReporteError nuevo = reporteErrorService.save(reporte, username);
-        return ResponseEntity.ok(nuevo);
+
+        Logro logroDesbloqueado = logroService.desbloquearLogro(username, "Reportero");
+
+        Map<String, Object> response = new java.util.HashMap<>();
+        response.put("reporte", nuevo);
+        if (logroDesbloqueado != null) {
+            response.put("logroDesbloqueado", logroDesbloqueado);
+        }
+
+        return ResponseEntity.ok(response);
     }
 }

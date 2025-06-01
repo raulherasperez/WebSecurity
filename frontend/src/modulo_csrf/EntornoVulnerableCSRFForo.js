@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './css/EntornoVulnerableCSRFForo.css';
+import { desbloquearLogro } from '../services/logroService';
+import ModalLogroDesbloqueado from '../components/ModalLogroDesbloqueado';
 
 // Modal reutilizable (puedes ajustar estilos según tu proyecto)
 function Modal({ open, onClose, children }) {
@@ -57,6 +59,7 @@ function EntornoVulnerableCSRFForo() {
   const [mensaje, setMensaje] = useState('');
   const [error, setError] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
+  const [logroDesbloqueado, setLogroDesbloqueado] = useState(null);
 
   // Para comparar la lista anterior y detectar cambios
   const prevComentariosRef = useRef([]);
@@ -92,6 +95,17 @@ function EntornoVulnerableCSRFForo() {
     const prev = prevComentariosRef.current;
     if (prev.length > 0 && comentarios.length < prev.length) {
       setModalOpen(true);
+
+      // Desbloquear logro "Maestro del CSRF" y mostrar modal
+      (async () => {
+        try {
+          const token = localStorage.getItem('authToken');
+          const resLogro = await desbloquearLogro(token, "Maestro del CSRF");
+          if (resLogro) {
+            setLogroDesbloqueado(resLogro);
+          }
+        } catch {}
+      })();
     }
     prevComentariosRef.current = comentarios;
   }, [comentarios]);
@@ -167,6 +181,12 @@ function EntornoVulnerableCSRFForo() {
         <h3 className="vshop-modal-title">¡Ejercicio completado con éxito!</h3>
         <p>Has conseguido borrar un comentario mediante un ataque CSRF.<br />¡Bien hecho!</p>
       </Modal>
+      {logroDesbloqueado && (
+        <ModalLogroDesbloqueado
+          logro={logroDesbloqueado}
+          onClose={() => setLogroDesbloqueado(null)}
+        />
+      )}
     </div>
   );
 }

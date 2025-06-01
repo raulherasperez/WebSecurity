@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
 import './css/InteractiveTest.css'; // Estilos externos
+import { desbloquearLogro } from '../services/logroService';
+import ModalLogroDesbloqueado from './ModalLogroDesbloqueado';
 
 const InteractiveTest = ({ questions }) => {
   const [showTest, setShowTest] = useState(false);
   const [selectedAnswers, setSelectedAnswers] = useState([]);
   const [score, setScore] = useState(-1); // -1 significa que no se ha realizado aún
+  const [logroDesbloqueado, setLogroDesbloqueado] = useState(null);
 
-  const calculateScore = () => {
+  // Solo desbloquear el logro la primera vez que se completa un test
+  const [testCompletado, setTestCompletado] = useState(
+    localStorage.getItem('testTeoricoCompletado') === 'true'
+  );
+
+  const calculateScore = async () => {
     let total = 0;
     questions.forEach((q, i) => {
       if (q.correctAnswer === selectedAnswers[i]) {
@@ -14,6 +22,19 @@ const InteractiveTest = ({ questions }) => {
       }
     });
     setScore(total);
+
+    // Desbloquear logro solo la primera vez
+    if (!testCompletado) {
+      setTestCompletado(true);
+      localStorage.setItem('testTeoricoCompletado', 'true');
+      try {
+        const token = localStorage.getItem('authToken');
+        const resLogro = await desbloquearLogro(token, "Estudiante aprendiz");
+        if (resLogro) {
+          setLogroDesbloqueado(resLogro);
+        }
+      } catch {}
+    }
   };
 
   const getFinalMessage = (score) => {
@@ -81,6 +102,12 @@ const InteractiveTest = ({ questions }) => {
             </div>
           )}
         </div>
+      )}
+      {logroDesbloqueado && (
+        <ModalLogroDesbloqueado
+          logro={logroDesbloqueado}
+          onClose={() => setLogroDesbloqueado(null)}
+        />
       )}
     </div>
   );
