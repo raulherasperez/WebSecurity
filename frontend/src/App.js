@@ -20,7 +20,7 @@ function App() {
   const handleCloseModal = () => setLogroDesbloqueado(null);
 
   return (
-    <div className="App">
+    <div className="App" >
       {/* Modal de logro desbloqueado */}
       {logroDesbloqueado && (
         <ModalLogroDesbloqueado logro={logroDesbloqueado} onClose={handleCloseModal} />

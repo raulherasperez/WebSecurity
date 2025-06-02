@@ -46,7 +46,7 @@ public class VirtualMachineService {
     public void delete(Long id, User user) {
         VirtualMachine vm = vmRepository.findById(id).orElseThrow();
         boolean isOwner = vm.getUsuario().getId().equals(user.getId());
-        boolean isAdminOrMod = user.getRol() == User.Rol.ADMIN || user.getRol() == User.Rol.MODERATOR;
+        boolean isAdminOrMod = user.getRol() == User.Rol.ROLE_ADMIN || user.getRol() == User.Rol.MODERATOR;
         if (!isOwner && !isAdminOrMod) {
             throw new SecurityException("No autorizado");
         }

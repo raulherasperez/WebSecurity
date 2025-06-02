@@ -38,7 +38,7 @@ public class TerminoController {
     public ResponseEntity<?> create(@RequestBody Termino termino, @RequestHeader("Authorization") String authHeader) {
         String username = usuarioService.getUsernameFromToken(authHeader.replace("Bearer ", ""));
         User user = usuarioService.findByUsername(username).orElseThrow();
-        if (user.getRol() == User.Rol.ADMIN) {
+        if (user.getRol() == User.Rol.ROLE_ADMIN) {
             return ResponseEntity.ok(terminoService.save(termino));
         } else {
             return ResponseEntity.status(403).body("No autorizado");
@@ -50,7 +50,7 @@ public class TerminoController {
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Termino termino, @RequestHeader("Authorization") String authHeader) {
         String username = usuarioService.getUsernameFromToken(authHeader.replace("Bearer ", ""));
         User user = usuarioService.findByUsername(username).orElseThrow();
-        if (user.getRol() == User.Rol.ADMIN) {
+        if (user.getRol() == User.Rol.ROLE_ADMIN) {
             return terminoService.findById(id)
                     .map(t -> {
                         t.setTermino(termino.getTermino());
@@ -69,7 +69,7 @@ public class TerminoController {
     public ResponseEntity<?> delete(@PathVariable Long id, @RequestHeader("Authorization") String authHeader) {
         String username = usuarioService.getUsernameFromToken(authHeader.replace("Bearer ", ""));
         User user = usuarioService.findByUsername(username).orElseThrow();
-        if (user.getRol() == User.Rol.ADMIN) {
+        if (user.getRol() == User.Rol.ROLE_ADMIN) {
             terminoService.delete(id);
             return ResponseEntity.ok().build();
         } else {

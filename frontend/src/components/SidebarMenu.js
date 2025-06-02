@@ -77,6 +77,11 @@ const SidebarMenu = () => {
             <li>
               <Link to="/retos-codigo/sesion">Sesión de retos</Link>
             </li>
+            {user && user.rol==='ROLE_ADMIN' && (
+              <li>
+                <Link to="/admin/modulos" onClick={() => setIsMenuOpen(false)}>Panel de administración</Link>
+              </li>
+            )}
           </ul>
         </nav>
       </aside>

@@ -1,15 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import './css/ModulePage.css';
 
 import InteractiveTest from '../components/InteractiveTest';
-import brokenAuthQuestions from './questions';
 import ModuleList from '../components/ModuleList';
 import ModuleComments from '../components/ModuleComments';
-import { pistas, soluciones, explicacionNivel } from './brokenAuthHints';
-
 import CodeQuiz from '../codequiz/CodeQuiz';
-import CODE_QUIZ from '../codequiz/quizData';
+import MDEditor from '@uiw/react-md-editor';
+import axios from 'axios';
 
 function ModulePageBrokenAuth() {
   const { user } = useAuth();
@@ -17,11 +15,61 @@ function ModulePageBrokenAuth() {
   const [nivel, setNivel] = useState(localStorage.getItem('nivelBrokenAuth') || 'facil');
   const [showExample, setShowExample] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
-  const [showHint, setShowHint] = useState(false);
-  const [showSolution, setShowSolution] = useState(false);
+  const [showHint, setShowHint] = useState({});
+  const [showSolution, setShowSolution] = useState({});
   const [showCodeQuiz, setShowCodeQuiz] = useState(false);
 
-  const brokenAuthQuizQuestions = CODE_QUIZ.filter(q => q.type === "broken_auth");
+  // Estado para datos del backend
+  const [modulo, setModulo] = useState(null);
+  const [loadingModulo, setLoadingModulo] = useState(true);
+
+  const API_URL = process.env.REACT_APP_BACKEND_URL;
+
+  console.log(user?.rol)
+
+  // Mapear nivel string a enum del backend
+  const nivelEnum = {
+    'facil': 'FACIL',
+    'medio': 'MEDIO',
+    'dificil': 'DIFICIL',
+    'imposible': 'IMPOSIBLE'
+  };
+
+  // Obtener descripción técnica según nivel
+  const getDescripcionTecnica = () => {
+    if (!modulo || !modulo.descripcionesTecnicas) return null;
+    return modulo.descripcionesTecnicas.find(
+      d => d.nivel === nivelEnum[nivel]
+    );
+  };
+
+  // Obtener todas las pistas y soluciones según nivel
+  const pistasActuales = (modulo?.pistas || []).filter(p => p.nivel === nivelEnum[nivel]);
+  const solucionesActuales = (modulo?.soluciones || []).filter(s => s.nivel === nivelEnum[nivel]);
+
+  // Adaptar preguntas teóricas si existen
+  const preguntasTeoricasAdaptadas = (modulo?.preguntasTeoricas || []).map(q => ({
+    question: q.pregunta,
+    options: q.opciones,
+    correctAnswer: q.respuesta
+  }));
+
+  // Adaptar preguntas de quiz de código si existen
+  const brokenAuthQuizQuestions = modulo?.preguntasQuizCodigo || [];
+
+  useEffect(() => {
+    setLoadingModulo(true);
+    // El id del módulo Broken Authentication debe coincidir con el backend (ajusta si es necesario)
+    axios.get(`${API_URL}/api/modulos/6`)
+      .then(res => {
+        setModulo(res.data);
+        setLoadingModulo(false);
+      })
+      .catch(err => {
+        console.error('Error al cargar el módulo:', err);
+        setLoadingModulo(false);
+      });
+  }, [API_URL]);
 
   // Guarda el nivel en localStorage al cambiarlo
   const handleNivelChange = e => {
@@ -29,48 +77,27 @@ function ModulePageBrokenAuth() {
     localStorage.setItem('nivelBrokenAuth', e.target.value);
   };
 
+  if (loadingModulo) return <div>Cargando módulo...</div>;
+  if (!modulo) return <div>No se encontró el módulo.</div>;
+
+  const descripcionTecnica = getDescripcionTecnica();
+
   return (
     <div className="ModulePage">
       <main className="ModuleContent">
-        <h1 className="h1">Módulo 6: Broken Authentication</h1>
-        <p>
-        <strong>Broken Authentication</strong> es una de las vulnerabilidades más críticas en aplicaciones web. Ocurre cuando los mecanismos de autenticación y gestión de sesiones no están correctamente implementados, permitiendo a los atacantes comprometer cuentas de usuarios, acceder a información sensible o realizar acciones como si fueran otros usuarios.
-        </p>
-        <p>
-        Las causas más comunes incluyen:
-        <ul>
-            <li>Mensajes de error distintos para usuarios y contraseñas incorrectas, facilitando la enumeración de usuarios.</li>
-            <li>Permitir intentos ilimitados de login, lo que facilita ataques de fuerza bruta y credential stuffing.</li>
-            <li>Permitir contraseñas débiles o predecibles.</li>
-            <li>No invalidar sesiones tras cerrar sesión o cambiar la contraseña.</li>
-            <li>Gestión insegura de cookies de sesión (sin HttpOnly, Secure, SameSite, etc).</li>
-            <li>Recuperación de contraseña insegura, permitiendo el secuestro de cuentas.</li>
-            <li>No regenerar el identificador de sesión tras el login (session fixation).</li>
-        </ul>
-        </p>
-        <p>
-        <strong>Impacto:</strong> Un atacante puede acceder a cuentas ajenas, escalar privilegios, robar información sensible o realizar acciones en nombre de otros usuarios.
-        </p>
-        <p>
-          <strong>¿Quieres saber más?</strong> Consulta estos recursos recomendados:
-          <ul>
-            <li>
-              <a href="https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/" target="_blank" rel="noopener noreferrer">
-                OWASP Top 10: Broken Authentication
-              </a>
-            </li>
-            <li>
-              <a href="https://portswigger.net/web-security/authentication" target="_blank" rel="noopener noreferrer">
-                PortSwigger Web Security Academy: Authentication
-              </a>
-            </li>
-          </ul>
-        </p>
+        <h1 className="h1">
+          <MDEditor.Markdown source={modulo.nombre} className="markdown-content" data-color-mode="light" />
+        </h1>
+        <MDEditor.Markdown source={modulo.descripcion} className="markdown-content" data-color-mode="light" />
 
         {/* Selector de nivel de dificultad */}
         <section>
-          <h2>Selecciona el nivel de dificultad</h2>
-          <label style={{ fontWeight: 600, marginRight: 8 }}>Nivel:</label>
+          <h2>
+            <MDEditor.Markdown source={'Selecciona el nivel de dificultad'} className="markdown-content" data-color-mode="light" />
+          </h2>
+          <label style={{ fontWeight: 600, marginRight: 8 }}>
+            <MDEditor.Markdown source={'Nivel:'} className="markdown-content" data-color-mode="light" />
+          </label>
           <select value={nivel} onChange={handleNivelChange}>
             <option value="facil">Fácil</option>
             <option value="medio">Medio</option>
@@ -78,50 +105,48 @@ function ModulePageBrokenAuth() {
             <option value="imposible">Imposible</option>
           </select>
           <div style={{ marginTop: 8, color: '#555', fontSize: '0.98em' }}>
-            {nivel === 'facil' && 'Mensajes de error distintos, sin límite de intentos, contraseñas débiles.'}
-            {nivel === 'medio' && 'Mensajes genéricos, pero sin límite de intentos ni protección de fuerza bruta.'}
-            {nivel === 'dificil' && 'Mensajes genéricos y límite de intentos, pero sin captcha.'}
-            {nivel === 'imposible' && 'Todo correctamente protegido: mensajes genéricos, límite de intentos, captcha y contraseñas fuertes.'}
+            <MDEditor.Markdown
+              source={
+                nivel === 'facil'
+                  ? 'Mensajes de error distintos, sin límite de intentos, contraseñas débiles.'
+                  : nivel === 'medio'
+                  ? 'Mensajes genéricos, pero sin límite de intentos ni protección de fuerza bruta.'
+                  : nivel === 'dificil'
+                  ? 'Mensajes genéricos y límite de intentos, pero sin captcha.'
+                  : 'Todo correctamente protegido: mensajes genéricos, límite de intentos, captcha y contraseñas fuertes.'
+              }
+              className="markdown-content"
+              data-color-mode="light"
+            />
           </div>
         </section>
 
         {/* Ejemplo en desplegable */}
         <section>
-          <h2>Ejemplo</h2>
+          <h2>
+            <MDEditor.Markdown source={'Ejemplo'} className="markdown-content" data-color-mode="light" />
+          </h2>
           <button onClick={() => setShowExample(e => !e)}>
             {showExample ? 'Ocultar ejemplo' : 'Mostrar ejemplo'}
           </button>
-          {showExample && (
+          {showExample && modulo.ejemplos && modulo.ejemplos.length > 0 && (
             <div className="example-details" style={{ marginTop: 14 }}>
-              <p>
-                <strong>Ejemplo 1: Enumeración de usuarios</strong><br />
-                Un formulario de login muestra mensajes distintos si el usuario existe o no:
-              </p>
-              <code className="sql-code">
-                {`Usuario no encontrado`}<br />
-                {`Contraseña incorrecta`}
-              </code>
-              <p>
-                Esto permite a un atacante descubrir usuarios válidos.
-              </p>
-              <hr />
-              <p>
-                <strong>Ejemplo 2: Fuerza bruta sin límite</strong><br />
-                El sistema permite infinitos intentos de login sin bloquear ni retrasar.
-              </p>
-              <code className="sql-code">
-                {`POST /login (sin límite de intentos)`}
-              </code>
-              <p>
-                Un atacante puede probar miles de contraseñas rápidamente.
-              </p>
+              <h4>
+                <MDEditor.Markdown source={modulo.ejemplos[0].titulo} className="markdown-content" data-color-mode="light" />
+              </h4>
+              <MDEditor.Markdown source={modulo.ejemplos[0].descripcion} className="markdown-content" data-color-mode="light" />
+              {modulo.ejemplos[0].codigo && (
+                <pre className="sql-code">{modulo.ejemplos[0].codigo}</pre>
+              )}
             </div>
           )}
         </section>
 
         {/* Vídeo en desplegable */}
         <section>
-          <h2>Vídeo</h2>
+          <h2>
+            <MDEditor.Markdown source={'Vídeo'} className="markdown-content" data-color-mode="light" />
+          </h2>
           <button onClick={() => setShowVideo(v => !v)}>
             {showVideo ? 'Ocultar vídeo' : 'Mostrar vídeo'}
           </button>
@@ -130,7 +155,7 @@ function ModulePageBrokenAuth() {
               <iframe
                 width="560"
                 height="315"
-                src="https://www.youtube.com/embed/8ZtInClXe1Q"
+                src={modulo.videoUrl}
                 title="YouTube video player"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -142,49 +167,73 @@ function ModulePageBrokenAuth() {
 
         {/* Test interactivo */}
         <section>
-          <h2>Test teórico</h2>
-          <InteractiveTest questions={brokenAuthQuestions} />
+          <h2>
+            <MDEditor.Markdown source={'Test teórico'} className="markdown-content" data-color-mode="light" />
+          </h2>
+          <InteractiveTest questions={preguntasTeoricasAdaptadas} />
         </section>
 
-        {/* Ejercicio */}
+        {/* Ejercicios con pistas y soluciones por nivel */}
         <section>
-          <h2>Ejercicio: Explota Broken Authentication</h2>
-          <p>
-            <strong>Contexto:</strong> Imagina que eres un atacante y tienes acceso al formulario de login de una aplicación. 
-            Tu objetivo es explotar fallos de autenticación para acceder a cuentas de otros usuarios, descubrir usuarios válidos o realizar fuerza bruta.
-          </p>
-          <ol>
-            <li>Accede al entorno vulnerable del login.</li>
-            <li>Prueba a introducir usuarios y contraseñas incorrectos y observa los mensajes de error.</li>
-            <li>Intenta descubrir usuarios válidos o acceder a cuentas usando fuerza bruta.</li>
-            <li>Según el nivel de dificultad, el sistema puede mostrar mensajes distintos, permitir intentos ilimitados o tener protección.</li>
-          </ol>
-          <div style={{ marginTop: 18 }}>
-            <button className="hint-btn" onClick={() => setShowHint(h => !h)}>
-              {showHint ? 'Ocultar pista' : 'Mostrar pista'}
-            </button>
-            {showHint && (
-              <div className="hint-box">
-                {pistas[nivel]}
-              </div>
-            )}
-            <button className="hint-btn" onClick={() => setShowSolution(s => !s)}>
-              {showSolution ? 'Ocultar solución' : 'Mostrar solución'}
-            </button>
-            {showSolution && (
-              <div className="hint-box solution-box">
-                {soluciones[nivel]}
-              </div>
-            )}
-          </div>
+          <h2>
+            <MDEditor.Markdown source={'Ejercicios'} className="markdown-content" data-color-mode="light" />
+          </h2>
+          {/* Mostrar la descripción de ejercicios en Markdown */}
+          {modulo.descripcionEjercicios && (
+            <div style={{ marginBottom: 16 }}>
+              <MDEditor.Markdown
+                source={modulo.descripcionEjercicios}
+                className="markdown-content"
+                data-color-mode="light"
+              />
+            </div>
+          )}
+
+          {/* Mostrar todas las pistas */}
+          <MDEditor.Markdown
+            source={pistasActuales.length > 0 ? 'Pistas para este nivel:' : 'No hay pistas para este nivel.'}
+            className="markdown-content"
+            data-color-mode="light"
+          />
+          {pistasActuales.map((pista, idx) => (
+            <div key={idx} style={{ marginBottom: 8 }}>
+              <button className="hint-btn" onClick={() => setShowHint(h => ({ ...h, [idx]: !h[idx] }))}>
+                {showHint[idx] ? 'Ocultar pista' : `Mostrar pista ${idx + 1}`}
+              </button>
+              {showHint[idx] && (
+                <div className="hint-box">
+                  <MDEditor.Markdown source={pista.texto} className="markdown-content" data-color-mode="light" />
+                </div>
+              )}
+            </div>
+          ))}
+
+          {/* Mostrar todas las soluciones */}
+          <MDEditor.Markdown
+            source={solucionesActuales.length > 0 ? 'Soluciones para este nivel:' : 'No hay soluciones para este nivel.'}
+            className="markdown-content"
+            data-color-mode="light"
+          />
+          {solucionesActuales.map((solucion, idx) => (
+            <div key={idx} style={{ marginBottom: 8 }}>
+              <button className="hint-btn" onClick={() => setShowSolution(s => ({ ...s, [idx]: !s[idx] }))}>
+                {showSolution[idx] ? 'Ocultar solución' : `Mostrar solución ${idx + 1}`}
+              </button>
+              {showSolution[idx] && (
+                <div className="hint-box solution-box">
+                  <MDEditor.Markdown source={solucion.texto} className="markdown-content" data-color-mode="light" />
+                </div>
+              )}
+            </div>
+          ))}
         </section>
 
         {/* Acceso al entorno vulnerable */}
         <section>
-          <h2>Acceso al entorno vulnerable</h2>
-          <p>
-            Pulsa el siguiente botón para abrir la aplicación vulnerable a Broken Authentication en una nueva pestaña y realizar el ejercicio.
-          </p>
+          <h2>
+            <MDEditor.Markdown source={'Acceso al entorno vulnerable'} className="markdown-content" data-color-mode="light" />
+          </h2>
+          <MDEditor.Markdown source={modulo.infoEntorno} className="markdown-content" data-color-mode="light" />
           <button
             className="sandbox-button"
             style={{ marginTop: 12 }}
@@ -223,7 +272,7 @@ function ModulePageBrokenAuth() {
               }}
               onClick={() => setShowCodeQuiz(s => !s)}
             >
-              ¿Reconoces el código vulnerable? (quiz interactivo)
+              <MDEditor.Markdown source={'¿Reconoces el código vulnerable? (quiz interactivo)'} className="markdown-content" data-color-mode="light" />
             </summary>
             {showCodeQuiz && (
               <div style={{ marginTop: 18 }}>
@@ -239,11 +288,15 @@ function ModulePageBrokenAuth() {
             ¿Por qué funciona la vulnerabilidad? (ver explicación técnica)
           </summary>
           <div style={{ marginTop: 16 }}>
-            {explicacionNivel[nivel]}
+            {descripcionTecnica ? (
+              <MDEditor.Markdown source={descripcionTecnica.descripcion} className="markdown-content" data-color-mode="light" />
+            ) : (
+              <MDEditor.Markdown source={'No hay descripción técnica para este nivel.'} className="markdown-content" data-color-mode="light" />
+            )}
           </div>
         </details>
 
-        <ModuleComments moduleId="brokenauth" user={user} />
+        <ModuleComments moduleId={modulo.id} user={user} />
 
       </main>
       <ModuleList />

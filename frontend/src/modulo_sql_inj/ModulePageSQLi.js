@@ -1,92 +1,93 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import './css/ModulePage.css';
 import { useAuth } from '../context/AuthContext';
+import axios from 'axios';
 
 import InteractiveTest from '../components/InteractiveTest';
-import sqlQuestions from './questions';
 import ModuleList from '../components/ModuleList';
 import ModuleComments from '../components/ModuleComments';
-import { pistas, soluciones, explicacionNivel } from './sqliHints';
-
 import CodeQuiz from '../codequiz/CodeQuiz';
-import CODE_QUIZ from '../codequiz/quizData';
+import MDEditor from '@uiw/react-md-editor';
 
 function ModulePageSQLi() {
   const [showDetails, setShowDetails] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
+  const [showHint, setShowHint] = useState({});
+  const [showSolution, setShowSolution] = useState({});
+  const [showCodeQuiz, setShowCodeQuiz] = useState(false);
+  const [showDescripcionTecnica, setShowDescripcionTecnica] = useState(false);
+
+  const [nivel, setNivel] = useState('facil');
   const { user } = useAuth();
 
-  // Estados para mostrar pistas/soluciones por ejercicio
-  const [showHint1, setShowHint1] = useState(false);
-  const [showSolution1, setShowSolution1] = useState(false);
-  const [showHint2, setShowHint2] = useState(false);
-  const [showSolution2, setShowSolution2] = useState(false);
-  const [showHint3, setShowHint3] = useState(false);
-  const [showSolution3, setShowSolution3] = useState(false);
-  
+  const [modulo, setModulo] = useState(null);
+  const [loadingModulo, setLoadingModulo] = useState(true);
 
-  // Nivel de dificultad
-  const [nivel, setNivel] = useState('facil');
+  console.log(modulo?.soluciones)
+  console.log(modulo?.id)
 
-  const [showCodeQuiz, setShowCodeQuiz] = useState(false);
+  const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-  // Filtra solo las preguntas de SQLi
-  const sqliQuizQuestions = CODE_QUIZ.filter(q => q.type === "sqli");
+  // Mapear nivel string a enum del backend
+  const nivelEnum = {
+    'facil': 'FACIL',
+    'medio': 'MEDIO',
+    'dificil': 'DIFICIL',
+    'imposible': 'IMPOSIBLE'
+  };
+
+  // Obtener descripción técnica según nivel
+  const getDescripcionTecnica = () => {
+    if (!modulo || !modulo.descripcionesTecnicas) return null;
+    return modulo.descripcionesTecnicas.find(
+      d => d.nivel === nivelEnum[nivel]
+    );
+  };
+
+  // Obtener todas las pistas y soluciones según nivel
+  const pistasActuales = (modulo?.pistas || []).filter(p => p.nivel === nivelEnum[nivel]);
+  const solucionesActuales = (modulo?.soluciones || []).filter(s => s.nivel === nivelEnum[nivel]);
+
+  useEffect(() => {
+    setLoadingModulo(true);
+    axios.get(`${API_URL}/api/modulos/1`)
+      .then(res => {
+        setModulo(res.data);
+        setLoadingModulo(false);
+      })
+      .catch(err => {
+        console.error('Error al cargar el módulo:', err);
+        setLoadingModulo(false);
+      });
+  }, [API_URL]);
+
+  if (loadingModulo) return <div>Cargando módulo...</div>;
+  if (!modulo) return <div>No se encontró el módulo.</div>;
+
+  const descripcionTecnica = getDescripcionTecnica();
+
+  const preguntasTeoricasAdaptadas = (modulo?.preguntasTeoricas || []).map(q => ({
+    question: q.pregunta,
+    options: q.opciones,
+    correctAnswer: q.respuesta
+  }));
 
   return (
     <div className="ModulePage">
       <main className="ModuleContent">
-        <h1 className="h1">Módulo 1: Inyección SQL</h1>
-        <p>
-          La <strong>inyección SQL</strong> es una de las vulnerabilidades más peligrosas y frecuentes en aplicaciones web. 
-          Ocurre cuando una aplicación construye consultas SQL de forma insegura, permitiendo que un usuario malicioso inserte código SQL propio en los campos de entrada (como formularios de login, búsqueda o parámetros en la URL).
-        </p>
-        <p>
-          Si una aplicación no valida ni filtra correctamente los datos que recibe del usuario, un atacante puede manipular las consultas a la base de datos. Esto puede permitirle:
-        </p>
-        <ul>
-          <li>Acceder a información confidencial (usuarios, contraseñas, datos personales...)</li>
-          <li>Modificar, borrar o insertar datos en la base de datos</li>
-          <li>Eludir controles de autenticación y acceder como otro usuario</li>
-          <li>Obtener acceso total al sistema en casos graves</li>
-        </ul>
-        <p>
-          Por ejemplo, si un formulario de login construye la consulta SQL directamente con los datos introducidos por el usuario, un atacante podría alterar la lógica de autenticación y acceder sin conocer la contraseña.
-        </p>
-        <p>
-          En este módulo aprenderás a identificar, explotar y entender el impacto de la inyección SQL, así como a proteger tus aplicaciones frente a este tipo de ataques.
-        </p>
-        <p>
-          <strong>¿Quieres saber más?</strong> Consulta estos recursos recomendados:
-          <ul>
-            <li>
-              <a href="https://owasp.org/www-community/attacks/SQL_Injection" target="_blank" rel="noopener noreferrer">
-                OWASP: SQL Injection
-              </a>
-            </li>
-            <li>
-              <a href="https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer">
-                OWASP Cheat Sheet: Prevención de SQL Injection
-              </a>
-            </li>
-            <li>
-              <a href="https://portswigger.net/web-security/sql-injection" target="_blank" rel="noopener noreferrer">
-                PortSwigger Web Security Academy: SQL Injection
-              </a>
-            </li>
-            <li>
-              <a href="https://www.hacksplaining.com/exercises/sql-injection" target="_blank" rel="noopener noreferrer">
-                Hacksplaining: Ejercicio interactivo de SQL Injection
-              </a>
-            </li>
-          </ul>
-        </p>
+        <h1 className="h1">
+          <MDEditor.Markdown source={modulo.nombre} className="markdown-content" data-color-mode="light" />
+        </h1>
+        <MDEditor.Markdown source={modulo.descripcion} className="markdown-content" data-color-mode="light" />
 
         {/* Selector de nivel de dificultad */}
         <section>
-          <h2>Selecciona el nivel de dificultad</h2>
-          <label style={{ fontWeight: 600, marginRight: 8 }}>Nivel:</label>
+          <h2>
+            <MDEditor.Markdown source={'Selecciona el nivel de dificultad'} className="markdown-content" data-color-mode="light" />
+          </h2>
+          <label style={{ fontWeight: 600, marginRight: 8 }}>
+            <MDEditor.Markdown source={'Nivel:'} className="markdown-content" data-color-mode="light" />
+          </label>
           <select value={nivel} onChange={e => setNivel(e.target.value)}>
             <option value="facil">Fácil</option>
             <option value="medio">Medio</option>
@@ -94,52 +95,55 @@ function ModulePageSQLi() {
             <option value="imposible">Imposible</option>
           </select>
           <div style={{ marginTop: 8, color: '#555', fontSize: '0.98em' }}>
-            {nivel === 'facil' && 'Sin protección, vulnerable a cualquier SQLi.'}
-            {nivel === 'medio' && 'Filtrado básico, pero aún vulnerable a técnicas conocidas.'}
-            {nivel === 'dificil' && 'Consultas preparadas, pero quedan vectores avanzados (blind/error-based).'}
-            {nivel === 'imposible' && 'Todas las protecciones activadas, no vulnerable.'}
+            <MDEditor.Markdown
+              source={
+                nivel === 'facil'
+                  ? 'Sin protección, vulnerable a cualquier SQLi.'
+                  : nivel === 'medio'
+                  ? 'Filtrado básico, pero aún vulnerable a técnicas conocidas.'
+                  : nivel === 'dificil'
+                  ? 'Consultas preparadas, pero quedan vectores avanzados (blind/error-based).'
+                  : 'Todas las protecciones activadas, no vulnerable.'
+              }
+              className="markdown-content"
+              data-color-mode="light"
+            />
           </div>
         </section>
 
-        {/* Ejemplo y vídeo */}
+        {/* Ejemplo */}
         <section>
-          <h2>Ejemplo</h2>
+          <h2>
+            <MDEditor.Markdown source={'Ejemplo'} className="markdown-content" data-color-mode="light" />
+          </h2>
           <button onClick={() => setShowDetails(!showDetails)}>
-            Mostrar detalles
+            {showDetails ? 'Ocultar detalles' : 'Mostrar detalles'}
           </button>
-          {showDetails && (
+          {showDetails && modulo.ejemplos && modulo.ejemplos.length > 0 && (
             <div className="example-details">
-              <p>
-                Imagina que una aplicación tiene esta consulta para verificar si un usuario existe:
-                <code className="sql-code">
-                  SELECT * FROM usuarios WHERE nombre = 'Pepe' AND contraseña = '1234'
-                </code>
-                Un atacante podría introducir esto en el campo de nombre de usuario:
-                <code className="sql-code">
-                  Pepe' OR 1=1 --
-                </code>
-                Entonces, la consulta quedaría así:
-                <code className="sql-code">
-                  SELECT * FROM usuarios WHERE nombre = 'Pepe' OR 1=1 --' AND contraseña = ''
-                </code>
-                Este código haría que se devuelvan todos los usuarios, ignorando la contraseña,
-                ¡y el atacante podría acceder sin conocer la contraseña!
-              </p>
+              <h4>
+                <MDEditor.Markdown source={modulo.ejemplos[0].titulo} className="markdown-content" data-color-mode="light" />
+              </h4>
+              <MDEditor.Markdown source={modulo.ejemplos[0].descripcion} className="markdown-content" data-color-mode="light" />
+              <pre className="sql-code">{modulo.ejemplos[0].codigo}</pre>
             </div>
           )}
         </section>
 
+        {/* Vídeo */}
         <section>
-          <h2>Vídeo</h2>
+          <h2>
+            <MDEditor.Markdown source={'Vídeo'} className="markdown-content" data-color-mode="light" />
+          </h2>
           <button onClick={() => setShowVideo(!showVideo)}>
-            Mostrar vídeo
+            {showVideo ? 'Ocultar vídeo' : 'Mostrar vídeo'}
           </button>
           {showVideo && (
             <div className="video-container">
               <iframe
                 width="560"
                 height="315"
-                src="https://www.youtube.com/embed/qLeeLRn9Z78?si=yXBmGdkXtWBO-pMR"
+                src={modulo.videoUrl}
                 title="YouTube video player"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -149,116 +153,99 @@ function ModulePageSQLi() {
           )}
         </section>
 
-        {/* Test interactivo */}
+        {/* Test teórico */}
         <section>
-          <h2>Test teórico</h2>
-          <p>
-            ¿Estás listo para poner a prueba tus conocimientos? Haz clic en el siguiente botón para acceder al test teórico:
-          </p>
-          <InteractiveTest questions={sqlQuestions} />
+          <h2>
+            <MDEditor.Markdown source={'Test teórico'} className="markdown-content" data-color-mode="light" />
+          </h2>
+          <MDEditor.Markdown
+            source={'¿Estás listo para poner a prueba tus conocimientos? Haz clic en el siguiente botón para acceder al test teórico:'}
+            className="markdown-content"
+            data-color-mode="light"
+          />
+          <InteractiveTest questions={preguntasTeoricasAdaptadas} />
         </section>
 
-        {/* Ejercicio 1 */}
+        {/* Ejercicios con pistas y soluciones por nivel */}
         <section>
-          <h2>Ejercicio 1: Login vulnerable</h2>
-          <p>
-            El primer paso para acceder a la tienda es iniciar sesión. El formulario de login es vulnerable a inyección SQL,
-            lo que significa que puedes acceder como cualquier usuario sin conocer su contraseña real.
-          </p>
-          <button className="hint-btn" onClick={() => setShowHint1(h => !h)}>
-            {showHint1 ? 'Ocultar pista' : 'Mostrar pista'}
-          </button>
-          {showHint1 && (
-            <div className="hint-box">
-              {pistas[1][nivel]}
+          <h2>
+            <MDEditor.Markdown source={'Ejercicios'} className="markdown-content" data-color-mode="light" />
+          </h2>
+          {/* Mostrar la descripción de ejercicios en Markdown */}
+          {modulo.descripcionEjercicios && (
+            <div style={{ marginBottom: 16 }}>
+              <MDEditor.Markdown
+                source={modulo.descripcionEjercicios}
+                className="markdown-content"
+                data-color-mode="light"
+              />
             </div>
           )}
-          <button className="hint-btn" onClick={() => setShowSolution1(s => !s)}>
-            {showSolution1 ? 'Ocultar solución' : 'Mostrar solución'}
-          </button>
-          {showSolution1 && (
-            <div className="hint-box solution-box">
-              {soluciones[1][nivel]}
+
+          {/* Mostrar todas las pistas */}
+          <MDEditor.Markdown
+            source={pistasActuales.length > 0 ? 'Pistas para este nivel:' : 'No hay pistas para este nivel.'}
+            className="markdown-content"
+            data-color-mode="light"
+          />
+          {pistasActuales.map((pista, idx) => (
+            <div key={idx} style={{ marginBottom: 8 }}>
+              <button className="hint-btn" onClick={() => setShowHint(h => ({ ...h, [idx]: !h[idx] }))}>
+                {showHint[idx] ? 'Ocultar pista' : `Mostrar pista ${idx + 1}`}
+              </button>
+              {showHint[idx] && (
+                <div className="hint-box">
+                  <MDEditor.Markdown source={pista.texto} className="markdown-content" data-color-mode="light" />
+                </div>
+              )}
             </div>
-          )}
+          ))}
+
+          {/* Mostrar todas las soluciones */}
+          <MDEditor.Markdown
+            source={solucionesActuales.length > 0 ? 'Soluciones para este nivel:' : 'No hay soluciones para este nivel.'}
+            className="markdown-content"
+            data-color-mode="light"
+          />
+          {solucionesActuales.map((solucion, idx) => (
+            <div key={idx} style={{ marginBottom: 8 }}>
+              <button className="hint-btn" onClick={() => setShowSolution(s => ({ ...s, [idx]: !s[idx] }))}>
+                {showSolution[idx] ? 'Ocultar solución' : `Mostrar solución ${idx + 1}`}
+              </button>
+              {showSolution[idx] && (
+                <div className="hint-box solution-box">
+                  <MDEditor.Markdown source={solucion.texto} className="markdown-content" data-color-mode="light" />
+                </div>
+              )}
+            </div>
+          ))}
         </section>
 
-        
-
-        {/* Ejercicio 3 */}
+        {/* Acceso al entorno vulnerable */}
         <section>
-          <h2>Ejercicio 2: Filtros avanzados vulnerables</h2>
-          <p>
-            Utiliza los filtros de búsqueda (nombre, categoría) en el catálogo. Todos los filtros son vulnerables a inyección SQL.
-            ¿Podrás encontrar productos ocultos o manipular los resultados?
-          </p>
-          <button className="hint-btn" onClick={() => setShowHint3(h => !h)}>
-            {showHint3 ? 'Ocultar pista' : 'Mostrar pista'}
-          </button>
-          {showHint3 && (
-            <div className="hint-box">
-              {pistas[2][nivel]}
-            </div>
-          )}
-          <button className="hint-btn" onClick={() => setShowSolution3(s => !s)}>
-            {showSolution3 ? 'Ocultar solución' : 'Mostrar solución'}
-          </button>
-          {showSolution3 && (
-            <div className="hint-box solution-box">
-              {soluciones[2][nivel]}
-            </div>
-          )}
-        </section>
-
-        {/* Ejercicio 2 */}
-        <section>
-          <h2>Ejercicio 3: Detalles de producto vulnerables</h2>
-          <p>
-            Una vez dentro, puedes ver el catálogo de productos. Si haces clic en un producto, accederás a una pantalla de detalle.
-            </p>
-            <p>Sin embargo, los productos de la categoría "Oculta" no son visibles a menos que manipules la URL.</p>
-            <p>El endpoint que obtiene los detalles es vulnerable a inyección SQL, así que puedes manipular el parámetro <code>id</code> en la URL para intentar acceder a productos ocultos o a información de otros productos.</p>
-          
-          <button className="hint-btn" onClick={() => setShowHint2(h => !h)}>
-            {showHint2 ? 'Ocultar pista' : 'Mostrar pista'}
-          </button>
-                      {showHint2 && (
-              <div className="hint-box">
-                {pistas[3][nivel]}
-              </div>
-            )}
-          <button className="hint-btn" onClick={() => setShowSolution2(s => !s)}>
-            {showSolution2 ? 'Ocultar solución' : 'Mostrar solución'}
-          </button>
-                    {showSolution2 && (
-            <div className="hint-box solution-box">
-              {soluciones[3][nivel]}
-            </div>
-          )}
-        </section>
-
-        {/* Botón para abrir el entorno vulnerable */}
-        <section>
-          <h2>Acceso al entorno vulnerable</h2>
-          <p>
-            Pulsa el siguiente botón para abrir la tienda vulnerable en una nueva pestaña y realizar los ejercicios libremente.
-            Recuerda: el entorno vulnerable integra todos los retos en una única experiencia, como una tienda real.
-          </p>
+          <h2>
+            <MDEditor.Markdown source={'Acceso al entorno vulnerable'} className="markdown-content" data-color-mode="light" />
+          </h2>
+          <MDEditor.Markdown source={modulo.infoEntorno} className="markdown-content" data-color-mode="light" />
           <button
             className="sandbox-button"
             style={{ marginTop: 12 }}
             onClick={() => {
-              localStorage.setItem('nivelSQLi', nivel); // o sessionStorage
+              localStorage.setItem('nivelSQLi', nivel);
               window.open('/modulo/sql-inyeccion/tienda', '_blank');
             }}
           >
             Abrir entorno vulnerable
           </button>
           <div style={{ marginTop: 18 }}>
-            <p style={{ marginBottom: 6, color: '#555', fontSize: '0.98rem' }}>
-              ¿Quieres reiniciar tu progreso en la tienda vulnerable? Puedes limpiar tu sesión y los retos completados con este botón. 
-              Si has desbloqueado logros, se mantendrán, pero perderás el progreso en los retos de SQLi.
-            </p>
+            <MDEditor.Markdown
+              source={
+                '¿Quieres reiniciar tu progreso en la tienda vulnerable? Puedes limpiar tu sesión y los retos completados con este botón. ' +
+                'Si has desbloqueado logros, se mantendrán, pero perderás el progreso en los retos de SQLi.'
+              }
+              className="markdown-content"
+              data-color-mode="light"
+            />
             <button
               className="sandbox-button"
               style={{ background: '#e53935', color: '#fff' }}
@@ -272,38 +259,55 @@ function ModulePageSQLi() {
             </button>
           </div>
 
-           {/* Quiz de código SQLi en desplegable */}
+          {/* Quiz de código SQLi en desplegable */}
           <details style={{ marginTop: 32 }}>
             <summary
               style={{ cursor: 'pointer', fontWeight: 600, fontSize: '1.08em', marginBottom: 8 }}
               onClick={() => setShowCodeQuiz(s => !s)}
             >
-              ¿Reconoces el código vulnerable? (quiz interactivo)
+              <MDEditor.Markdown source={'¿Reconoces el código vulnerable? (quiz interactivo)'} className="markdown-content" data-color-mode="light" />
             </summary>
             {showCodeQuiz && (
               <div style={{ marginTop: 18 }}>
-                <CodeQuiz questions={sqliQuizQuestions} />
+                <CodeQuiz questions={modulo.preguntasQuizCodigo || []} />
               </div>
             )}
           </details>
 
-          {/* Explicación técnica de la vulnerabilidad en un desplegable */}
-          <details style={{ marginTop: 32 }}>
-          <summary style={{ cursor: 'pointer', fontWeight: 600, fontSize: '1.08em' }}>
-            ¿Por qué funciona la vulnerabilidad? (ver explicación técnica)
-          </summary>
-          <div style={{ marginTop: 16 }}>
-            {explicacionNivel[nivel]}
-          </div>
-        </details>
+          {/* Descripción técnica en desplegable igual que el quiz, usando Markdown */}
+          <details style={{ marginTop: 24 }}>
+            <summary
+              style={{ cursor: 'pointer', fontWeight: 600, fontSize: '1.08em', marginBottom: 8 }}
+              onClick={() => setShowDescripcionTecnica(s => !s)}
+            >
+              <MDEditor.Markdown source={'Ver explicación técnica de este nivel'} className="markdown-content" data-color-mode="light" />
+            </summary>
+            {showDescripcionTecnica && (
+              <div style={{ marginTop: 18 }}>
+                {descripcionTecnica ? (
+                  <div>
+                    <MDEditor.Markdown
+                      source={descripcionTecnica.descripcion}
+                      className="markdown-content"
+                      data-color-mode="light"
+                    />
+                    {descripcionTecnica.codigoEjemplo && (
+                      <pre className="sql-code">{descripcionTecnica.codigoEjemplo}</pre>
+                    )}
+                  </div>
+                ) : (
+                  <MDEditor.Markdown source={'No hay descripción técnica para este nivel.'} className="markdown-content" data-color-mode="light" />
+                )}
+              </div>
+            )}
+          </details>
         </section>
 
-        <ModuleComments moduleId="sql-inyeccion" user={user} />
-
+        {/* Comentarios */}
+        <ModuleComments moduleId={modulo.id} user={user} />
       </main>
       <ModuleList />
-      <footer className="App-footer">
-      </footer>
+      <footer className="App-footer"></footer>
     </div>
   );
 }

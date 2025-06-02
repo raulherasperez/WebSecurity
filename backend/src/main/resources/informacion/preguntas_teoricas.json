@@ -1,0 +1,464 @@
+[
+  {
+    "pregunta": "¿Qué es una inyección SQL?",
+    "opciones": [
+      "Un ataque que modifica el diseño de una página web",
+      "Una técnica para robar contraseñas mediante phishing",
+      "Un método donde se inyecta código SQL malicioso en consultas de base de datos",
+      "Un error de sintaxis en una consulta SQL"
+    ],
+    "respuesta": "Un método donde se inyecta código SQL malicioso en consultas de base de datos",
+    "modulo": "sqli"
+  },
+  {
+    "pregunta": "¿Cuál de estos NO es un método efectivo para prevenir la inyección SQL?",
+    "opciones": [
+      "Usar consultas preparadas (prepared statements)",
+      "Validar las entradas del usuario",
+      "Concatenar directamente cadenas en las consultas SQL",
+      "Utilizar ORM como Sequelize o TypeORM"
+    ],
+    "respuesta": "Concatenar directamente cadenas en las consultas SQL",
+    "modulo": "sqli"
+  },
+  {
+    "pregunta": "¿Qué hace '--' en una consulta SQL?",
+    "opciones": [
+      "Activa una extensión del motor de base de datos",
+      "Comienza un comentario que ignora el resto de la línea",
+      "Indica una transacción segura",
+      "Ejecuta una subconsulta"
+    ],
+    "respuesta": "Comienza un comentario que ignora el resto de la línea",
+    "modulo": "sqli"
+  },
+  {
+    "pregunta": "¿Cuál de los siguientes es un ejemplo de entrada maliciosa para explotar una inyección SQL en un campo de usuario?",
+    "opciones": [
+      "admin' OR 1=1 --",
+      "SELECT * FROM usuarios",
+      "DROP TABLE usuarios;",
+      "user@example.com"
+    ],
+    "respuesta": "admin' OR 1=1 --",
+    "modulo": "sqli"
+  },
+  {
+    "pregunta": "¿Qué tipo de daño puede causar una inyección SQL exitosa?",
+    "opciones": [
+      "Solo mostrar mensajes de error",
+      "Modificar, borrar o robar datos de la base de datos",
+      "Cambiar el color de la página",
+      "Desactivar el servidor web"
+    ],
+    "respuesta": "Modificar, borrar o robar datos de la base de datos",
+    "modulo": "sqli"
+  },
+  {
+    "pregunta": "¿Qué función cumple la validación de entradas del usuario en la prevención de inyección SQL?",
+    "opciones": [
+      "Evita que los usuarios escriban en mayúsculas",
+      "Limita el tipo y formato de datos que se pueden enviar",
+      "Aumenta la velocidad de la base de datos",
+      "Permite consultas más complejas"
+    ],
+    "respuesta": "Limita el tipo y formato de datos que se pueden enviar",
+    "modulo": "sqli"
+  },
+  {
+    "pregunta": "¿Qué es una consulta preparada (prepared statement)?",
+    "opciones": [
+      "Una consulta SQL que se construye concatenando cadenas",
+      "Una consulta SQL que separa los datos de la lógica de la consulta",
+      "Un script que se ejecuta antes de iniciar la base de datos",
+      "Un tipo de base de datos relacional"
+    ],
+    "respuesta": "Una consulta SQL que separa los datos de la lógica de la consulta",
+    "modulo": "sqli"
+  },
+  {
+    "pregunta": "¿Qué puede indicar la aparición de errores de sintaxis SQL en una aplicación web?",
+    "opciones": [
+      "Que la aplicación es segura",
+      "Que la base de datos está actualizada",
+      "Que puede existir una vulnerabilidad de inyección SQL",
+      "Que el usuario ha escrito mal su contraseña"
+    ],
+    "respuesta": "Que puede existir una vulnerabilidad de inyección SQL",
+    "modulo": "sqli"
+  },
+  {
+    "pregunta": "¿Qué es un ataque XSS y por qué es peligroso?",
+    "opciones": [
+      "Un ataque que explota vulnerabilidades de inyección de código JavaScript en páginas web, permitiendo a un atacante ejecutar scripts maliciosos en el navegador de otros usuarios.",
+      "Un ataque que explota contraseñas débiles.",
+      "Un ataque que explota configuraciones inseguras del servidor.",
+      "Un ataque que explota la inyección SQL."
+    ],
+    "respuesta": "Un ataque que explota vulnerabilidades de inyección de código JavaScript en páginas web, permitiendo a un atacante ejecutar scripts maliciosos en el navegador de otros usuarios.",
+    "modulo": "xss"
+  },
+  {
+    "pregunta": "¿Cuáles son los principales tipos de XSS?",
+    "opciones": [
+      "Reflejado, almacenado y basado en DOM.",
+      "SQLi, CSRF y SSRF.",
+      "Reflejado, CSRF y RCE.",
+      "Almacenado, SSRF y XXE."
+    ],
+    "respuesta": "Reflejado, almacenado y basado en DOM.",
+    "modulo": "xss"
+  },
+  {
+    "pregunta": "¿Qué puede lograr un atacante con un XSS exitoso?",
+    "opciones": [
+      "Robar cookies de sesión y credenciales.",
+      "Modificar el contenido de la página o redirigir al usuario.",
+      "Capturar pulsaciones de teclado o propagar malware.",
+      "Todas las anteriores."
+    ],
+    "respuesta": "Todas las anteriores.",
+    "modulo": "xss"
+  },
+  {
+    "pregunta": "¿Cuál es una buena práctica para prevenir XSS?",
+    "opciones": [
+      "Validar y escapar las entradas del usuario y nunca insertar datos no confiables en el HTML sin sanitizar.",
+      "Permitir cualquier entrada sin validación.",
+      "Desactivar el firewall.",
+      "Usar solo contraseñas fuertes."
+    ],
+    "respuesta": "Validar y escapar las entradas del usuario y nunca insertar datos no confiables en el HTML sin sanitizar.",
+    "modulo": "xss"
+  },
+  {
+    "pregunta": "¿Qué función cumple Content Security Policy (CSP) en la protección contra XSS?",
+    "opciones": [
+      "Limita los recursos y scripts que puede cargar y ejecutar una página web, ayudando a mitigar el impacto de XSS.",
+      "Permite la ejecución de cualquier script.",
+      "Desactiva la validación de formularios.",
+      "Permite la inyección de código."
+    ],
+    "respuesta": "Limita los recursos y scripts que puede cargar y ejecutar una página web, ayudando a mitigar el impacto de XSS.",
+    "modulo": "xss"
+  },
+  {
+    "pregunta": "¿Por qué es peligroso usar innerHTML o dangerouslySetInnerHTML?",
+    "opciones": [
+      "Porque permite insertar código HTML y JavaScript directamente en el DOM, lo que puede ser explotado por un atacante si los datos no están correctamente sanitizados.",
+      "Porque hace la página más lenta.",
+      "Porque bloquea el acceso a la base de datos.",
+      "Porque desactiva el CSS."
+    ],
+    "respuesta": "Porque permite insertar código HTML y JavaScript directamente en el DOM, lo que puede ser explotado por un atacante si los datos no están correctamente sanitizados.",
+    "modulo": "xss"
+  },
+  {
+    "pregunta": "¿Qué es un ataque CSRF y cómo funciona?",
+    "opciones": [
+      "Un ataque que fuerza a un usuario autenticado a ejecutar acciones no deseadas en una aplicación web, aprovechando que el navegador envía automáticamente las cookies de sesión.",
+      "Un ataque que roba cookies mediante JavaScript.",
+      "Un ataque que explota errores de validación de formularios.",
+      "Un ataque que explota la inyección SQL."
+    ],
+    "respuesta": "Un ataque que fuerza a un usuario autenticado a ejecutar acciones no deseadas en una aplicación web, aprovechando que el navegador envía automáticamente las cookies de sesión.",
+    "modulo": "csrf"
+  },
+  {
+    "pregunta": "¿Cuál de las siguientes medidas ayuda a prevenir CSRF?",
+    "opciones": [
+      "Validar el origen de la petición y usar tokens CSRF únicos por usuario.",
+      "Usar solo HTTPS.",
+      "Validar el tamaño de los formularios.",
+      "Limitar el tamaño de las cookies."
+    ],
+    "respuesta": "Validar el origen de la petición y usar tokens CSRF únicos por usuario.",
+    "modulo": "csrf"
+  },
+  {
+    "pregunta": "¿Por qué las cookies de sesión permiten ataques CSRF?",
+    "opciones": [
+      "Porque se envían automáticamente con cada petición al dominio, sin importar el origen.",
+      "Porque son visibles en JavaScript.",
+      "Porque no están cifradas.",
+      "Porque expiran rápidamente."
+    ],
+    "respuesta": "Porque se envían automáticamente con cada petición al dominio, sin importar el origen.",
+    "modulo": "csrf"
+  },
+  {
+    "pregunta": "¿Cuál de los siguientes ejemplos representa un ataque CSRF?",
+    "opciones": [
+      "Una página externa que envía un formulario POST a una aplicación donde el usuario está autenticado.",
+      "Un usuario que introduce un script en un campo de texto.",
+      "Un atacante que intercepta tráfico de red.",
+      "Un usuario que olvida cerrar sesión."
+    ],
+    "respuesta": "Una página externa que envía un formulario POST a una aplicación donde el usuario está autenticado.",
+    "modulo": "csrf"
+  },
+  {
+    "pregunta": "¿Qué es un token CSRF?",
+    "opciones": [
+      "Un valor único y aleatorio que la aplicación genera y asocia a la sesión del usuario, y que debe enviarse con cada petición sensible para verificar su legitimidad.",
+      "Un tipo de cookie especial.",
+      "Un encabezado HTTP estándar.",
+      "Un tipo de contraseña temporal."
+    ],
+    "respuesta": "Un valor único y aleatorio que la aplicación genera y asocia a la sesión del usuario, y que debe enviarse con cada petición sensible para verificar su legitimidad.",
+    "modulo": "csrf"
+  },
+  {
+    "pregunta": "¿Qué otras medidas pueden ayudar a mitigar CSRF además de los tokens?",
+    "opciones": [
+      "Configurar las cookies de sesión como SameSite y validar los encabezados Origin/Referer.",
+      "Permitir cualquier origen en CORS.",
+      "Desactivar HTTPS.",
+      "Permitir peticiones GET para acciones sensibles."
+    ],
+    "respuesta": "Configurar las cookies de sesión como SameSite y validar los encabezados Origin/Referer.",
+    "modulo": "csrf"
+  },
+  {
+    "pregunta": "¿Qué es una vulnerabilidad SSRF?",
+    "opciones": [
+      "Una vulnerabilidad que permite a un atacante forzar al servidor a realizar peticiones a recursos internos o externos controlando la URL o destino.",
+      "Un ataque que explota la inyección SQL.",
+      "Un ataque que permite ejecutar código JavaScript en el navegador.",
+      "Un ataque que explota la falta de autenticación."
+    ],
+    "respuesta": "Una vulnerabilidad que permite a un atacante forzar al servidor a realizar peticiones a recursos internos o externos controlando la URL o destino.",
+    "modulo": "ssrf"
+  },
+  {
+    "pregunta": "¿Cuál de los siguientes es un ejemplo de SSRF?",
+    "opciones": [
+      "Una aplicación que permite a los usuarios obtener una vista previa de una imagen descargando la URL proporcionada sin validación.",
+      "Un formulario de login vulnerable a fuerza bruta.",
+      "Un campo de búsqueda vulnerable a XSS.",
+      "Un endpoint que permite subir archivos."
+    ],
+    "respuesta": "Una aplicación que permite a los usuarios obtener una vista previa de una imagen descargando la URL proporcionada sin validación.",
+    "modulo": "ssrf"
+  },
+  {
+    "pregunta": "¿Qué riesgos puede implicar una vulnerabilidad SSRF?",
+    "opciones": [
+      "Acceso a recursos internos, escaneo de red, obtención de metadatos en la nube y bypass de controles de acceso.",
+      "Solo acceso a archivos públicos.",
+      "Solo ejecución de código en el navegador.",
+      "Solo denegación de servicio."
+    ],
+    "respuesta": "Acceso a recursos internos, escaneo de red, obtención de metadatos en la nube y bypass de controles de acceso.",
+    "modulo": "ssrf"
+  },
+  {
+    "pregunta": "¿Cómo se puede prevenir SSRF?",
+    "opciones": [
+      "Validando y restringiendo las URLs permitidas, usando listas blancas de dominios y evitando el acceso a direcciones internas.",
+      "Permitiendo cualquier URL proporcionada por el usuario.",
+      "Solo usando HTTPS.",
+      "Desactivando los logs del servidor."
+    ],
+    "respuesta": "Validando y restringiendo las URLs permitidas, usando listas blancas de dominios y evitando el acceso a direcciones internas.",
+    "modulo": "ssrf"
+  },
+  {
+    "pregunta": "¿Por qué es peligroso permitir que el backend acceda a direcciones como 127.0.0.1 o 169.254.169.254?",
+    "opciones": [
+      "Porque pueden exponer servicios internos o credenciales sensibles de la infraestructura.",
+      "Porque ralentiza la aplicación.",
+      "Porque bloquea el acceso a Internet.",
+      "Porque genera errores de JavaScript."
+    ],
+    "respuesta": "Porque pueden exponer servicios internos o credenciales sensibles de la infraestructura.",
+    "modulo": "ssrf"
+  },
+  {
+    "pregunta": "¿Qué es una lista blanca (whitelist) en el contexto de SSRF?",
+    "opciones": [
+      "Una lista de dominios o direcciones permitidas a las que el backend puede acceder.",
+      "Una lista de usuarios administradores.",
+      "Una lista de contraseñas seguras.",
+      "Una lista de endpoints públicos."
+    ],
+    "respuesta": "Una lista de dominios o direcciones permitidas a las que el backend puede acceder.",
+    "modulo": "ssrf"
+  },
+  {
+    "pregunta": "¿Qué es Broken Authentication?",
+    "opciones": [
+      "Un error de sintaxis en el código.",
+      "Un tipo de ataque XSS.",
+      "Un fallo en la autenticación que permite a un atacante acceder a cuentas ajenas o realizar acciones como otro usuario.",
+      "Un fallo en la base de datos."
+    ],
+    "respuesta": "Un fallo en la autenticación que permite a un atacante acceder a cuentas ajenas o realizar acciones como otro usuario.",
+    "modulo": "broken_auth"
+  },
+  {
+    "pregunta": "¿Cuál de los siguientes es un síntoma de Broken Authentication?",
+    "opciones": [
+      "Uso de captcha en el login.",
+      "Bloqueo tras varios intentos fallidos.",
+      "Mensajes de error distintos para usuario inexistente y contraseña incorrecta.",
+      "Uso de contraseñas fuertes obligatorias."
+    ],
+    "respuesta": "Mensajes de error distintos para usuario inexistente y contraseña incorrecta.",
+    "modulo": "broken_auth"
+  },
+  {
+    "pregunta": "¿Qué técnica puede explotar un atacante si no hay límite de intentos de login?",
+    "opciones": [
+      "CSRF.",
+      "Fuerza bruta.",
+      "SQL Injection.",
+      "Open Redirect."
+    ],
+    "respuesta": "Fuerza bruta.",
+    "modulo": "broken_auth"
+  },
+  {
+    "pregunta": "¿Cómo se puede evitar la enumeración de usuarios en el login?",
+    "opciones": [
+      "No usando HTTPS.",
+      "Permitiendo contraseñas débiles.",
+      "Mostrando siempre el mismo mensaje de error.",
+      "No validando los datos del usuario."
+    ],
+    "respuesta": "Mostrando siempre el mismo mensaje de error.",
+    "modulo": "broken_auth"
+  },
+  {
+    "pregunta": "¿Qué medida NO ayuda a prevenir Broken Authentication?",
+    "opciones": [
+      "Forzar contraseñas fuertes.",
+      "Bloquear tras varios intentos fallidos.",
+      "Usar mensajes de error genéricos.",
+      "Permitir intentos ilimitados de login."
+    ],
+    "respuesta": "Permitir intentos ilimitados de login.",
+    "modulo": "broken_auth"
+  },
+  {
+    "pregunta": "¿Por qué es peligroso permitir contraseñas débiles en una aplicación?",
+    "opciones": [
+      "Hace que la aplicación sea más rápida.",
+      "Facilita ataques de fuerza bruta y acceso no autorizado.",
+      "Permite a los usuarios recordar mejor sus contraseñas.",
+      "No tiene ningún impacto en la seguridad."
+    ],
+    "respuesta": "Facilita ataques de fuerza bruta y acceso no autorizado.",
+    "modulo": "broken_auth"
+  },
+  {
+    "pregunta": "¿Qué es un ataque de sesión fijada (session fixation)?",
+    "opciones": [
+      "Cuando la sesión expira automáticamente.",
+      "Cuando se usa HTTPS para la autenticación.",
+      "Cuando un atacante fuerza a la víctima a usar un identificador de sesión conocido por el atacante.",
+      "Cuando un usuario olvida cerrar sesión."
+    ],
+    "respuesta": "Cuando un atacante fuerza a la víctima a usar un identificador de sesión conocido por el atacante.",
+    "modulo": "broken_auth"
+  },
+  {
+    "pregunta": "¿Cuál de los siguientes es un ejemplo de mala práctica en la gestión de sesiones?",
+    "opciones": [
+      "Regenerar el identificador de sesión tras el login.",
+      "No invalidar la sesión tras cerrar sesión.",
+      "Usar cookies con el atributo HttpOnly.",
+      "Establecer un tiempo de expiración corto para las sesiones."
+    ],
+    "respuesta": "No invalidar la sesión tras cerrar sesión.",
+    "modulo": "broken_auth"
+  },
+  {
+    "pregunta": "¿Qué es el credential stuffing?",
+    "opciones": [
+      "Un ataque de denegación de servicio.",
+      "Un tipo de XSS.",
+      "Un método de cifrado de contraseñas.",
+      "El uso de combinaciones de usuario/contraseña filtradas en otros servicios para intentar acceder a cuentas."
+    ],
+    "respuesta": "El uso de combinaciones de usuario/contraseña filtradas en otros servicios para intentar acceder a cuentas.",
+    "modulo": "broken_auth"
+  },
+  {
+    "pregunta": "¿Qué atributo de cookie ayuda a proteger la sesión frente a ataques XSS?",
+    "opciones": [
+      "Path.",
+      "HttpOnly.",
+      "Domain.",
+      "Expires."
+    ],
+    "respuesta": "HttpOnly.",
+    "modulo": "broken_auth"
+  },
+  {
+    "pregunta": "¿Qué es Broken Access Control?",
+    "opciones": [
+      "Permitir a usuarios no autenticados acceder a recursos restringidos.",
+      "Permitir a usuarios autenticados realizar acciones o acceder a recursos para los que no tienen permiso.",
+      "Permitir a usuarios cambiar su propia contraseña.",
+      "Permitir a usuarios ver su propio perfil."
+    ],
+    "respuesta": "Permitir a usuarios autenticados realizar acciones o acceder a recursos para los que no tienen permiso.",
+    "modulo": "bac"
+  },
+  {
+    "pregunta": "¿Cuál de los siguientes es un ejemplo de Broken Access Control?",
+    "opciones": [
+      "Un usuario puede ver su propio perfil.",
+      "Un usuario puede acceder al perfil de otro usuario cambiando el parámetro en la URL.",
+      "Un usuario puede cerrar sesión.",
+      "Un usuario puede actualizar su correo electrónico."
+    ],
+    "respuesta": "Un usuario puede acceder al perfil de otro usuario cambiando el parámetro en la URL.",
+    "modulo": "bac"
+  },
+  {
+    "pregunta": "¿Cómo se puede prevenir Broken Access Control?",
+    "opciones": [
+      "Validando siempre en el backend que el usuario autenticado tiene permiso para acceder o modificar el recurso solicitado.",
+      "Solo usando autenticación en el frontend.",
+      "Mostrando mensajes de error genéricos.",
+      "Utilizando HTTPS."
+    ],
+    "respuesta": "Validando siempre en el backend que el usuario autenticado tiene permiso para acceder o modificar el recurso solicitado.",
+    "modulo": "bac"
+  },
+  {
+    "pregunta": "¿Qué puede causar la falta de control de acceso?",
+    "opciones": [
+      "Exposición de datos sensibles de otros usuarios.",
+      "Ejecución de código malicioso en el navegador.",
+      "Fuga de contraseñas por correo electrónico.",
+      "Desbordamiento de búfer."
+    ],
+    "respuesta": "Exposición de datos sensibles de otros usuarios.",
+    "modulo": "bac"
+  },
+  {
+    "pregunta": "¿Qué tipo de controles deben implementarse para evitar BAC?",
+    "opciones": [
+      "Controles de acceso en el backend, comprobando siempre la identidad y permisos del usuario.",
+      "Solo controles en el frontend.",
+      "Permitir que el usuario envíe su propio ID en cada petición.",
+      "No mostrar mensajes de error detallados."
+    ],
+    "respuesta": "Controles de acceso en el backend, comprobando siempre la identidad y permisos del usuario.",
+    "modulo": "bac"
+  },
+  {
+    "pregunta": "¿Por qué no es suficiente confiar en el frontend para controlar el acceso?",
+    "opciones": [
+      "Porque el frontend puede ser manipulado por el usuario y no es una barrera de seguridad real.",
+      "Porque el frontend es más rápido.",
+      "Porque el backend no puede validar nada.",
+      "Porque el frontend siempre es seguro."
+    ],
+    "respuesta": "Porque el frontend puede ser manipulado por el usuario y no es una barrera de seguridad real.",
+    "modulo": "bac"
+  }
+]

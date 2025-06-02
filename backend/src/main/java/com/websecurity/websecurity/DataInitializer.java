@@ -64,7 +64,7 @@ public class DataInitializer implements CommandLineRunner {
         createUserIfNotExists("user4", "user4@websec.com", "user4pass", User.Rol.USER, loadFoto("user3.jpg"));
         createUserIfNotExists("user5", "user5@websec.com", "user5pass", User.Rol.USER, loadFoto("user3.jpg"));
         // Admin con foto
-        createUserIfNotExists("admin", "admin@websec.com", "adminpass", User.Rol.ADMIN, loadFoto("admin.jpg"));
+        createUserIfNotExists("admin", "admin@websec.com", "adminpass", User.Rol.ROLE_ADMIN, loadFoto("admin.jpg"));
 
         // Moderador con foto
         createUserIfNotExists("moderator", "moderator@websec.com", "modpass", User.Rol.MODERATOR, loadFoto("moderator.jpg"));

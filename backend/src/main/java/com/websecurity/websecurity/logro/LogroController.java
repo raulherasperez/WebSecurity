@@ -24,7 +24,7 @@ public class LogroController {
     public ResponseEntity<?> getAll(@RequestHeader("Authorization") String authHeader) {
         String username = usuarioService.getUsernameFromToken(authHeader.replace("Bearer ", ""));
         User user = usuarioService.findByUsername(username).orElseThrow();
-        if (user.getRol() == User.Rol.ADMIN) {
+        if (user.getRol() == User.Rol.ROLE_ADMIN) {
             return ResponseEntity.ok(logroService.findAll());
         } else {
             return ResponseEntity.status(403).body("No autorizado");
@@ -35,7 +35,7 @@ public class LogroController {
     public ResponseEntity<?> create(@RequestBody Logro logro, @RequestHeader("Authorization") String authHeader) {
         String username = usuarioService.getUsernameFromToken(authHeader.replace("Bearer ", ""));
         User user = usuarioService.findByUsername(username).orElseThrow();
-        if (user.getRol() == User.Rol.ADMIN) {
+        if (user.getRol() == User.Rol.ROLE_ADMIN) {
             return ResponseEntity.ok(logroService.create(logro));
         } else {
             return ResponseEntity.status(403).body("No autorizado");
@@ -46,7 +46,7 @@ public class LogroController {
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Logro logro, @RequestHeader("Authorization") String authHeader) {
         String username = usuarioService.getUsernameFromToken(authHeader.replace("Bearer ", ""));
         User user = usuarioService.findByUsername(username).orElseThrow();
-        if (user.getRol() == User.Rol.ADMIN) {
+        if (user.getRol() == User.Rol.ROLE_ADMIN) {
             return ResponseEntity.ok(logroService.update(id, logro));
         } else {
             return ResponseEntity.status(403).body("No autorizado");
@@ -57,7 +57,7 @@ public class LogroController {
     public ResponseEntity<?> delete(@PathVariable Long id, @RequestHeader("Authorization") String authHeader) {
         String username = usuarioService.getUsernameFromToken(authHeader.replace("Bearer ", ""));
         User user = usuarioService.findByUsername(username).orElseThrow();
-        if (user.getRol() == User.Rol.ADMIN) {
+        if (user.getRol() == User.Rol.ROLE_ADMIN) {
             logroService.delete(id);
             return ResponseEntity.ok().build();
         } else {

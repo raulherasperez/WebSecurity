@@ -10,7 +10,8 @@ function getRandomQuestions(questions, n) {
 }
 
 const CodeQuiz = ({ questions }) => {
-  const [quizSet, setQuizSet] = useState(() => getRandomQuestions(questions, 5));
+  // Si hay menos de 5 preguntas, usa todas
+  const [quizSet, setQuizSet] = useState(() => getRandomQuestions(questions, Math.min(5, questions.length)));
   const [current, setCurrent] = useState(0);
   const [selected, setSelected] = useState(null);
   const [showResult, setShowResult] = useState(false);
@@ -22,6 +23,7 @@ const CodeQuiz = ({ questions }) => {
     localStorage.getItem('codeQuizCompletado') === 'true'
   );
 
+  // Adaptar la estructura recibida del backend
   const quiz = quizSet[current];
 
   const handleSelect = idx => {
@@ -53,18 +55,22 @@ const CodeQuiz = ({ questions }) => {
   };
 
   const reshuffle = () => {
-    setQuizSet(getRandomQuestions(questions, 5));
+    setQuizSet(getRandomQuestions(questions, Math.min(5, questions.length)));
     setCurrent(0);
     setSelected(null);
     setShowResult(false);
     setCompleted(false);
   };
 
+  if (!quizSet.length) {
+    return <div>No hay preguntas de código disponibles.</div>;
+  }
+
   if (completed) {
     return (
       <div style={{ textAlign: 'center', marginTop: 24 }}>
         <div style={{ fontWeight: 600, color: '#388e3c', marginBottom: 16 }}>
-          ¡Has completado los 5 ejemplos!
+          ¡Has completado los {quizSet.length} ejemplos!
         </div>
         <button className="sandbox-btn" onClick={reshuffle}>
           Remezclar preguntas y volver a empezar
@@ -81,9 +87,9 @@ const CodeQuiz = ({ questions }) => {
 
   return (
     <div>
-      <h4>{quiz.title}</h4>
+      <h4>{quiz.titulo}</h4>
       <pre className="sandbox-codequiz-block">
-        {quiz.code.map((line, idx) => (
+        {quiz.codigo.map((line, idx) => (
           <div
             key={idx}
             className={`sandbox-codequiz-line ${selected === idx ? 'selected' : ''} ${showResult && quiz.vulnerableLine === idx ? 'vulnerable' : ''}`}
@@ -101,9 +107,9 @@ const CodeQuiz = ({ questions }) => {
       {showResult && (
         <div style={{ marginTop: 16 }}>
           {selected === quiz.vulnerableLine ? (
-            <div style={{ color: '#388e3c', fontWeight: 600 }}>¡Correcto!<br />{quiz.explanation}</div>
+            <div style={{ color: '#388e3c', fontWeight: 600 }}>¡Correcto!<br />{quiz.explicacion}</div>
           ) : (
-            <div style={{ color: '#e53935', fontWeight: 600 }}>Incorrecto.<br />{quiz.explanation}</div>
+            <div style={{ color: '#e53935', fontWeight: 600 }}>Incorrecto.<br />{quiz.explicacion}</div>
           )}
           <button className="sandbox-btn" style={{ marginTop: 12 }} onClick={nextQuiz}>
             {current + 1 < quizSet.length ? 'Siguiente ejemplo' : 'Finalizar'}

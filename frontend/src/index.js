@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 
 import './index.css';
@@ -46,6 +46,10 @@ import ResetPasswordPage from './auth/ResetPasswordPage';
 import SandboxApp from './sandbox/SandboxApp';
 import CodeQuizPage from './codequiz/CodeQuizPage';
 import CodeQuizSession from './codequiz/CodeQuizSession';
+import AdminPanel from './admin/AdminPanel';
+import RequireAdmin from './auth/RequireAdmin';
+import ModuloAdminDashboard from './admin/ModuloAdminDashboard';
+
 
 // Importa el layout principal
 import MainLayout from './components/MainLayout';
@@ -110,6 +114,12 @@ root.render(
              <Route path="/logros/admin" element={<LogrosAdmin />} />
              <Route path="/retos-codigo" element={<CodeQuizPage />} />
              <Route path="/retos-codigo/sesion" element={<CodeQuizSession />} />
+
+             <Route path="/admin" element={<RequireAdmin />}>
+            <Route index element={<Navigate to="modulos" replace />} />
+            <Route path="modulos" element={<AdminPanel />} />
+            <Route path="modulos/:id" element={<ModuloAdminDashboard />} />
+          </Route>
           </Route>
         </Routes>
       </BrowserRouter>

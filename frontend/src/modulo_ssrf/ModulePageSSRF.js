@@ -1,16 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import './css/ModulePage.css';
 
 import InteractiveTest from '../components/InteractiveTest';
-import ssrfQuestions from './questions';
 import ModuleList from '../components/ModuleList';
 import ModuleComments from '../components/ModuleComments';
-import { pistas, soluciones, explicacionNivel } from './ssrfHints';
-
 import CodeQuiz from '../codequiz/CodeQuiz';
-import CODE_QUIZ from '../codequiz/quizData';
-
+import MDEditor from '@uiw/react-md-editor';
+import axios from 'axios';
 
 function ModulePageSSRF() {
   const { user } = useAuth();
@@ -18,9 +15,59 @@ function ModulePageSSRF() {
   const [nivel, setNivel] = useState(localStorage.getItem('nivelSSRF') || 'facil');
   const [showExample, setShowExample] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
-  const [showHint, setShowHint] = useState(false);
-  const [showSolution, setShowSolution] = useState(false);
+  const [showHint, setShowHint] = useState({});
+  const [showSolution, setShowSolution] = useState({});
   const [showCodeQuiz, setShowCodeQuiz] = useState(false);
+
+  // Estado para datos del backend
+  const [modulo, setModulo] = useState(null);
+  const [loadingModulo, setLoadingModulo] = useState(true);
+
+  const API_URL = process.env.REACT_APP_BACKEND_URL;
+
+  // Mapear nivel string a enum del backend
+  const nivelEnum = {
+    'facil': 'FACIL',
+    'medio': 'MEDIO',
+    'dificil': 'DIFICIL',
+    'imposible': 'IMPOSIBLE'
+  };
+
+  // Obtener descripción técnica según nivel
+  const getDescripcionTecnica = () => {
+    if (!modulo || !modulo.descripcionesTecnicas) return null;
+    return modulo.descripcionesTecnicas.find(
+      d => d.nivel === nivelEnum[nivel]
+    );
+  };
+
+  // Obtener todas las pistas y soluciones según nivel
+  const pistasActuales = (modulo?.pistas || []).filter(p => p.nivel === nivelEnum[nivel]);
+  const solucionesActuales = (modulo?.soluciones || []).filter(s => s.nivel === nivelEnum[nivel]);
+
+  // Adaptar preguntas teóricas si existen
+  const preguntasTeoricasAdaptadas = (modulo?.preguntasTeoricas || []).map(q => ({
+    question: q.pregunta,
+    options: q.opciones,
+    correctAnswer: q.respuesta
+  }));
+
+  // Adaptar preguntas de quiz de código si existen
+  const ssrfQuizQuestions = modulo?.preguntasQuizCodigo || [];
+
+  useEffect(() => {
+    setLoadingModulo(true);
+    // El id del módulo SSRF debe coincidir con el backend (ajusta si es necesario)
+    axios.get(`${API_URL}/api/modulos/5`)
+      .then(res => {
+        setModulo(res.data);
+        setLoadingModulo(false);
+      })
+      .catch(err => {
+        console.error('Error al cargar el módulo:', err);
+        setLoadingModulo(false);
+      });
+  }, [API_URL]);
 
   // Guarda el nivel en localStorage al cambiarlo
   const handleNivelChange = e => {
@@ -28,51 +75,27 @@ function ModulePageSSRF() {
     localStorage.setItem('nivelSSRF', e.target.value);
   };
 
-  const ssrfQuizQuestions = CODE_QUIZ.filter(q => q.type === "ssrf");
+  if (loadingModulo) return <div>Cargando módulo...</div>;
+  if (!modulo) return <div>No se encontró el módulo.</div>;
+
+  const descripcionTecnica = getDescripcionTecnica();
 
   return (
     <div className="ModulePage">
       <main className="ModuleContent">
-        <h1 className="h1">Módulo 5: Server-Side Request Forgery (SSRF)</h1>
-        <p>
-          <strong>Server-Side Request Forgery (SSRF)</strong> es una vulnerabilidad que permite a un atacante manipular a un servidor para que realice peticiones HTTP o de otro tipo a recursos internos o externos, normalmente controlando la URL o el destino de la petición. 
-          Esto puede permitir al atacante acceder a información interna, interactuar con servicios privados, escanear la red interna, o incluso acceder a metadatos sensibles en servicios en la nube.
-        </p>
-        <p>
-          SSRF ocurre cuando una aplicación web obtiene una URL o dirección de destino desde la entrada del usuario y la utiliza para realizar una petición desde el backend, sin validar adecuadamente el destino. 
-          Si el atacante puede controlar la URL, puede hacer que el servidor acceda a recursos internos (por ejemplo, <code>http://localhost</code>, <code>http://127.0.0.1</code>, <code>http://169.254.169.254</code> en AWS) o a servicios protegidos por firewalls.
-        </p>
-        <ul>
-          <li><strong>Acceso a recursos internos:</strong> El atacante puede leer datos de servicios internos no expuestos públicamente.</li>
-          <li><strong>Escaneo de red interna:</strong> El atacante puede descubrir servicios y puertos abiertos en la red privada.</li>
-          <li><strong>Acceso a metadatos en la nube:</strong> En entornos cloud, puede acceder a endpoints como <code>169.254.169.254</code> para obtener credenciales temporales.</li>
-          <li><strong>Bypass de controles de acceso:</strong> El atacante puede acceder a recursos restringidos desde el backend.</li>
-        </ul>
-        <p>
-          <strong>¿Quieres saber más?</strong> Consulta estos recursos recomendados:
-          <ul>
-            <li>
-              <a href="https://owasp.org/www-community/attacks/Server_Side_Request_Forgery" target="_blank" rel="noopener noreferrer">
-                OWASP: Server-Side Request Forgery (SSRF)
-              </a>
-            </li>
-            <li>
-              <a href="https://portswigger.net/web-security/ssrf" target="_blank" rel="noopener noreferrer">
-                PortSwigger Web Security Academy: SSRF
-              </a>
-            </li>
-            <li>
-              <a href="https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer">
-                OWASP SSRF Prevention Cheat Sheet
-              </a>
-            </li>
-          </ul>
-        </p>
+        <h1 className="h1">
+          <MDEditor.Markdown source={modulo.nombre} className="markdown-content" data-color-mode="light" />
+        </h1>
+        <MDEditor.Markdown source={modulo.descripcion} className="markdown-content" data-color-mode="light" />
 
         {/* Selector de nivel de dificultad */}
         <section>
-          <h2>Selecciona el nivel de dificultad</h2>
-          <label style={{ fontWeight: 600, marginRight: 8 }}>Nivel:</label>
+          <h2>
+            <MDEditor.Markdown source={'Selecciona el nivel de dificultad'} className="markdown-content" data-color-mode="light" />
+          </h2>
+          <label style={{ fontWeight: 600, marginRight: 8 }}>
+            <MDEditor.Markdown source={'Nivel:'} className="markdown-content" data-color-mode="light" />
+          </label>
           <select value={nivel} onChange={handleNivelChange}>
             <option value="facil">Fácil</option>
             <option value="medio">Medio</option>
@@ -80,60 +103,48 @@ function ModulePageSSRF() {
             <option value="imposible">Imposible</option>
           </select>
           <div style={{ marginTop: 8, color: '#555', fontSize: '0.98em' }}>
-            {nivel === 'facil' && 'Sin validación, puedes acceder a cualquier recurso interno o externo.'}
-            {nivel === 'medio' && 'Filtrado básico de localhost y 127.0.0.1, pero puedes evadirlo.'}
-            {nivel === 'dificil' && 'Filtrado de IPs privadas y metadatos, pero aún hay técnicas de evasión.'}
-            {nivel === 'imposible' && 'Solo puedes acceder a imágenes de Unsplash, el backend valida correctamente.'}
+            <MDEditor.Markdown
+              source={
+                nivel === 'facil'
+                  ? 'Sin validación, puedes acceder a cualquier recurso interno o externo.'
+                  : nivel === 'medio'
+                  ? 'Filtrado básico de localhost y 127.0.0.1, pero puedes evadirlo.'
+                  : nivel === 'dificil'
+                  ? 'Filtrado de IPs privadas y metadatos, pero aún hay técnicas de evasión.'
+                  : 'Solo puedes acceder a imágenes de Unsplash, el backend valida correctamente.'
+              }
+              className="markdown-content"
+              data-color-mode="light"
+            />
           </div>
         </section>
 
         {/* Ejemplo en desplegable */}
         <section>
-          <h2>Ejemplo</h2>
+          <h2>
+            <MDEditor.Markdown source={'Ejemplo'} className="markdown-content" data-color-mode="light" />
+          </h2>
           <button onClick={() => setShowExample(e => !e)}>
             {showExample ? 'Ocultar ejemplo' : 'Mostrar ejemplo'}
           </button>
-          {showExample && (
+          {showExample && modulo.ejemplos && modulo.ejemplos.length > 0 && (
             <div className="example-details" style={{ marginTop: 14 }}>
-              <p>
-                <strong>Ejemplo 1: Lectura de recursos internos</strong><br />
-                Una aplicación permite a los usuarios obtener una vista previa de una imagen proporcionando una URL. El backend descarga la imagen usando la URL proporcionada:
-              </p>
-              <code className="sql-code">
-                {`GET /preview?url=http://example.com/imagen.jpg`}
-              </code>
-              <p>
-                Si el usuario envía <code>http://localhost:8080/admin</code> o <code>http://127.0.0.1:8000/secret</code>, el servidor podría acceder a recursos internos no expuestos públicamente.
-              </p>
-              <hr />
-              <p>
-                <strong>Ejemplo 2: Acceso a metadatos en la nube</strong><br />
-                En servicios cloud como AWS, existe un endpoint especial para metadatos:
-              </p>
-              <code className="sql-code">
-                {`GET /preview?url=http://169.254.169.254/latest/meta-data/iam/security-credentials/`}
-              </code>
-              <p>
-                Si el backend accede a esta URL, el atacante podría obtener credenciales temporales de la instancia y comprometer toda la infraestructura.
-              </p>
-              <hr />
-              <p>
-                <strong>Ejemplo 3: Escaneo de red interna</strong><br />
-                El atacante puede probar diferentes direcciones IP y puertos internos:
-              </p>
-              <code className="sql-code">
-                {`GET /preview?url=http://192.168.1.10:8080/`}
-              </code>
-              <p>
-                Analizando los tiempos de respuesta o los mensajes de error, el atacante puede mapear la red interna y descubrir servicios ocultos.
-              </p>
+              <h4>
+                <MDEditor.Markdown source={modulo.ejemplos[0].titulo} className="markdown-content" data-color-mode="light" />
+              </h4>
+              <MDEditor.Markdown source={modulo.ejemplos[0].descripcion} className="markdown-content" data-color-mode="light" />
+              {modulo.ejemplos[0].codigo && (
+                <pre className="sql-code">{modulo.ejemplos[0].codigo}</pre>
+              )}
             </div>
           )}
         </section>
 
         {/* Vídeo en desplegable */}
         <section>
-          <h2>Vídeo</h2>
+          <h2>
+            <MDEditor.Markdown source={'Vídeo'} className="markdown-content" data-color-mode="light" />
+          </h2>
           <button onClick={() => setShowVideo(v => !v)}>
             {showVideo ? 'Ocultar vídeo' : 'Mostrar vídeo'}
           </button>
@@ -142,7 +153,7 @@ function ModulePageSSRF() {
               <iframe
                 width="560"
                 height="315"
-                src="https://www.youtube.com/embed/5qT3QyQ6Q6E"
+                src={modulo.videoUrl}
                 title="YouTube video player"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -154,49 +165,73 @@ function ModulePageSSRF() {
 
         {/* Test interactivo */}
         <section>
-          <h2>Test teórico</h2>
-          <InteractiveTest questions={ssrfQuestions} />
+          <h2>
+            <MDEditor.Markdown source={'Test teórico'} className="markdown-content" data-color-mode="light" />
+          </h2>
+          <InteractiveTest questions={preguntasTeoricasAdaptadas} />
         </section>
 
-        {/* Ejercicio */}
+        {/* Ejercicios con pistas y soluciones por nivel */}
         <section>
-          <h2>Ejercicio: Explota SSRF para acceder a recursos internos</h2>
-          <p>
-            <strong>Contexto:</strong> Imagina que eres administrador de una tienda online y tienes acceso a un panel de administración donde puedes gestionar productos, usuarios y ver estadísticas. 
-            El panel incluye una funcionalidad para obtener una <b>vista previa de la imagen de un producto</b> a partir de una URL externa. 
-            Esta funcionalidad es vulnerable a SSRF, ya que el backend descarga cualquier recurso solicitado sin validar el destino.
-          </p>
-          <p>
-            Tu objetivo es explotar esta funcionalidad para hacer que el servidor acceda a recursos internos o protegidos, demostrando la vulnerabilidad SSRF. 
-            Puedes hacerlo directamente desde el formulario de vista previa de imagen en el entorno vulnerable, introduciendo URLs internas o de servicios sensibles.
-          </p>
+          <h2>
+            <MDEditor.Markdown source={'Ejercicios'} className="markdown-content" data-color-mode="light" />
+          </h2>
+          {/* Mostrar la descripción de ejercicios en Markdown */}
+          {modulo.descripcionEjercicios && (
+            <div style={{ marginBottom: 16 }}>
+              <MDEditor.Markdown
+                source={modulo.descripcionEjercicios}
+                className="markdown-content"
+                data-color-mode="light"
+              />
+            </div>
+          )}
 
-          <div style={{ marginTop: 18 }}>
-            <button className="hint-btn" onClick={() => setShowHint(h => !h)}>
-              {showHint ? 'Ocultar pista' : 'Mostrar pista'}
-            </button>
-            {showHint && (
-              <div className="hint-box">
-                {pistas[nivel]}
-              </div>
-            )}
-            <button className="hint-btn" onClick={() => setShowSolution(s => !s)}>
-              {showSolution ? 'Ocultar solución' : 'Mostrar solución'}
-            </button>
-            {showSolution && (
-              <div className="hint-box solution-box">
-                {soluciones[nivel]}
-              </div>
-            )}
-          </div>
+          {/* Mostrar todas las pistas */}
+          <MDEditor.Markdown
+            source={pistasActuales.length > 0 ? 'Pistas para este nivel:' : 'No hay pistas para este nivel.'}
+            className="markdown-content"
+            data-color-mode="light"
+          />
+          {pistasActuales.map((pista, idx) => (
+            <div key={idx} style={{ marginBottom: 8 }}>
+              <button className="hint-btn" onClick={() => setShowHint(h => ({ ...h, [idx]: !h[idx] }))}>
+                {showHint[idx] ? 'Ocultar pista' : `Mostrar pista ${idx + 1}`}
+              </button>
+              {showHint[idx] && (
+                <div className="hint-box">
+                  <MDEditor.Markdown source={pista.texto} className="markdown-content" data-color-mode="light" />
+                </div>
+              )}
+            </div>
+          ))}
+
+          {/* Mostrar todas las soluciones */}
+          <MDEditor.Markdown
+            source={solucionesActuales.length > 0 ? 'Soluciones para este nivel:' : 'No hay soluciones para este nivel.'}
+            className="markdown-content"
+            data-color-mode="light"
+          />
+          {solucionesActuales.map((solucion, idx) => (
+            <div key={idx} style={{ marginBottom: 8 }}>
+              <button className="hint-btn" onClick={() => setShowSolution(s => ({ ...s, [idx]: !s[idx] }))}>
+                {showSolution[idx] ? 'Ocultar solución' : `Mostrar solución ${idx + 1}`}
+              </button>
+              {showSolution[idx] && (
+                <div className="hint-box solution-box">
+                  <MDEditor.Markdown source={solucion.texto} className="markdown-content" data-color-mode="light" />
+                </div>
+              )}
+            </div>
+          ))}
         </section>
 
         {/* Acceso al entorno vulnerable */}
         <section>
-          <h2>Acceso al entorno vulnerable</h2>
-          <p>
-            Pulsa el siguiente botón para abrir la aplicación vulnerable a SSRF en una nueva pestaña y realizar el ejercicio.
-          </p>
+          <h2>
+            <MDEditor.Markdown source={'Acceso al entorno vulnerable'} className="markdown-content" data-color-mode="light" />
+          </h2>
+          <MDEditor.Markdown source={modulo.infoEntorno} className="markdown-content" data-color-mode="light" />
           <button
             className="sandbox-button"
             style={{ marginTop: 12 }}
@@ -236,7 +271,7 @@ function ModulePageSSRF() {
               }}
               onClick={() => setShowCodeQuiz(s => !s)}
             >
-              ¿Reconoces el código vulnerable? (quiz interactivo)
+              <MDEditor.Markdown source={'¿Reconoces el código vulnerable? (quiz interactivo)'} className="markdown-content" data-color-mode="light" />
             </summary>
             {showCodeQuiz && (
               <div style={{ marginTop: 18 }}>
@@ -252,11 +287,15 @@ function ModulePageSSRF() {
             ¿Por qué funciona la vulnerabilidad? (ver explicación técnica)
           </summary>
           <div style={{ marginTop: 16 }}>
-            {explicacionNivel[nivel]}
+            {descripcionTecnica ? (
+              <MDEditor.Markdown source={descripcionTecnica.descripcion} className="markdown-content" data-color-mode="light" />
+            ) : (
+              <MDEditor.Markdown source={'No hay descripción técnica para este nivel.'} className="markdown-content" data-color-mode="light" />
+            )}
           </div>
         </details>
 
-        <ModuleComments moduleId="ssrf" user={user} />
+        <ModuleComments moduleId={modulo.id} user={user} />
 
       </main>
       <ModuleList />

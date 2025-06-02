@@ -31,7 +31,7 @@ public class ReporteErrorController {
     public ResponseEntity<List<ReporteError>> getAll(@RequestHeader("Authorization") String authHeader) {
         String username = usuarioService.getUsernameFromToken(authHeader.replace("Bearer ", ""));
         User user = usuarioService.findByUsername(username).orElseThrow();
-        if (user.getRol() == User.Rol.ADMIN) {
+        if (user.getRol() == User.Rol.ROLE_ADMIN) {
             return ResponseEntity.ok(reporteErrorService.findAll());
         } else {
             return ResponseEntity.ok(reporteErrorService.findByUsuario(username));
@@ -44,7 +44,7 @@ public class ReporteErrorController {
         String username = usuarioService.getUsernameFromToken(authHeader.replace("Bearer ", ""));
         User user = usuarioService.findByUsername(username).orElseThrow();
         return reporteErrorService.findById(id)
-                .filter(r -> r.getUsuario().getUsername().equals(username) || user.getRol() == User.Rol.ADMIN)
+                .filter(r -> r.getUsuario().getUsername().equals(username) || user.getRol() == User.Rol.ROLE_ADMIN)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.status(403).build());
     }

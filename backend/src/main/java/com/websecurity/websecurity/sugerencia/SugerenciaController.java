@@ -30,7 +30,7 @@ public class SugerenciaController {
     public ResponseEntity<List<Sugerencia>> getAll(@RequestHeader("Authorization") String authHeader) {
         String username = usuarioService.getUsernameFromToken(authHeader.replace("Bearer ", ""));
         User user = usuarioService.findByUsername(username).orElseThrow();
-        if (user.getRol() == User.Rol.ADMIN) {
+        if (user.getRol() == User.Rol.ROLE_ADMIN) {
             return ResponseEntity.ok(sugerenciaService.findAll());
         } else {
             return ResponseEntity.ok(sugerenciaService.findByUsuario(username));
@@ -43,7 +43,7 @@ public class SugerenciaController {
         String username = usuarioService.getUsernameFromToken(authHeader.replace("Bearer ", ""));
         User user = usuarioService.findByUsername(username).orElseThrow();
         return sugerenciaService.findById(id)
-                .filter(s -> s.getUsuario().getUsername().equals(username) || user.getRol() == User.Rol.ADMIN)
+                .filter(s -> s.getUsuario().getUsername().equals(username) || user.getRol() == User.Rol.ROLE_ADMIN)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.status(403).build());
     }

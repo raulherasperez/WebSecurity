@@ -37,7 +37,7 @@ public class User {
     private LocalDateTime resetTokenExpiry;
 
     public enum Rol {
-        USER, ADMIN, MODERATOR
+        USER, ROLE_ADMIN, MODERATOR
     }
 
     public User() {

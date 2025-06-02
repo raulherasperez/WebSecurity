@@ -47,6 +47,42 @@ public class SecurityConfig {
                     .requestMatchers("/api/users/verify", "/api/users/register", "/api/users/forgot-password", "/api/users/reset-password").permitAll()
                     .requestMatchers("/api/upload/**").authenticated()
                     .requestMatchers(HttpMethod.GET, "/api/comentarios/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/preguntas-quiz/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/preguntas-quiz/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/api/preguntas-quiz/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/api/preguntas-quiz/**").hasRole("ADMIN")
+
+                    .requestMatchers(HttpMethod.GET, "/api/modulos/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/modulos/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/api/modulos/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/api/modulos/**").hasRole("ADMIN")
+
+                    .requestMatchers(HttpMethod.GET, "/api/descripciones-tecnicas/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/descripciones-tecnicas/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/api/descripciones-tecnicas/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/api/descripciones-tecnicas/**").hasRole("ADMIN")
+
+                    .requestMatchers(HttpMethod.GET, "/api/ejemplos/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/ejemplos/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/api/ejemplos/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/api/ejemplos/**").hasRole("ADMIN")
+
+                    .requestMatchers(HttpMethod.GET, "/api/soluciones/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/soluciones/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/api/soluciones/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/api/soluciones/**").hasRole("ADMIN")
+
+                    .requestMatchers(HttpMethod.GET, "/api/pistas/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/pistas/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/api/pistas/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/api/pistas/**").hasRole("ADMIN")
+
+                    .requestMatchers(HttpMethod.GET, "/api/preguntas-teoricas/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/preguntas-teoricas/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/api/preguntas-teoricas/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/api/preguntas-teoricas/**").hasRole("ADMIN")
+                    
+
                     .requestMatchers("/api/vms", "/api/vms/**").permitAll()
                     .requestMatchers("/api/sugerencias/**").authenticated()
                     .requestMatchers("/api/reportes/**").authenticated()

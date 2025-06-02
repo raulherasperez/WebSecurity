@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.UUID;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class UsuarioService {
@@ -93,10 +94,12 @@ public class UsuarioService {
     public String loginAndGetToken(String username, String rawPassword) {
     Optional<User> userOpt = userRepository.findByUsername(username);
     if (userOpt.isPresent() && passwordEncoder.matches(rawPassword, userOpt.get().getPassword())) {
-        return jwtUtil.generateToken(username);
+        User user = userOpt.get();
+        // Incluye el rol en el token
+        return jwtUtil.generateToken(username, List.of(user.getRol().name()));
     }
     return null;
-    }
+}
 
     public Optional<User> findById(Long id) {
     return userRepository.findById(id);
