@@ -5,6 +5,7 @@ import './css/GuiaListado.css';
 import SidebarMenu from '../components/SidebarMenu';
 import LogoHomeLink from '../components/LogoHomeLink';
 import MDEditor from '@uiw/react-md-editor';
+import { useAuth } from '../context/AuthContext';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -12,6 +13,8 @@ const GuiaListado = () => {
   const [guias, setGuias] = useState([]);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  
+  const token = localStorage.getItem('authToken');
 
   useEffect(() => {
     const fetchGuias = async () => {
@@ -32,12 +35,14 @@ const GuiaListado = () => {
         
         <div className="guia-listado-header">
           <h2>Listado de Guías</h2>
-          <button
-            className="guia-listado-crear-btn"
-            onClick={() => navigate('/guias/crear')}
-          >
-            + Crear guía
-          </button>
+          {token && (
+            <button
+              className="guia-listado-crear-btn"
+              onClick={() => navigate('/guias/crear')}
+            >
+              + Crear guía
+            </button>
+          )}
         </div>
         <ul className="guia-listado-list">
           {guias.map(guia => (
@@ -49,15 +54,15 @@ const GuiaListado = () => {
                 Publicada por: {guia.usuario?.username || 'Desconocido'} | {new Date(guia.fechaAñadida).toLocaleString()}
               </div>
               <div className="guia-listado-preview" data-color-mode="light">
-        <MDEditor.Markdown
-          source={
-            guia.contenido && guia.contenido.length > 120
-              ? guia.contenido.slice(0, 120) + '...'
-              : guia.contenido
-          }
-          style={{ background: 'transparent', fontSize: '1rem', padding: 0 }}
-        />
-      </div>
+                <MDEditor.Markdown
+                  source={
+                    guia.contenido && guia.contenido.length > 120
+                      ? guia.contenido.slice(0, 120) + '...'
+                      : guia.contenido
+                  }
+                  style={{ background: 'transparent', fontSize: '1rem', padding: 0 }}
+                />
+              </div>
             </li>
           ))}
         </ul>

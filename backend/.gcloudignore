@@ -1,0 +1,6 @@
+# .gcloudignore
+# No ignores target/
+.git
+.idea
+*.iml
+node_modules

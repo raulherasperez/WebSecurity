@@ -24,7 +24,7 @@ function ModulePageSQLi() {
   const [loadingModulo, setLoadingModulo] = useState(true);
 
   console.log(modulo?.soluciones)
-  console.log(modulo?.id)
+  console.log(modulo?.ejemplos)
 
   const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -120,14 +120,18 @@ function ModulePageSQLi() {
             {showDetails ? 'Ocultar detalles' : 'Mostrar detalles'}
           </button>
           {showDetails && modulo.ejemplos && modulo.ejemplos.length > 0 && (
-            <div className="example-details">
-              <h4>
-                <MDEditor.Markdown source={modulo.ejemplos[0].titulo} className="markdown-content" data-color-mode="light" />
-              </h4>
-              <MDEditor.Markdown source={modulo.ejemplos[0].descripcion} className="markdown-content" data-color-mode="light" />
-              <pre className="sql-code">{modulo.ejemplos[0].codigo}</pre>
-            </div>
-          )}
+          <div className="example-details">
+            {modulo.ejemplos.map((ejemplo, idx) => (
+              <div key={ejemplo.id || idx} style={{ marginBottom: 24 }}>
+                <h4>
+                  <MDEditor.Markdown source={ejemplo.titulo} className="markdown-content" data-color-mode="light" />
+                </h4>
+                <MDEditor.Markdown source={ejemplo.descripcion} className="markdown-content" data-color-mode="light" />
+                <pre className="sql-code">{ejemplo.codigo}</pre>
+              </div>
+            ))}
+          </div>
+        )}
         </section>
 
         {/* Vídeo */}

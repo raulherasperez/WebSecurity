@@ -49,6 +49,7 @@ import CodeQuizSession from './codequiz/CodeQuizSession';
 import AdminPanel from './admin/AdminPanel';
 import RequireAdmin from './auth/RequireAdmin';
 import ModuloAdminDashboard from './admin/ModuloAdminDashboard';
+import ModulePageGeneric from './components/ModulePageGeneric';
 
 
 // Importa el layout principal
@@ -94,6 +95,7 @@ root.render(
             <Route path="/modulo/bac" element={<ModulePageBAC />} />
             <Route path="/modulo/ssrf" element={<ModulePageSSRF />} />
             <Route path="/modulo/brokenauth" element={<ModulePageBrokenAuth />} />
+            <Route path="/modulo/:id" element={<ModulePageGeneric />} />
             
             {/* Rutas de máquinas virtuales */}
             <Route path="/machines" element={<VMListado />} />

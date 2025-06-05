@@ -38,7 +38,7 @@ function PistasList({ moduloId }) {
       } else {
         await axios.post(
           `${API_URL}/api/pistas`,
-          { texto, nivel, moduloId },
+          { texto, nivel, modulo: { id: moduloId } },
           authHeader
         );
       }

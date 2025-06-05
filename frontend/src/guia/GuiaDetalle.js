@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import MDEditor from '@uiw/react-md-editor';
 import './css/GuiaDetalle.css';
+import { useAuth } from '../context/AuthContext';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -13,10 +14,12 @@ const GuiaDetalle = () => {
   const [deleting, setDeleting] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   // Usuario loggeado
-  const username = localStorage.getItem('username');
+  const username = user?.username;
   const token = localStorage.getItem('authToken');
+  
 
   useEffect(() => {
     const fetchGuia = async () => {

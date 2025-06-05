@@ -39,7 +39,7 @@ function EjemplosList({ moduloId }) {
       } else {
         await axios.post(
           `${API_URL}/api/ejemplos`,
-          { titulo, descripcion, codigo, moduloId },
+          { titulo, descripcion, codigo, modulo: { id: moduloId } },
           authHeader
         );
       }

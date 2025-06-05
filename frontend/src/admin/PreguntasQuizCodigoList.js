@@ -41,7 +41,7 @@ function PreguntasQuizCodigoList({ moduloId }) {
       } else {
         await axios.post(
           `${API_URL}/api/preguntas-quiz`,
-          { titulo, codigo: codigoArr, vulnerableLine, explicacion, moduloId },
+          { titulo, codigo: codigoArr, vulnerableLine, explicacion, modulo: { id: moduloId } },
           authHeader
         );
       }

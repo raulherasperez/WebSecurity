@@ -38,7 +38,7 @@ function DescripcionesTecnicasList({ moduloId }) {
       } else {
         await axios.post(
           `${API_URL}/api/descripciones-tecnicas`,
-          { descripcion, nivel, moduloId },
+          { descripcion, nivel, modulo: { id: moduloId } },
           authHeader
         );
       }

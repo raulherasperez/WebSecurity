@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import MDEditor from '@uiw/react-md-editor';
 import './css/GuiaCrear.css';
+import { useAuth } from '../context/AuthContext';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -15,9 +16,12 @@ const GuiaEditar = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const token = localStorage.getItem('authToken');
-  const username = localStorage.getItem('username');
   const fileInputRef = useRef();
   const editorRef = useRef();
+  const { user } = useAuth();
+  const username = user?.username;
+
+
 
   useEffect(() => {
     const fetchGuia = async () => {

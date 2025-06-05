@@ -40,7 +40,7 @@ function PreguntasTeoricasList({ moduloId }) {
       } else {
         await axios.post(
           `${API_URL}/api/preguntas-teoricas`,
-          { pregunta, opciones: opcionesArr, respuesta, moduloId },
+          { pregunta, opciones: opcionesArr, respuesta, modulo: { id: moduloId }},
           authHeader
         );
       }

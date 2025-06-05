@@ -38,7 +38,7 @@ function SolucionesList({ moduloId }) {
       } else {
         await axios.post(
           `${API_URL}/api/soluciones`,
-          { texto, nivel, moduloId },
+          { texto, nivel, modulo: { id: moduloId } },
           authHeader
         );
       }

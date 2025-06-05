@@ -33,7 +33,6 @@ const handleSubmit = async (e) => {
   const token = localStorage.getItem('authToken');
   const data = { modulo: { id: moduleId }, texto: text };
   const config = { headers: { Authorization: `Bearer ${token}` } };
-  console.log('Enviando comentario:', data, config); // <-- Aquí el log
   try {
     const res = await axios.post(
       `${API_URL}/api/comentarios`,
@@ -94,7 +93,7 @@ const handleSubmit = async (e) => {
                 </span>
               </div>
               <div className="comment-text">{c.texto}</div>
-              {(user?.rol === 'ADMIN' || user?.rol === 'MODERATOR') && (
+              {(user?.rol === 'ROLE_ADMIN' || user?.rol === 'MODERATOR') && (
                 <div className="comment-actions">
                   <button onClick={() => handleDelete(c.id)}>Eliminar</button>
                 </div>

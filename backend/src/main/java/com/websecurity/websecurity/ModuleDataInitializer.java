@@ -54,7 +54,7 @@ public class ModuleDataInitializer implements CommandLineRunner {
             sqli.setDescripcion(descripcionSQLi);
             sqli.setDescripcionEjercicios(ejerciciosSQLi);
             sqli.setNombre("Inyección SQL");
-            sqli.setVideoUrl("https://www.youtube.com/embed/ciNHn38EyRc");
+            sqli.setVideoUrl("https://www.youtube.com/embed/qLeeLRn9Z78?si=5AhGHVf4m97Wsv0e");
             sqli.setInfoEntorno("Pulsa el botón para abrir la tienda vulnerable y practicar ataques de inyección SQL.");
             moduloRepository.save(sqli);
 
@@ -135,7 +135,7 @@ public class ModuleDataInitializer implements CommandLineRunner {
             xss.setNombre("Cross-Site Scripting (XSS)");
             xss.setDescripcion((String) xssData.get("descripcion"));
             xss.setDescripcionEjercicios((String) xssData.get("descripcionEjercicios"));
-            xss.setVideoUrl("https://www.youtube.com/embed/BrjeZ9b4p2A");
+            xss.setVideoUrl("https://www.youtube.com/embed/_IO8Sm-tWPs?si=BbujyiFv8s_HHn30");
             xss.setInfoEntorno("Pulsa el botón para abrir la aplicación vulnerable a XSS.");
             moduloRepository.save(xss);
 
@@ -206,7 +206,7 @@ public class ModuleDataInitializer implements CommandLineRunner {
             csrf.setNombre("Cross-Site Request Forgery (CSRF)");
             csrf.setDescripcion((String) csrfData.get("descripcion"));
             csrf.setDescripcionEjercicios((String) csrfData.get("descripcionEjercicios"));
-            csrf.setVideoUrl("https://www.youtube.com/embed/6jI8vruj6jY");
+            csrf.setVideoUrl("https://www.youtube.com/embed/kZ0x5K3msWg?si=0VRaVH9S27CKow3T");
             csrf.setInfoEntorno("Pulsa el botón para abrir la aplicación vulnerable a CSRF.");
             moduloRepository.save(csrf);
 
@@ -274,7 +274,7 @@ public class ModuleDataInitializer implements CommandLineRunner {
             bac.setNombre("Broken Access Control (BAC)");
             bac.setDescripcion((String) bacData.get("descripcion"));
             bac.setDescripcionEjercicios((String) bacData.get("descripcionEjercicios"));
-            bac.setVideoUrl("https://www.youtube.com/embed/8ZtInClXe1Q");
+            bac.setVideoUrl("https://www.youtube.com/embed/Mn9oFEv1VIQ?si=B0qz3ZGHCU17pqU8");
             bac.setInfoEntorno("Pulsa el botón para abrir la aplicación vulnerable a BAC.");
             moduloRepository.save(bac);
 
@@ -336,7 +336,7 @@ public class ModuleDataInitializer implements CommandLineRunner {
             ssrf.setNombre("Server-Side Request Forgery (SSRF)");
             ssrf.setDescripcion((String) ssrfData.get("descripcion"));
             ssrf.setDescripcionEjercicios((String) ssrfData.get("descripcionEjercicios"));
-            ssrf.setVideoUrl("https://www.youtube.com/embed/8ZtInClXe1Q");
+            ssrf.setVideoUrl("https://www.youtube.com/embed/1-UTT8OeY8E?si=E7c31Hb3YY31mAlX");
             ssrf.setInfoEntorno("Pulsa el botón para abrir la aplicación vulnerable a SSRF.");
             moduloRepository.save(ssrf);
 
@@ -398,7 +398,7 @@ public class ModuleDataInitializer implements CommandLineRunner {
             brokenAuth.setNombre("Broken Authentication");
             brokenAuth.setDescripcion((String) brokenAuthData.get("descripcion"));
             brokenAuth.setDescripcionEjercicios((String) brokenAuthData.get("descripcionEjercicios"));
-            brokenAuth.setVideoUrl("https://www.youtube.com/embed/8ZtInClXe1Q");
+            brokenAuth.setVideoUrl("https://www.youtube.com/embed/lyuX3M06Mk8?si=JSTy5JTl7Ya6psiO");
             brokenAuth.setInfoEntorno("Pulsa el siguiente botón para abrir la aplicación vulnerable a Broken Authentication en una nueva pestaña y realizar el ejercicio.");
             moduloRepository.save(brokenAuth);
 
