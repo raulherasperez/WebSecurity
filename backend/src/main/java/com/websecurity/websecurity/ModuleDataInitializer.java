@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.io.FileNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.Map;
@@ -41,10 +41,13 @@ public class ModuleDataInitializer implements CommandLineRunner {
         if (sqliOpt.isPresent()) {
             sqli = sqliOpt.get();
         } else {
-            Map<String, Object> sqliData = mapper.readValue(
-                Files.readString(Paths.get("src/main/resources/informacion/sqli/sqli_data.json"), StandardCharsets.UTF_8),
-                Map.class
-            );
+            // Cambiado: Leer el recurso desde el classpath
+            InputStream sqliStream = getClass().getClassLoader().getResourceAsStream("informacion/sqli/sqli_data.json");
+            if (sqliStream == null) {
+                throw new FileNotFoundException("No se encontró el archivo sqli_data.json en el classpath");
+            }
+            String sqliJson = new String(sqliStream.readAllBytes(), StandardCharsets.UTF_8);
+            Map<String, Object> sqliData = mapper.readValue(sqliJson, Map.class);
 
             String descripcionSQLi = (String) sqliData.get("descripcion");
             String ejerciciosSQLi = (String) sqliData.get("descripcionEjercicios");
@@ -127,10 +130,13 @@ public class ModuleDataInitializer implements CommandLineRunner {
         if (xssOpt.isPresent()) {
             xss = xssOpt.get();
         } else {
-            Map<String, Object> xssData = mapper.readValue(
-                Files.readString(Paths.get("src/main/resources/informacion/xss/xss_data.json"), StandardCharsets.UTF_8),
-                Map.class
-            );
+            InputStream xssStream = getClass().getClassLoader().getResourceAsStream("informacion/xss/xss_data.json");
+            if (xssStream == null) {
+                throw new FileNotFoundException("No se encontró el archivo xss_data.json en el classpath");
+            }
+            String xssJson = new String(xssStream.readAllBytes(), StandardCharsets.UTF_8);
+            Map<String, Object> xssData = mapper.readValue(xssJson, Map.class);
+
             xss = new Modulo();
             xss.setNombre("Cross-Site Scripting (XSS)");
             xss.setDescripcion((String) xssData.get("descripcion"));
@@ -198,10 +204,13 @@ public class ModuleDataInitializer implements CommandLineRunner {
         if (csrfOpt.isPresent()) {
             csrf = csrfOpt.get();
         } else {
-            Map<String, Object> csrfData = mapper.readValue(
-                Files.readString(Paths.get("src/main/resources/informacion/csrf/csrf_data.json"), StandardCharsets.UTF_8),
-                Map.class
-            );
+            InputStream csrfStream = getClass().getClassLoader().getResourceAsStream("informacion/csrf/csrf_data.json");
+            if (csrfStream == null) {
+                throw new FileNotFoundException("No se encontró el archivo csrf_data.json en el classpath");
+            }
+            String csrfJson = new String(csrfStream.readAllBytes(), StandardCharsets.UTF_8);
+            Map<String, Object> csrfData = mapper.readValue(csrfJson, Map.class);
+
             csrf = new Modulo();
             csrf.setNombre("Cross-Site Request Forgery (CSRF)");
             csrf.setDescripcion((String) csrfData.get("descripcion"));
@@ -266,10 +275,13 @@ public class ModuleDataInitializer implements CommandLineRunner {
         if (bacOpt.isPresent()) {
             bac = bacOpt.get();
         } else {
-            Map<String, Object> bacData = mapper.readValue(
-                Files.readString(Paths.get("src/main/resources/informacion/bac/bac_data.json"), StandardCharsets.UTF_8),
-                Map.class
-            );
+            InputStream bacStream = getClass().getClassLoader().getResourceAsStream("informacion/bac/bac_data.json");
+            if (bacStream == null) {
+                throw new FileNotFoundException("No se encontró el archivo bac_data.json en el classpath");
+            }
+            String bacJson = new String(bacStream.readAllBytes(), StandardCharsets.UTF_8);
+            Map<String, Object> bacData = mapper.readValue(bacJson, Map.class);
+
             bac = new Modulo();
             bac.setNombre("Broken Access Control (BAC)");
             bac.setDescripcion((String) bacData.get("descripcion"));
@@ -328,10 +340,13 @@ public class ModuleDataInitializer implements CommandLineRunner {
         if (ssrfOpt.isPresent()) {
             ssrf = ssrfOpt.get();
         } else {
-            Map<String, Object> ssrfData = mapper.readValue(
-                Files.readString(Paths.get("src/main/resources/informacion/ssrf/ssrf_data.json"), StandardCharsets.UTF_8),
-                Map.class
-            );
+            InputStream ssrfStream = getClass().getClassLoader().getResourceAsStream("informacion/ssrf/ssrf_data.json");
+            if (ssrfStream == null) {
+                throw new FileNotFoundException("No se encontró el archivo ssrf_data.json en el classpath");
+            }
+            String ssrfJson = new String(ssrfStream.readAllBytes(), StandardCharsets.UTF_8);
+            Map<String, Object> ssrfData = mapper.readValue(ssrfJson, Map.class);
+
             ssrf = new Modulo();
             ssrf.setNombre("Server-Side Request Forgery (SSRF)");
             ssrf.setDescripcion((String) ssrfData.get("descripcion"));
@@ -390,10 +405,13 @@ public class ModuleDataInitializer implements CommandLineRunner {
         if (brokenAuthOpt.isPresent()) {
             brokenAuth = brokenAuthOpt.get();
         } else {
-            Map<String, Object> brokenAuthData = mapper.readValue(
-                Files.readString(Paths.get("src/main/resources/informacion/broken_auth/broken_auth_data.json"), StandardCharsets.UTF_8),
-                Map.class
-            );
+            InputStream brokenAuthStream = getClass().getClassLoader().getResourceAsStream("informacion/broken_auth/broken_auth_data.json");
+            if (brokenAuthStream == null) {
+                throw new FileNotFoundException("No se encontró el archivo broken_auth_data.json en el classpath");
+            }
+            String brokenAuthJson = new String(brokenAuthStream.readAllBytes(), StandardCharsets.UTF_8);
+            Map<String, Object> brokenAuthData = mapper.readValue(brokenAuthJson, Map.class);
+
             brokenAuth = new Modulo();
             brokenAuth.setNombre("Broken Authentication");
             brokenAuth.setDescripcion((String) brokenAuthData.get("descripcion"));
@@ -447,8 +465,13 @@ public class ModuleDataInitializer implements CommandLineRunner {
         }
 
         // --- PREGUNTAS QUIZ CÓDIGO ---
+        InputStream quizStream = getClass().getClassLoader().getResourceAsStream("informacion/quizData.json");
+        if (quizStream == null) {
+            throw new FileNotFoundException("No se encontró el archivo quizData.json en el classpath");
+        }
+        String quizJson = new String(quizStream.readAllBytes(), StandardCharsets.UTF_8);
         List<Map<String, Object>> quizData = mapper.readValue(
-            Files.readString(Paths.get("src/main/resources/informacion/quizData.json"), StandardCharsets.UTF_8),
+            quizJson,
             new TypeReference<List<Map<String, Object>>>() {}
         );
 
@@ -475,8 +498,13 @@ public class ModuleDataInitializer implements CommandLineRunner {
         }
 
         // --- PREGUNTAS TEÓRICAS ---
+        InputStream teoricasStream = getClass().getClassLoader().getResourceAsStream("informacion/preguntas_teoricas.json");
+        if (teoricasStream == null) {
+            throw new FileNotFoundException("No se encontró el archivo preguntas_teoricas.json en el classpath");
+        }
+        String teoricasJson = new String(teoricasStream.readAllBytes(), StandardCharsets.UTF_8);
         List<Map<String, Object>> preguntasTeoricas = mapper.readValue(
-            Files.readString(Paths.get("src/main/resources/informacion/preguntas_teoricas.json"), StandardCharsets.UTF_8),
+            teoricasJson,
             new TypeReference<List<Map<String, Object>>>() {}
         );
 

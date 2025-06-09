@@ -6,6 +6,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/modulos")
+@CrossOrigin(origins = "http://localhost:3000")
 public class ModuloController {
     private final ModuloService moduloService;
 
