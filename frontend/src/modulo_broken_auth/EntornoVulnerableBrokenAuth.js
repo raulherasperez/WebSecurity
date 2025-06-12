@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { desbloquearLogro } from '../services/logroService';
 import ModalLogroDesbloqueado from '../components/ModalLogroDesbloqueado';
 
@@ -13,6 +13,35 @@ function EntornoVulnerableBrokenAuth() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [logroDesbloqueado, setLogroDesbloqueado] = useState(null);
 
+  // Estados para captcha
+  const [captchaRequired, setCaptchaRequired] = useState(false);
+  const [captcha, setCaptcha] = useState('');
+
+  // Estado para nivel de dificultad (leer de localStorage)
+  const getNivelFromStorage = () => localStorage.getItem('nivelBrokenAuth') || 'facil';
+  const [nivel, setNivel] = useState(getNivelFromStorage());
+
+  // Sincroniza el nivel con localStorage y backend cuando cambia
+  useEffect(() => {
+    localStorage.setItem('nivelBrokenAuth', nivel);
+    fetch(`${API_URL}/set-nivel-brokenauth`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nivel })
+    });
+    // Resetear captcha y mensajes al cambiar nivel
+    setCaptchaRequired(false);
+    setCaptcha('');
+    setMensaje('');
+    setUsuarioLogueado(null);
+  }, [nivel]);
+
+  const handleNivelChange = e => {
+    setNivel(e.target.value);
+    localStorage.setItem('nivelBrokenAuth', e.target.value);
+  };
+
   const handleLogin = async e => {
     e.preventDefault();
     setMensaje('');
@@ -22,14 +51,20 @@ function EntornoVulnerableBrokenAuth() {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ username, password, captcha })
       });
       const data = await res.json();
-      if (data.success) {
+      if (data.captcha_required) {
+        setCaptchaRequired(true);
+        setMensaje(data.error || 'Introduce el captcha para continuar');
+        setCaptcha('');
+        setUsuarioLogueado(null);
+      } else if (data.success) {
         setUsuarioLogueado(data.user);
         setMensaje('¡Login correcto! Has accedido como ' + data.user);
         setShowSuccessModal(true);
-
+        setCaptchaRequired(false);
+        setCaptcha('');
         // Desbloquear logro "Broken Auth Hunter" y mostrar modal
         try {
           const token = localStorage.getItem('authToken');
@@ -41,6 +76,8 @@ function EntornoVulnerableBrokenAuth() {
       } else {
         setUsuarioLogueado(null);
         setMensaje(data.error || 'Error desconocido');
+        setCaptchaRequired(false);
+        setCaptcha('');
       }
     } catch (err) {
       setMensaje('Error de conexión con el servidor');
@@ -53,6 +90,8 @@ function EntornoVulnerableBrokenAuth() {
     setMensaje('Has cerrado sesión.');
     setUsername('');
     setPassword('');
+    setCaptchaRequired(false);
+    setCaptcha('');
   };
 
   return (
@@ -87,6 +126,21 @@ function EntornoVulnerableBrokenAuth() {
               required
             />
           </div>
+          {captchaRequired && (
+            <div style={{ marginBottom: 12 }}>
+              <label>Captcha (escribe 1234):</label>
+              <input
+                type="text"
+                value={captcha}
+                onChange={e => setCaptcha(e.target.value)}
+                style={{ width: '100%', padding: 6, marginTop: 4 }}
+                required
+              />
+              <div style={{ fontSize: '0.95em', color: '#888', marginTop: 4 }}>
+                (Mockup: el valor correcto es <b>1234</b>)
+              </div>
+            </div>
+          )}
           <button
             className="sandbox-button"
             type="submit"

@@ -1,7 +1,10 @@
 package com.websecurity.websecurity.solucion;
 
+import com.websecurity.websecurity.user.UsuarioService;
+import com.websecurity.websecurity.user.User;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 @RestController
@@ -9,9 +12,12 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:3000")
 public class SolucionController {
     private final SolucionService service;
+    private final UsuarioService usuarioService;
 
-    public SolucionController(SolucionService service) {
+    @Autowired
+    public SolucionController(SolucionService service, UsuarioService usuarioService) {
         this.service = service;
+        this.usuarioService = usuarioService;
     }
 
     @GetMapping
@@ -25,18 +31,38 @@ public class SolucionController {
         return service.findByModuloId(moduloId);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public Solucion create(@RequestBody Solucion s) { return service.save(s); }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{id}")
-    public Solucion update(@PathVariable Long id, @RequestBody Solucion s) {
-        s.setId(id);
-        return service.save(s);
+    public ResponseEntity<?> create(@RequestBody Solucion s, @RequestHeader("Authorization") String authHeader) {
+        String username = usuarioService.getUsernameFromToken(authHeader.replace("Bearer ", ""));
+        User user = usuarioService.findByUsername(username).orElseThrow();
+        if (user.getRol() == User.Rol.ROLE_ADMIN) {
+            return ResponseEntity.ok(service.save(s));
+        } else {
+            return ResponseEntity.status(403).body("No autorizado");
+        }
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Solucion s, @RequestHeader("Authorization") String authHeader) {
+        String username = usuarioService.getUsernameFromToken(authHeader.replace("Bearer ", ""));
+        User user = usuarioService.findByUsername(username).orElseThrow();
+        if (user.getRol() == User.Rol.ROLE_ADMIN) {
+            s.setId(id);
+            return ResponseEntity.ok(service.save(s));
+        } else {
+            return ResponseEntity.status(403).body("No autorizado");
+        }
+    }
+
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) { service.delete(id); }
+    public ResponseEntity<?> delete(@PathVariable Long id, @RequestHeader("Authorization") String authHeader) {
+        String username = usuarioService.getUsernameFromToken(authHeader.replace("Bearer ", ""));
+        User user = usuarioService.findByUsername(username).orElseThrow();
+        if (user.getRol() == User.Rol.ROLE_ADMIN) {
+            service.delete(id);
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(403).body("No autorizado");
+        }
+    }
 }

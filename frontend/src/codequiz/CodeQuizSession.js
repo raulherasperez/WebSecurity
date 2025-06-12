@@ -42,8 +42,6 @@ const CodeQuizSession = () => {
       .catch(() => setLoading(false));
   }, []);
 
-  console.log('Preguntas cargadas:', allQuestions);
-
   // Configuración inicial
   const handleStart = () => {
     let filtered = allQuestions.filter(q => selectedModules.includes(q.moduloId));
@@ -67,6 +65,12 @@ const CodeQuizSession = () => {
   const handleSelect = idx => {
     setSelected(idx);
     setShowResult(true);
+    // Guardar la selección del usuario en la pregunta actual
+    setQuizSet(prev => {
+      const updated = [...prev];
+      updated[current] = { ...updated[current], userSelected: idx };
+      return updated;
+    });
   };
 
   // Siguiente pregunta o resultado final
@@ -203,10 +207,7 @@ const CodeQuizSession = () => {
 
   // Pantalla de resultado
   if (step === 2) {
-    const correct = quizSet.reduce(
-      (acc, quiz, idx) => acc + (quiz.vulnerableLine === quizSet[idx].userSelected ? 1 : 0),
-      0
-    );
+    const correct = quizSet.filter(q => q.vulnerableLine === (q.userSelected ?? -1)).length;
     return (
       <div className="sandbox-product-detail-page">
         <h2>¡Sesión finalizada!</h2>
@@ -214,7 +215,7 @@ const CodeQuizSession = () => {
           Has completado la sesión de código.
         </div>
         <div style={{ fontSize: '1.1rem', marginBottom: 18 }}>
-          Puntuación: <strong>{quizSet.filter((q, i) => q.vulnerableLine === (q.userSelected ?? -1)).length} / {quizSet.length}</strong>
+          Puntuación: <strong>{correct} / {quizSet.length}</strong>
         </div>
         <button className="sandbox-btn" onClick={handleRestart}>Volver a empezar</button>
       </div>

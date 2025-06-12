@@ -1,6 +1,11 @@
+
 package com.websecurity.websecurity.descripciontecnica;
 
+import com.websecurity.websecurity.user.UsuarioService;
+import com.websecurity.websecurity.user.User;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 @RestController
@@ -8,9 +13,12 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:3000")
 public class DescripcionTecnicaController {
     private final DescripcionTecnicaService service;
+    private final UsuarioService usuarioService;
 
-    public DescripcionTecnicaController(DescripcionTecnicaService service) {
+    @Autowired
+    public DescripcionTecnicaController(DescripcionTecnicaService service, UsuarioService usuarioService) {
         this.service = service;
+        this.usuarioService = usuarioService;
     }
 
     @GetMapping
@@ -34,18 +42,37 @@ public class DescripcionTecnicaController {
     }
 
     @PostMapping
-    public DescripcionTecnica create(@RequestBody DescripcionTecnica d) {
-        return service.save(d);
+    public ResponseEntity<?> create(@RequestBody DescripcionTecnica d, @RequestHeader("Authorization") String authHeader) {
+        String username = usuarioService.getUsernameFromToken(authHeader.replace("Bearer ", ""));
+        User user = usuarioService.findByUsername(username).orElseThrow();
+        if (user.getRol() == User.Rol.ROLE_ADMIN) {
+            return ResponseEntity.ok(service.save(d));
+        } else {
+            return ResponseEntity.status(403).body("No autorizado");
+        }
     }
 
     @PutMapping("/{id}")
-    public DescripcionTecnica update(@PathVariable Long id, @RequestBody DescripcionTecnica d) {
-        d.setId(id);
-        return service.save(d);
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody DescripcionTecnica d, @RequestHeader("Authorization") String authHeader) {
+        String username = usuarioService.getUsernameFromToken(authHeader.replace("Bearer ", ""));
+        User user = usuarioService.findByUsername(username).orElseThrow();
+        if (user.getRol() == User.Rol.ROLE_ADMIN) {
+            d.setId(id);
+            return ResponseEntity.ok(service.save(d));
+        } else {
+            return ResponseEntity.status(403).body("No autorizado");
+        }
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        service.deleteById(id);
+    public ResponseEntity<?> delete(@PathVariable Long id, @RequestHeader("Authorization") String authHeader) {
+        String username = usuarioService.getUsernameFromToken(authHeader.replace("Bearer ", ""));
+        User user = usuarioService.findByUsername(username).orElseThrow();
+        if (user.getRol() == User.Rol.ROLE_ADMIN) {
+            service.deleteById(id);
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(403).body("No autorizado");
+        }
     }
 }

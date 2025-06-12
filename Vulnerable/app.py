@@ -1,3 +1,4 @@
+from platform import system
 from flask import Flask, request, jsonify, Response, session, send_from_directory
 import os
 from werkzeug.utils import secure_filename
@@ -11,7 +12,8 @@ app = Flask(__name__)
 CORS(app, supports_credentials=True, origins=["http://localhost:3000"])
 app.secret_key = "supersecretkey"
 def get_db_connection():
-    conn = sqlite3.connect('db/vulnerable.db')
+    db_path = app.config.get('DATABASE', 'db/vulnerable.db')
+    conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -69,11 +71,11 @@ def vuln_productos():
             query = f"SELECT * FROM productos WHERE nombre LIKE '%{search}%' AND categoria != 'Oculta'"
             cursor.execute(query)
         elif nivel == 'medio':
-            if "'" in search or '"' in search:
+            if '"' in search:
                 return jsonify({"productos": [], "error": "Caracteres no permitidos"}), 400
-            safe_search = search if search.strip() else "'%'"
-            # OJO: NO hay comillas, así que el usuario debe inyectar algo válido para SQL
-            query = f"SELECT * FROM productos WHERE nombre LIKE {safe_search} AND categoria != 'Oculta'"
+            if not search:
+                search = '%'
+            query = f"SELECT * FROM productos WHERE nombre LIKE '{search}' AND categoria != 'Oculta'"
             cursor.execute(query)
         elif nivel == 'dificil':
             query = "SELECT * FROM productos WHERE nombre LIKE ? AND categoria != 'Oculta'"
@@ -105,7 +107,7 @@ def vuln_producto():
             cursor.execute(query)
         elif nivel == 'medio':
             import re
-            if not re.match(r'^[0-9\s\-+*/%()]+$', prod_id):
+            if not re.match(r'^[0-9\s\-+*/%()=|&]+$', prod_id):
                 return jsonify({"error": "Solo se permiten números y operadores aritméticos"}), 400
             query = f"SELECT * FROM productos WHERE id = {prod_id}"
             cursor.execute(query)
@@ -420,12 +422,16 @@ def reset_nivel_brokenauth():
     session.pop('nivel_brokenauth', None)
     return jsonify({"success": True}), 200
 
+# ...existing code...
+
 @app.route('/brokenauth-login', methods=['POST'])
 def brokenauth_login():
     data = request.get_json()
     username = data.get('username', '')
     password = data.get('password', '')
+    captcha = data.get('captcha', '')
     nivel = session.get('nivel_brokenauth', 'facil')
+    print(f"Nivel de dificultad: {nivel}")
 
     if nivel == 'facil':
         usuarios = {
@@ -461,9 +467,24 @@ def brokenauth_login():
             return jsonify({"success": False, "error": "Demasiados intentos. Inténtalo más tarde."}), 429
 
         attempts = session.get('brokenauth_attempts', 0)
+        # --- En imposible, mostrar captcha si se llega al límite ---
+        if nivel == 'imposible':
+            captcha_required = session.get('brokenauth_captcha_required', False)
+            if attempts >= 5 and not captcha_required:
+                session['brokenauth_captcha_required'] = True
+                return jsonify({"success": False, "error": "Demasiados intentos. Resuelve el captcha para continuar.", "captcha_required": True}), 429
+            if session.get('brokenauth_captcha_required', False):
+                # Mockup: el captcha correcto es "1234"
+                if captcha != "1234":
+                    return jsonify({"success": False, "error": "Captcha incorrecto", "captcha_required": True}), 401
+                # Si el captcha es correcto, resetea intentos y permite seguir
+                session['brokenauth_attempts'] = 0
+                session['brokenauth_captcha_required'] = False
+
         if attempts >= 5:
             session['brokenauth_blocked_until'] = (now + timedelta(minutes=2)).isoformat()
             session['brokenauth_attempts'] = 0
+            session['brokenauth_captcha_required'] = False
             return jsonify({"success": False, "error": "Demasiados intentos. Inténtalo más tarde."}), 429
 
     # Comprobación de usuario y contraseña
@@ -495,18 +516,15 @@ def brokenauth_login():
         session['brokenauth_user'] = username
         return jsonify({"success": True, "user": username}), 200
 
-    # Nivel imposible: mensaje genérico, límite de intentos, solo contraseñas fuertes
+    # Nivel imposible: mensaje genérico, límite de intentos, captcha si es necesario (sin restricción de contraseña fuerte)
     if nivel == 'imposible':
-        # Solo permite contraseñas fuertes (ejemplo simple)
-        import re
-        if not re.match(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$', password):
-            return jsonify({"success": False, "error": "Contraseña demasiado débil"}), 401
         if not user_exists or not password_ok:
             session['brokenauth_attempts'] = session.get('brokenauth_attempts', 0) + 1
             return jsonify({"success": False, "error": "Usuario o contraseña incorrectos"}), 401
         session['brokenauth_attempts'] = 0
         session['brokenauth_user'] = username
         return jsonify({"success": True, "user": username}), 200
+
 
 # ENTORNO SANDBOX
 @app.route('/sandbox/login', methods=['POST'])

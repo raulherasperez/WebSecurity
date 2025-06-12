@@ -113,7 +113,7 @@ const VulnerableShop = ({ nivel }) => {
         marcarRetoCompletado(1);
         setRetoCompletado(1);
 
-        // Desbloquear logro "Aprendiz SQL" solo al completar el reto 1
+        // Desbloquear logro "Aprendiz SQL"
         try {
           const token = localStorage.getItem('authToken');
           const resLogro = await desbloquearLogro(token, "Aprendiz SQL");

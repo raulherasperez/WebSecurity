@@ -92,29 +92,6 @@ def generar_productos(n=20):
         productos.append((nombre, precio, categoria, stock, imagen))
     return productos
 
-# Insertar usuario víctima para CSRF (si no existe)
-cursor.execute('''
-INSERT OR IGNORE INTO usuarios (nombre, email, ciudad, fecha_registro, password)
-VALUES (?, ?, ?, ?, ?)
-''', (
-    'victima',
-    'victima@demo.local',
-    'Ciudad Demo',
-    fake.date_between(start_date='-1y', end_date='today'),
-    'victima123'  # Contraseña original
-))
-
-cursor.execute('''
-INSERT OR IGNORE INTO usuarios (nombre, email, ciudad, fecha_registro, password)
-VALUES (?, ?, ?, ?, ?)
-''', (
-    'John',
-    'john@email.com',
-    'Ciudad John',
-    fake.date_between(start_date='-1y', end_date='today'),
-    'john'  # Contraseña original
-))
-
 # Insertar usuarios aleatorios con contraseña
 usuarios = generar_usuarios(10)
 cursor.executemany('''
@@ -139,6 +116,31 @@ cursor.executemany('''
 INSERT INTO productos (nombre, precio, categoria, stock, imagen)
 VALUES (?, ?, ?, ?, ?)
 ''', productos_ocultos)
+
+# Insertar usuario víctima para CSRF (si no existe)
+cursor.execute('''
+INSERT OR IGNORE INTO usuarios (nombre, email, ciudad, fecha_registro, password)
+VALUES (?, ?, ?, ?, ?)
+''', (
+    'victima',
+    'victima@demo.local',
+    'Ciudad Demo',
+    fake.date_between(start_date='-1y', end_date='today'),
+    'victima123'  # Contraseña original
+))
+
+cursor.execute('''
+INSERT OR IGNORE INTO usuarios (nombre, email, ciudad, fecha_registro, password)
+VALUES (?, ?, ?, ?, ?)
+''', (
+    'John',
+    'john@email.com',
+    'Ciudad John',
+    fake.date_between(start_date='-1y', end_date='today'),
+    'john'  # Contraseña original
+))
+
+
 
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS foro_comentarios (
