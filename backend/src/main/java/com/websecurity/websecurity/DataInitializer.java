@@ -70,7 +70,7 @@ public class DataInitializer implements CommandLineRunner {
         createUserIfNotExists("moderator", "moderator@websec.com", "modpass", User.Rol.MODERATOR, loadFoto("moderator.jpg"));
 
         // Guías de prueba para cada usuario con rol USER
-        createGuiaIfNotExists("user1", "Guía de prueba 1", "Contenido de la guía de prueba 1.");
+        createGuiaIfNotExists("user1", "Guía para resolver el ejercicio 1 de SQLi", "Para resolver el ejercicio 1 de SQLi, debes realizar una inyección SQL en el campo de búsqueda.");
         createGuiaIfNotExists("user2", "Guía de prueba 2", "Contenido de la guía de prueba 2.");
         createGuiaIfNotExists("user3", "Guía de prueba 3", "Contenido de la guía de prueba 3.");
 
@@ -80,14 +80,14 @@ public class DataInitializer implements CommandLineRunner {
         createVMIfNotExists("user3", "Máquina Windows 10 Eval", "Máquina Windows 10 de evaluación para pruebas.", "https://developer.microsoft.com/en-us/windows/downloads/virtual-machines/");
 
         // Sugerencias de prueba para cada usuario con rol USER
-        createSugerenciaIfNotExists("user1", "Sugerencia de user1", "Texto de sugerencia de user1.");
-        createSugerenciaIfNotExists("user2", "Sugerencia de user2", "Texto de sugerencia de user2.");
-        createSugerenciaIfNotExists("user3", "Sugerencia de user3", "Texto de sugerencia de user3.");
+        createSugerenciaIfNotExists("user1", "Ampliad los módulos", "Ya he acabado el primer módulo y me gustaría que ampliaseis los módulos de SQL Injection, XSS y CSRF.");
+        createSugerenciaIfNotExists("user2", "Más juegos.", "Me gustaría que añadieseis más juegos de pentesting, como Hack The Box o TryHackMe.");
+        createSugerenciaIfNotExists("user3", "Texto en inglés", "Me gustaría que el texto de la web estuviese en inglés, ya que es el idioma más utilizado en el mundo de la ciberseguridad.");
 
         // Reportes de error de prueba para cada usuario con rol USER
-        createReporteIfNotExists("user1", "Error de user1", "Descripción del error reportado por user1.");
-        createReporteIfNotExists("user2", "Error de user2", "Descripción del error reportado por user2.");
-        createReporteIfNotExists("user3", "Error de user3", "Descripción del error reportado por user3.");
+        createReporteIfNotExists("user1", "Error en el sandbox", "Hay un error en el sandbox que impide hacer login con inyección SQL.");
+        createReporteIfNotExists("user2", "Error al actualizar una guía", "No puedo actualizar la guía que he creado, me da un error 500.");
+        createReporteIfNotExists("user3", "No puedo completar un test", "No puedo completar el test de SQL Injection, me da un error al enviar las respuestas.");
 
         // Logros de prueba y desbloqueo para cada usuario
         createLogroIfNotExists("Primer Logro", "Has desbloqueado tu primer logro.");
@@ -125,6 +125,67 @@ public class DataInitializer implements CommandLineRunner {
             "Técnica de inyección de código que explota vulnerabilidades en la capa de base de datos de una aplicación.",
             "https://owasp.org/www-community/attacks/SQL_Injection"
         );
+        createTerminoIfNotExists(
+            "CSRF",
+            "Cross-Site Request Forgery: ataque que engaña al navegador para que realice acciones no deseadas en una aplicación web en la que el usuario está autenticado.",
+            "https://owasp.org/www-community/attacks/csrf"
+        );
+        createTerminoIfNotExists(
+            "Broken Access Control",
+            "Vulnerabilidad que permite a un atacante eludir las restricciones de acceso y realizar acciones no autorizadas.",
+            "https://owasp.org/www-community/attacks/broken_access_control"
+        );
+        createTerminoIfNotExists(
+            "SSRF",
+            "Server-Side Request Forgery: vulnerabilidad que permite a un atacante hacer que el servidor realice solicitudes a recursos internos o externos.",
+            "https://owasp.org/www-community/attacks/Server_Side_Request_Forgery"
+        );
+        createTerminoIfNotExists(
+            "Broken Authentication",
+            "Vulnerabilidad que permite a un atacante comprometer las credenciales de autenticación y hacerse pasar por otro usuario.",
+            "https://owasp.org/www-community/attacks/broken_authentication"
+        );
+        createTerminoIfNotExists(
+            "Ciberseguridad",
+            "Práctica de proteger sistemas, redes y programas de ataques digitales.",
+            "https://es.wikipedia.org/wiki/Ciberseguridad"
+        );
+        createTerminoIfNotExists(
+            "Pentesting",
+            "Prueba de penetración: simulación de un ataque cibernético para identificar vulnerabilidades en un sistema.",
+            "https://es.wikipedia.org/wiki/Prueba_de_penetraci%C3%B3n"
+        );
+        createTerminoIfNotExists(
+            "Vulnerabilidad",
+            "Debilidad en un sistema que puede ser explotada por un atacante para comprometer la seguridad.",
+            "https://es.wikipedia.org/wiki/Vulnerabilidad_de_seguridad"
+        );
+        createTerminoIfNotExists(
+            "Malware",
+            "Software malicioso diseñado para dañar, explotar o comprometer un sistema.",
+            "https://es.wikipedia.org/wiki/Software_malicioso"
+        );
+        createTerminoIfNotExists(
+            "Firewall",
+            "Dispositivo o software que controla el tráfico de red entrante y saliente según reglas de seguridad predefinidas.",
+            "https://es.wikipedia.org/wiki/Cortafuegos_(inform%C3%A1tica)"
+        );
+        createTerminoIfNotExists(
+            "VPN",
+            "Red Privada Virtual: tecnología que crea una conexión segura y cifrada a través de una red pública.",
+            "https://es.wikipedia.org/wiki/Red_privada_virtual"
+        );
+        createTerminoIfNotExists(
+            "Criptografía",
+            "Técnica de proteger información mediante el uso de algoritmos matemáticos para cifrar y descifrar datos.",
+            "https://es.wikipedia.org/wiki/Criptograf%C3%ADa"
+        );
+        createTerminoIfNotExists(
+            "Ingeniería Social",
+            "Técnica de manipulación psicológica para obtener información confidencial o realizar acciones no autorizadas.",
+            "https://es.wikipedia.org/wiki/Ingenier%C3%ADa_social_(seguridad_inform%C3%A1tica)"
+        );
+        
     }
 
     private void createUserIfNotExists(String username, String email, String rawPassword, User.Rol rol, byte[] foto) {
