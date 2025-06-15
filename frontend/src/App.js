@@ -29,9 +29,11 @@ function App() {
       {/* Contenido principal */}
       <main className="App-main">
         <section className="news-section">
-          <h2>Novedades</h2>
+          <h2>Página de inicio</h2>
           <p>
-            Esta es la versión inicial de la aplicación. Aquí puedes encontrar las últimas novedades y actualizaciones.
+            Bienvenido a WebSecurity, tu plataforma para aprender sobre seguridad web.
+            Aquí encontrarás módulos interactivos, retos de código y recursos para mejorar tus habilidades en ciberseguridad.
+            Explora los módulos disponibles en el menú lateral derecho y comienza tu viaje de aprendizaje.
           </p>
         </section>
       </main>
